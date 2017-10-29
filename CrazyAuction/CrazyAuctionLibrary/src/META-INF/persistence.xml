@@ -3,6 +3,10 @@
   <persistence-unit name="CrazyAuctionLibraryPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>entity.Employee</class>
+    <class>entity.Customer</class>
+    <class>entity.Address</class>
+    <class>entity.CreditTransaction</class>
+    <class>entity.Bid</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/crazyauction?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

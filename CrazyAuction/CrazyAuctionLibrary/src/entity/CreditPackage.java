@@ -6,12 +6,15 @@
 package entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -27,6 +30,41 @@ public class CreditPackage {
     private BigDecimal availableCredit;
     @Column(nullable = false)
     private Boolean enabled;
+    @OneToMany(mappedBy = "purchasedCreditPackage")
+    private Collection<CreditTransaction> transactions = new ArrayList<CreditTransaction>();
+
+    public CreditPackage() {
+    }
+
+    public CreditPackage(Long creditPackageId, BigDecimal availableCredit, Boolean enabled) {
+        this.creditPackageId = creditPackageId;
+        this.availableCredit = availableCredit;
+        this.enabled = enabled;
+    }
+
+    public BigDecimal getAvailableCredit() {
+        return availableCredit;
+    }
+
+    public void setAvailableCredit(BigDecimal availableCredit) {
+        this.availableCredit = availableCredit;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Collection<CreditTransaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(Collection<CreditTransaction> transactions) {
+        this.transactions = transactions;
+    }
     
     
 }
