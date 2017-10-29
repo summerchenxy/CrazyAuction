@@ -22,7 +22,7 @@ import util.exception.InvalidLoginCredentialException;
 public interface EmployeeControllerRemote {
     Employee employeeLogin(String username, String password) throws InvalidLoginCredentialException;
 
-    void changePassword(String username, String currentPw, String newPw) throws EmployeeNotFoundException, EmployeePasswordChangeException;
+    void changePassword(String username, String currentPw, String newPw, String confirmationPw) throws EmployeeNotFoundException, EmployeePasswordChangeException;
 
     Employee createNewEmployee(Employee newEmployee);
 
