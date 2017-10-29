@@ -9,12 +9,12 @@ package util.exception;
  *
  * @author Summer
  */
-public class EmployeePwChangeException extends Exception{
+public class EmployeePasswordChangeException extends Exception{
 
-    public EmployeePwChangeException() {
+    public EmployeePasswordChangeException() {
     }
 
-    public EmployeePwChangeException(String message) {
+    public EmployeePasswordChangeException(String message) {
         super(message);
     }
     

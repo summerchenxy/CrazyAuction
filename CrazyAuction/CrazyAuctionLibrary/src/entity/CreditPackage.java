@@ -27,6 +27,8 @@ public class CreditPackage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long creditPackageId;
     @Column(nullable = false, precision = 18, scale = 4)
+    private BigDecimal initialCredit;
+    @Column(nullable = false, precision = 18, scale = 4)
     private BigDecimal availableCredit;
     @Column(nullable = false)
     private Boolean enabled;
@@ -36,10 +38,26 @@ public class CreditPackage {
     public CreditPackage() {
     }
 
-    public CreditPackage(Long creditPackageId, BigDecimal availableCredit, Boolean enabled) {
+    public CreditPackage(Long creditPackageId, BigDecimal initialCredit, Boolean enabled) {
         this.creditPackageId = creditPackageId;
-        this.availableCredit = availableCredit;
+        this.initialCredit = initialCredit;
         this.enabled = enabled;
+    }
+
+    public Long getCreditPackageId() {
+        return creditPackageId;
+    }
+
+    public void setCreditPackageId(Long creditPackageId) {
+        this.creditPackageId = creditPackageId;
+    }
+
+    public BigDecimal getInitialCredit() {
+        return initialCredit;
+    }
+
+    public void setInitialCredit(BigDecimal initialCredit) {
+        this.initialCredit = initialCredit;
     }
 
     public BigDecimal getAvailableCredit() {

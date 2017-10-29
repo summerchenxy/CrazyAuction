@@ -28,7 +28,9 @@ public class AuctionListing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long auctionListingId;
+    @Column(nullable = false)
     private Date startDateTime;
+    @Column(nullable = false)
     private Date endDateTime;
     private AuctionStatus status;    
     private String description;    
@@ -38,7 +40,7 @@ public class AuctionListing {
     
     @ManyToOne(optional = false)
     private Timer timer;
-    @OneToMany(mappedBy = "bid")
+    @OneToMany(mappedBy = "auctionListing")
     private List<Bid> bidList;
 
     @Override

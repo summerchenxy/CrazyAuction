@@ -5,6 +5,8 @@
  */
 package ejb.session.stateless;
 
+import entity.AuctionListing;
+import entity.CreditPackage;
 import entity.Employee;
 import java.util.List;
 import javax.ejb.Local;
@@ -15,8 +17,11 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import static util.enumeration.AuctionStatus.CLOSED;
+import util.exception.AuctionListingNotFoundException;
+import util.exception.CreditPackageNotFoundException;
 import util.exception.EmployeeNotFoundException;
-import util.exception.EmployeePwChangeException;
+import util.exception.EmployeePasswordChangeException;
 import util.exception.InvalidLoginCredentialException;
 
 /**
@@ -58,7 +63,7 @@ public class EmployeeController implements EmployeeControllerRemote, EmployeeCon
     }
     
     @Override
-    public void changePw(String username, String currentPw, String newPw) throws EmployeeNotFoundException, EmployeePwChangeException
+    public void changePassword(String username, String currentPw, String newPw) throws EmployeeNotFoundException, EmployeePasswordChangeException
     {
         Employee employee = retrieveEmployeeByUsername(username);
         
@@ -68,7 +73,7 @@ public class EmployeeController implements EmployeeControllerRemote, EmployeeCon
         }
         else
         {
-            throw new EmployeePwChangeException("Current PIN is invalid");
+            throw new EmployeePasswordChangeException("Current PIN is invalid");
         }
     }
     
@@ -77,6 +82,8 @@ public class EmployeeController implements EmployeeControllerRemote, EmployeeCon
     {
         em.persist(newEmployee);
         em.flush();
+        em.refresh(newEmployee);
+        
         
         return newEmployee;
     }
@@ -93,6 +100,7 @@ public class EmployeeController implements EmployeeControllerRemote, EmployeeCon
     {
         Employee employeeToRemove = retrieveEmployeeByEmployeeId(employeeId);
         em.remove(employeeToRemove);
+        em.flush();
     }
     
     @Override
@@ -133,6 +141,115 @@ public class EmployeeController implements EmployeeControllerRemote, EmployeeCon
             throw new EmployeeNotFoundException("Employee ID " + employeeId + " does not exist!");
         }
     }
-
     
+    @Override
+    public CreditPackage createCreditPackage(CreditPackage creditPackage)
+    {
+        em.persist(creditPackage);
+        em.flush();
+        em.refresh(creditPackage);
+        
+        
+        return creditPackage;
+    }
+    
+    
+    @Override
+    public void updateCreditPackage(CreditPackage creditPackage)
+    {
+        em.merge(creditPackage);
+    }
+    
+    
+   
+    @Override
+    public void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException
+    {
+        CreditPackage creditPackage = retrieveCreditPackageByCreditPackageId(creditPackageId);
+        if (creditPackage.getInitialCredit().equals(creditPackage.getAvailableCredit())){
+            em.remove(creditPackage);
+            em.flush();
+        }
+        else{//package used. mark as disabled
+            creditPackage.setEnabled(Boolean.FALSE);
+        }
+    }
+    
+  
+    @Override
+    public List<CreditPackage> retrieveAllCreditPackages()
+    {
+        Query query = em.createQuery("SELECT s FROM CreditPackage s");
+        
+        return query.getResultList();
+    }
+
+    @Override
+    public CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException
+    {
+        CreditPackage creditPackage = em.find(CreditPackage.class, creditPackageId);
+        
+        if(creditPackageId != null)
+        {
+            return creditPackage;
+        }
+        else
+        {
+            throw new CreditPackageNotFoundException("Credit Package ID " + creditPackageId + " does not exist!");
+        }
+    }
+    
+    @Override
+    public AuctionListing createAuctionListing(AuctionListing auctionListing)
+    {
+        em.persist(auctionListing);
+        em.flush();
+        em.refresh(auctionListing);
+        
+        
+        return auctionListing;
+    }
+    
+    @Override
+    public void updateAuctionListing(AuctionListing auctionListing)
+    {
+        em.merge(auctionListing);
+    }
+    
+    @Override
+    public void deleteAuctionListing(Long auctionListingId) throws AuctionListingNotFoundException
+    {
+        AuctionListing auctionListing = retrieveAuctionListingByAuctionListingId(auctionListingId);
+        if (auctionListing.getBidList().isEmpty()){
+            em.remove(auctionListing);
+            em.flush();
+        }
+        else{//listing used. mark as disabled
+            auctionListing.setStatus(CLOSED);
+        };
+    }
+    
+ 
+    @Override
+    public List<AuctionListing> retrieveAllAuctionListings()
+    {
+        Query query = em.createQuery("SELECT s FROM AuctionListing s");
+        
+        return query.getResultList();
+    }
+
+    @Override
+    public AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException
+    {
+        AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
+        
+        if(auctionListingId != null)
+        {
+            return auctionListing;
+        }
+        else
+        {
+            throw new AuctionListingNotFoundException("Auction Listing ID " + auctionListingId + " does not exist!");
+        }
+    }
 }

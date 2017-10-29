@@ -5,10 +5,14 @@
  */
 package ejb.session.stateless;
 
+import entity.AuctionListing;
+import entity.CreditPackage;
 import entity.Employee;
 import java.util.List;
+import util.exception.AuctionListingNotFoundException;
+import util.exception.CreditPackageNotFoundException;
 import util.exception.EmployeeNotFoundException;
-import util.exception.EmployeePwChangeException;
+import util.exception.EmployeePasswordChangeException;
 import util.exception.InvalidLoginCredentialException;
 
 /**
@@ -18,7 +22,7 @@ import util.exception.InvalidLoginCredentialException;
 public interface EmployeeControllerRemote {
     Employee employeeLogin(String username, String password) throws InvalidLoginCredentialException;
 
-    void changePw(String username, String currentPw, String newPw) throws EmployeeNotFoundException, EmployeePwChangeException;
+    void changePassword(String username, String currentPw, String newPw) throws EmployeeNotFoundException, EmployeePasswordChangeException;
 
     Employee createNewEmployee(Employee newEmployee);
 
@@ -31,4 +35,25 @@ public interface EmployeeControllerRemote {
     Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException;
 
     Employee retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException;
+    
+    CreditPackage createCreditPackage(CreditPackage creditPackage);
+
+    void updateCreditPackage(CreditPackage creditPackage);
+
+    void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException;
+
+    List<CreditPackage> retrieveAllCreditPackages();
+
+    CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException;
+    
+    AuctionListing createAuctionListing(AuctionListing auctionListing);
+
+    void updateAuctionListing(AuctionListing auctionListing);
+
+    void deleteAuctionListing(Long auctionListingId) throws AuctionListingNotFoundException;
+
+    List<AuctionListing> retrieveAllAuctionListings();
+
+    AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException;
+    
 }
