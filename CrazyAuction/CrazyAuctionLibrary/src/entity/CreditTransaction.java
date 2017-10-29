@@ -27,7 +27,7 @@ public class CreditTransaction implements Serializable {
     private Long creditTransactionId;
     @Column(nullable = false)
     private Date transactionDateTime;
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Customer purchasingCustomer;
     @ManyToOne
     private CreditPackage purchasedCreditPackage;
