@@ -11,10 +11,7 @@
                     <file>${reference.CrazyAuction-ejb.dist-ear}</file>
                     <path-in-war>/</path-in-war>
                 </library>
-                <library>
-                    <file>${reference.CrazyAuctionClient.j2ee-module-car}</file>
-                    <path-in-war>/</path-in-war>
-                </library>
+
                 <library>
                     <file>${reference.AdministrationClient.j2ee-module-car}</file>
                     <path-in-war>/</path-in-war>
@@ -41,14 +38,14 @@
                 <clean-target>clean-ear</clean-target>
                 <id>dist-ear</id>
             </reference>
-            <reference>
+            <!--<reference>
                 <foreign-project>CrazyAuctionClient</foreign-project>
                 <artifact-type>j2ee_ear_archive</artifact-type>
                 <script>build.xml</script>
                 <target>dist-ear</target>
                 <clean-target>clean-ear</clean-target>
                 <id>j2ee-module-car</id>
-            </reference>
+            </reference>-->
         </references>
     </configuration>
 </project>

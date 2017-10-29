@@ -234,10 +234,6 @@ exists or setup the property manually. For example like this:
             <property location="${build.dir}" name="dist.ear.dir"/>
             <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
-        <ant antfile="${project.CrazyAuctionClient}/build.xml" inheritall="false" target="dist-ear">
-            <property location="${build.dir}" name="dist.ear.dir"/>
-            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
-        </ant>
     </target>
     <target depends="init,deps-jar,deps-j2ee-archive" name="pre-pre-compile"/>
     <target name="pre-compile">
@@ -251,7 +247,7 @@ exists or setup the property manually. For example like this:
     </target>
     <target depends="init,deps-jar,pre-pre-compile,pre-compile" name="-do-compile-deps">
         <copyfiles files="${reference.CrazyAuction-ejb.dist-ear}" todir="${build.dir}//"/>
-        <copyfiles files="${reference.CrazyAuctionClient.j2ee-module-car}" todir="${build.dir}//"/>
+       
         <copyfiles files="${reference.AdministrationClient.j2ee-module-car}" todir="${build.dir}//"/>
     </target>
     <target name="post-compile">
@@ -331,7 +327,7 @@ exists or setup the property manually. For example like this:
         <!-- Task to deploy to the Access Manager runtime. -->
         <ant antfile="${project.AdministrationClient}/build.xml" inheritall="false" target="-run-deploy-am"/>
         <ant antfile="${project.CrazyAuction-ejb}/build.xml" inheritall="false" target="-run-deploy-am"/>
-        <ant antfile="${project.CrazyAuctionClient}/build.xml" inheritall="false" target="-run-deploy-am"/>
+        
     </target>
     <target depends="-init-cos,dist-directory-deploy,pre-run-deploy,-pre-nbmodule-run-deploy,-run-deploy-nb,-init-deploy-ant,-deploy-ant,-run-deploy-am,-post-nbmodule-run-deploy,post-run-deploy" name="run-deploy"/>
     <target if="netbeans.home" name="-run-deploy-nb">
@@ -438,7 +434,7 @@ exists or setup the property manually. For example like this:
         <ear2:run-appclient subprojectname="${app.client}"/>
     </target>
     <target if="j2ee.appclient.mainclass.args" name="-as-retrieve-option-workaround" unless="j2ee.clientName">
-        <property name="client.jar" value="${dist.dir}/CrazyAuctionClient.jar"/>
+        <!--<property name="client.jar" value="${dist.dir}/CrazyAuctionClient.jar"/>
         <sleep seconds="3"/>
         <copy failonerror="false" file="${wa.copy.client.jar.from}/CrazyAuction/CrazyAuctionClient.jar" todir="${dist.dir}"/>
         <copy failonerror="false" flatten="true" todir="${dist.dir}/">
@@ -449,7 +445,7 @@ exists or setup the property manually. For example like this:
         </copy>
         <copy failonerror="false" flatten="false" todir="${dist.dir}/CrazyAuctionClient">
             <fileset dir="${dist.dir}/gfdeploy/CrazyAuction" includes="**/*.jar"/>
-        </copy>
+        </copy>-->
     </target>
     <target depends="init" name="-init-run-macros">
         <macrodef name="run-appclient" uri="http://www.netbeans.org/ns/j2ee-earproject/2">
@@ -664,10 +660,10 @@ exists or setup the property manually. For example like this:
             <property location="${build.dir}" name="dist.ear.dir"/>
             <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
-        <ant antfile="${project.CrazyAuctionClient}/build.xml" inheritall="false" target="clean-ear">
+        <!--<ant antfile="${project.CrazyAuctionClient}/build.xml" inheritall="false" target="clean-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
             <property name="deploy.on.save" value="${build.deploy.on.save}"/>
-        </ant>
+        </ant>-->
     </target>
     <target depends="init" name="do-clean">
         <delete dir="${build.dir}"/>
