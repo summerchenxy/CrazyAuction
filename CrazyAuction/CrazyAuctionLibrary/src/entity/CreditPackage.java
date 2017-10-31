@@ -34,7 +34,10 @@ public class CreditPackage {
     private Boolean enabled;
     @OneToMany(mappedBy = "purchasedCreditPackage")
     private Collection<CreditTransaction> transactions = new ArrayList<CreditTransaction>();
-
+    @ManyToOne
+    @JoinColumn(nullable = true)
+    private Bid bid;
+            
     public CreditPackage() {
     }
 

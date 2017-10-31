@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import util.enumeration.AuctionStatus;
@@ -32,13 +33,15 @@ public class AuctionListing {
     private Date startDateTime;
     @Column(nullable = false)
     private Date endDateTime;
-    private AuctionStatus status;    
+    private AuctionStatus status;
+    @Column(length = 32, nullable = false)    
     private String description;    
     @Column(precision = 11, scale = 2)
     private BigDecimal reservePrice;    
     private Bid winningBid;
     
     @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Timer timer;
     @OneToMany(mappedBy = "auctionListing")
     private List<Bid> bidList;

@@ -12,7 +12,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -28,11 +30,15 @@ public class CreditTransaction implements Serializable {
     @Column(nullable = false)
     private Date transactionDateTime;
     @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Customer purchasingCustomer;
     @ManyToOne
     private CreditPackage purchasedCreditPackage;
     @Column(nullable = false)
-    private Integer unitPurchased;
+    private Integer unitPurchased;    
+    @OneToOne(mappedBy = "creditTransaction")
+    private Bid bid;
+
 
     public CreditTransaction() {
     }
@@ -84,6 +90,12 @@ public class CreditTransaction implements Serializable {
         this.unitPurchased = unitPurchased;
     }
 
+    public Bid getBid() {
+        return bid;
+    }
 
+    public void setBid(Bid bid) {
+        this.bid = bid;
+    }
 
 }
