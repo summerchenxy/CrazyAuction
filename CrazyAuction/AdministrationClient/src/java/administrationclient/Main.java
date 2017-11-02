@@ -5,17 +5,23 @@
  */
 package administrationclient;
 
+import ejb.session.stateless.EmployeeControllerRemote;
+import javax.ejb.EJB;
+
 /**
  *
  * @author Summer
  */
 public class Main {
-
+    @EJB
+    private static EmployeeControllerRemote employeeControllerRemote;
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        MainApp mainApp = new MainApp(employeeControllerRemote);
+        mainApp.runApp();
     }
     
 }
