@@ -8,7 +8,7 @@ package entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,7 +34,7 @@ public class Bid implements Serializable {
     @JoinColumn(nullable = false)
     private Address address; 
     @OneToMany(mappedBy = "bid")
-    private Collection<CreditPackage> creditPackages  = new ArrayList<CreditPackage>();
+    private List<CreditPackage> creditPackages  = new ArrayList<CreditPackage>();
     @ManyToOne
     @JoinColumn(nullable = false)
     private AuctionListing auctionListing; 
@@ -75,11 +75,11 @@ public class Bid implements Serializable {
         this.address = address;
     }
 
-    public Collection<CreditPackage> getCreditPackages() {
+    public List<CreditPackage> getCreditPackages() {
         return creditPackages;
     }
 
-    public void setCreditPackages(Collection<CreditPackage> creditPackages) {
+    public void setCreditPackages(List<CreditPackage> creditPackages) {
         this.creditPackages = creditPackages;
     }
 

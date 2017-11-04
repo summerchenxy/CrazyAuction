@@ -6,8 +6,9 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,21 +34,30 @@ public class Customer implements Serializable {
     private String lastName;
     @Column (length = 9, nullable = false, unique = true)
     private String identificationNumber;
-    @OneToMany(mappedBy = "customer")
-    private Collection<Address> addresses= new ArrayList<Address>();
-    @OneToMany(mappedBy = "purchasingCustomer")
-    private Collection<CreditTransaction> creditBalance = new ArrayList<CreditTransaction>();
     @Column(nullable=false)
     private String password;
+    private BigDecimal creditBalance;
+    @OneToMany(mappedBy = "customer")
+    private List<Address> addresses= new ArrayList<Address>();
+    @OneToMany(mappedBy = "purchasingCustomer")
+    private List<CreditTransaction> creditTransactionHistory = new ArrayList<CreditTransaction>();
+    @Column(length=32, nullable = false, unique = true)
+    private String loginCredential;
+
+
+
 
     public Customer() {
     }
 
-    public Customer(String firstName, String lastName, String identificationNumber, String password) {
+    
+    public Customer(String firstName, String lastName, String identificationNumber, String password, BigDecimal creditBalance, String loginCredential) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.identificationNumber = identificationNumber;
         this.password = password;
+        this.creditBalance = creditBalance;
+        this.loginCredential = loginCredential;
     }
 
     public Long getCustomerId() {
@@ -82,20 +92,20 @@ public class Customer implements Serializable {
         this.identificationNumber = identificationNumber;
     }
 
-    public Collection<Address> getAddresses() {
+    public List<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(Collection<Address> addresses) {
+    public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
     }
 
-    public Collection<CreditTransaction> getCreditBalance() {
-        return creditBalance;
+    public List<CreditTransaction> getreditTransactionHistory() {
+        return creditTransactionHistory;
     }
 
-    public void setCreditBalance(Collection<CreditTransaction> creditBalance) {
-        this.creditBalance = creditBalance;
+    public void setCreditBalance(List<CreditTransaction> creditTransactionHistory) {
+        this.creditTransactionHistory = creditTransactionHistory;
     }
 
     public String getPassword() {
@@ -106,5 +116,27 @@ public class Customer implements Serializable {
         this.password = password;
     }
     
+    public BigDecimal getCreditBalance() {
+        return creditBalance;
+    }
+
+    public void setCreditBalance(BigDecimal creditBalance) {
+        this.creditBalance = creditBalance;
+    }
+
+    public List<CreditTransaction> getCreditTransactionHistory() {
+        return creditTransactionHistory;
+    }
+
+    public void setCreditTransactionHistory(List<CreditTransaction> creditTransactionHistory) {
+        this.creditTransactionHistory = creditTransactionHistory;
+    }
     
+    public String getLoginCredential() {
+        return loginCredential;
+    }
+
+    public void setLoginCredential(String loginCredential) {
+        this.loginCredential = loginCredential;
+    }
 }
