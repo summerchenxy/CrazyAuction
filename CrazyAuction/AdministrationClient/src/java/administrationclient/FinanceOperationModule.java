@@ -7,6 +7,9 @@ package administrationclient;
 
 import ejb.session.stateless.EmployeeControllerRemote;
 import entity.Employee;
+import java.util.Scanner;
+import util.enumeration.AccessRightEnum;
+import util.exception.InvalidAccessRightException;
 
 /**
  *
@@ -25,7 +28,13 @@ public class FinanceOperationModule {
         this.currentEmployee = currentEmployee;
     }
     
-    public void menuFinanceOperation(){
-    
+    public void menuFinanceOperation() throws InvalidAccessRightException{
+        if(currentEmployee.getAccessRightEnum() != AccessRightEnum.FINANCE)
+        {
+            throw new InvalidAccessRightException("You don't have FINANCE employee rights to access the finance operation module.");
+        }
+        
+        Scanner scanner = new Scanner(System.in);
+        Integer response = 0;
     }
 }

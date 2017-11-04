@@ -111,7 +111,7 @@ public class MainApp {
     
     
     
-    private void menuMain() throws InvalidLoginCredentialException
+    private void menuMain() throws InvalidLoginCredentialException, InvalidAccessRightException
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -182,12 +182,12 @@ public class MainApp {
         }
     }
     
-    private void doSpecifyRole(){
+    private void doSpecifyRole() throws InvalidAccessRightException{
         Scanner scanner = new Scanner(System.in);        
         String input;
         while(true)
         {
-            System.out.print("Specify your role (0: No Change, 1: System Administrator, 2: Finance Staff, 3: Sales staff)> ");
+            System.out.print("Specify your role (0: No Change, 1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
             Integer accessRightInt = scanner.nextInt();
             
             if(accessRightInt >= 1 && accessRightInt <= 3)

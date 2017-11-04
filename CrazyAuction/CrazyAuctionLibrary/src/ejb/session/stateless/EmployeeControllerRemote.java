@@ -30,7 +30,7 @@ public interface EmployeeControllerRemote {
 
     void deleteEmployee(Long employeeId) throws EmployeeNotFoundException;
 
-    List<Employee> retrieveAllStaffs();
+    List<Employee> retrieveAllEmployees();
 
     Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException;
 

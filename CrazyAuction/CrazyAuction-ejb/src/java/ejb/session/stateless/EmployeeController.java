@@ -109,7 +109,7 @@ public class EmployeeController implements EmployeeControllerRemote, EmployeeCon
     }
     
     @Override
-    public List<Employee> retrieveAllStaffs()
+    public List<Employee> retrieveAllEmployees()
     {
         Query query = em.createQuery("SELECT s FROM Employee s");
         
