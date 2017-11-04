@@ -31,7 +31,7 @@ public class MainApp {
     public MainApp(EmployeeControllerRemote employeeControllerRemote) {
         this.employeeControllerRemote = employeeControllerRemote;
     }
-    public void runApp()
+    public void runApp() throws InvalidAccessRightException
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
