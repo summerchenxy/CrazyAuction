@@ -7,11 +7,16 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -26,12 +31,22 @@ public class Bid implements Serializable {
     private Long bidId;
     private BigDecimal creditValue;
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Address address; 
-
+    @OneToMany(mappedBy = "bid")
+    private List<CreditPackage> creditPackages  = new ArrayList<CreditPackage>();
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private AuctionListing auctionListing; 
+    @OneToOne
+    private CreditTransaction creditTransaction;
+    
     public Bid() {
+       
     }
 
     public Bid(BigDecimal creditValue, Address address) {
+
         this.creditValue = creditValue;
         this.address = address;
     }
@@ -58,6 +73,30 @@ public class Bid implements Serializable {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public List<CreditPackage> getCreditPackages() {
+        return creditPackages;
+    }
+
+    public void setCreditPackages(List<CreditPackage> creditPackages) {
+        this.creditPackages = creditPackages;
+    }
+
+    public AuctionListing getAuctionListing() {
+        return auctionListing;
+    }
+
+    public void setAuctionListing(AuctionListing auctionListing) {
+        this.auctionListing = auctionListing;
+    }
+
+    public CreditTransaction getCreditTransaction() {
+        return creditTransaction;
+    }
+
+    public void setCreditTransaction(CreditTransaction creditTransaction) {
+        this.creditTransaction = creditTransaction;
     }
     
 }

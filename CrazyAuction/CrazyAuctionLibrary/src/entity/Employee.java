@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -26,7 +27,7 @@ public class Employee implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-     private Long employeeId;
+    private Long employeeId;
     @Column(length = 32, nullable = false)
     private String firstName;
     @Column(length = 32, nullable = false)

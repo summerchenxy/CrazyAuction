@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.AuctionListing;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -14,6 +15,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import static util.enumeration.AuctionStatus.CLOSED;
 import util.exception.AuctionListingNotFoundException;
+
+/**
+ *
+ * @author alex_zy
+=======*/
 
 /**
  *

@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -27,25 +28,29 @@ public class Address implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long addressId;
-    @ManyToOne
-    private Customer customer;
     @Column(length =32, nullable = false)
     private String lineOne;
     @Column(length =32, nullable = true)
     private String lineTwo;
+    @ManyToOne
+    @JoinColumn(nullable = true)
+    private Customer customer;
     @OneToMany(mappedBy = "address")
     private List<Bid> bids = new ArrayList ();
+    private boolean enabled;
 
-    public Address() {
+    public Address() { 
+        enabled = true;
     }
 
-    public Address(Long addressId, Customer customer, String lineOne, String lineTwo) {
-        this.addressId = addressId;
+    public Address(String lineOne, String lineTwo, Customer customer) {
         this.customer = customer;
         this.lineOne = lineOne;
         this.lineTwo = lineTwo;
     }
 
+    private boolean IsEnabled() {return this.enabled;}
+            
     public Long getAddressId() {
         return addressId;
     }

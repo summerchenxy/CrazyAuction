@@ -9,10 +9,16 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import util.enumeration.AccessRightEnum;
+import util.enumeration.TransactionTypeEnum;
 
 /**
  *
@@ -28,20 +34,35 @@ public class CreditTransaction implements Serializable {
     @Column(nullable = false)
     private Date transactionDateTime;
     @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Customer purchasingCustomer;
     @ManyToOne
-    private CreditPackage purchasedCreditPackage;
+    private CreditPackage creditPackages;  
     @Column(nullable = false)
-    private Integer unitPurchased;
+    @Enumerated(EnumType.STRING)
+    private TransactionTypeEnum type;
+    @OneToOne(mappedBy = "creditTransaction", optional=true)
+    private Bid bid;
+
 
     public CreditTransaction() {
     }
 
-    public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage purchasedCreditPackage, Integer unitPurchased) {
+    public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage creditPackages, TransactionTypeEnum type, Bid bid) {
         this.transactionDateTime = transactionDateTime;
         this.purchasingCustomer = purchasingCustomer;
-        this.purchasedCreditPackage = purchasedCreditPackage;
-        this.unitPurchased = unitPurchased;
+        this.creditPackages = creditPackages;
+        this.type = type;
+        this.bid = bid;
+    }
+
+
+    public TransactionTypeEnum getType() {
+        return type;
+    }
+
+    public void setType(TransactionTypeEnum type) {
+        this.type = type;
     }
 
     public Long getCreditTransactionId() {
@@ -68,22 +89,20 @@ public class CreditTransaction implements Serializable {
         this.purchasingCustomer = purchasingCustomer;
     }
 
-    public CreditPackage getPurchasedCreditPackage() {
-        return purchasedCreditPackage;
+    public CreditPackage getCreditPackages() {
+        return creditPackages;
     }
 
-    public void setPurchasedCreditPackage(CreditPackage purchasedCreditPackage) {
-        this.purchasedCreditPackage = purchasedCreditPackage;
+    public void setCreditPackages(CreditPackage creditPackages) {
+        this.creditPackages = creditPackages;
     }
 
-    public Integer getUnitPurchased() {
-        return unitPurchased;
+    public Bid getBid() {
+        return bid;
     }
 
-    public void setUnitPurchased(Integer unitPurchased) {
-        this.unitPurchased = unitPurchased;
+    public void setBid(Bid bid) {
+        this.bid = bid;
     }
-
-
 
 }

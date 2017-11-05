@@ -8,6 +8,7 @@ package entity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,8 +36,11 @@ public class CreditPackage {
     @Column(nullable = false)
     private Boolean enabled;
     @OneToMany(mappedBy = "purchasedCreditPackage")
-    private Collection<CreditTransaction> transactions = new ArrayList<CreditTransaction>();
-
+    private List<CreditTransaction> transactions = new ArrayList<CreditTransaction>();
+    @ManyToOne
+    @JoinColumn(nullable = true)
+    private Bid bid;
+            
     public CreditPackage() {
     }
 
@@ -87,11 +91,11 @@ public class CreditPackage {
         this.enabled = enabled;
     }
 
-    public Collection<CreditTransaction> getTransactions() {
+    public List<CreditTransaction> getTransactions() {
         return transactions;
     }
 
-    public void setTransactions(Collection<CreditTransaction> transactions) {
+    public void setTransactions(List<CreditTransaction> transactions) {
         this.transactions = transactions;
     }
     
