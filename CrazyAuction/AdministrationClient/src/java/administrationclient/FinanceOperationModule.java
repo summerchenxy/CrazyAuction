@@ -28,8 +28,9 @@ public class FinanceOperationModule {
     public FinanceOperationModule() {
     }
 
-    public FinanceOperationModule(EmployeeControllerRemote employeeControllerRemote, Employee currenteEmployee) {
+    public FinanceOperationModule(EmployeeControllerRemote employeeControllerRemote, CreditPackageControllerRemote creditPackageControllerRemote, Employee currenteEmployee) {
         this.employeeControllerRemote = employeeControllerRemote;
+        this.creditPackageControllerRemote = creditPackageControllerRemote;
         this.currentEmployee = currentEmployee;
     }
     
@@ -89,7 +90,7 @@ public class FinanceOperationModule {
         Scanner scanner = new Scanner(System.in);
         CreditPackage newCreditPackage = new CreditPackage();
         
-        System.out.println("*** OAS Administration Panel :: System Administration :: Create New Credit Package ***\n");
+        System.out.println("*** OAS Administration Panel :: Finance Operation :: Create New Credit Package ***\n");
         System.out.print("Enter Initial Credit> ");
         newCreditPackage.setPrice(scanner.nextBigDecimal());
         newCreditPackage.setInitialCredit(scanner.nextBigDecimal());
@@ -105,7 +106,7 @@ public class FinanceOperationModule {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
         
-        System.out.println("*** OAS Administration Panel :: System Administration :: View Credit Package Details ***\n");
+        System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details ***\n");
         System.out.print("Enter CreditPackage ID> ");
         Long creditPackageId = scanner.nextLong();
         
@@ -142,7 +143,7 @@ public class FinanceOperationModule {
         BigDecimal newPrice;
         String input;
         
-        System.out.println("*** OAS Administration Panel :: System Administration :: View Credit Package Details :: Update Credit Package ***\n");
+        System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details :: Update Credit Package ***\n");
         
         System.out.print("Enter Price (blank if no change)> ");
         newPrice = scanner.nextBigDecimal();
@@ -174,7 +175,7 @@ public class FinanceOperationModule {
         Scanner scanner = new Scanner(System.in);        
         String input;
         
-        System.out.println("*** OAS Administration Panel :: System Administration :: View Credit Package Details :: Delete Credit Package ***\n");
+        System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details :: Delete Credit Package ***\n");
         System.out.printf("Confirm Delete CreditPackage of price %s and initial credit of %s (Credit Package ID: %d) (Enter 'Y' to Delete)> ", creditPackage.getPrice().toString(), creditPackage.getInitialCredit().toString(), creditPackage.getCreditPackageId());
         input = scanner.nextLine().trim();
         
@@ -199,7 +200,7 @@ public class FinanceOperationModule {
     {
         Scanner scanner = new Scanner(System.in);
         
-        System.out.println("*** OAS Administration Panel :: System Administration :: View All CreditPackages ***\n");
+        System.out.println("*** OAS Administration Panel :: Finance Operation :: View All CreditPackages ***\n");
         
         List<CreditPackage> allCreditPackages = creditPackageControllerRemote.retrieveAllCreditPackages();
         System.out.printf("%8s%20s%20s%15s%20s%20s\n", "CreditPackage ID", "Price", "Initial Credit", "Available Credit", "Enabled Status", "Credit Transactions");
