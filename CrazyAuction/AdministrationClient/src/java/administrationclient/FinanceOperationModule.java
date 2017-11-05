@@ -91,8 +91,9 @@ public class FinanceOperationModule {
         CreditPackage newCreditPackage = new CreditPackage();
         
         System.out.println("*** OAS Administration Panel :: Finance Operation :: Create New Credit Package ***\n");
-        System.out.print("Enter Initial Credit> ");
+        System.out.print("Enter Price> ");
         newCreditPackage.setPrice(scanner.nextBigDecimal());
+        System.out.print("Enter Initial Credit> ");
         newCreditPackage.setInitialCredit(scanner.nextBigDecimal());
         newCreditPackage.setAvailableCredit(newCreditPackage.getInitialCredit());
         newCreditPackage.setEnabled(Boolean.TRUE);//assume that credit package is by default enabled when it is created
@@ -188,7 +189,7 @@ public class FinanceOperationModule {
             else{//credit package is used and is marked as disabled
                 creditPackage.setEnabled(Boolean.FALSE);
                 creditPackageControllerRemote.updateCreditPackage(creditPackage);
-                System.out.println("Credit Package has been used hence it is diabled but not deleted!\n");
+                System.out.println("Credit Package has been used hence it is disabled but not deleted!\n");
             }
         }
         else

@@ -32,7 +32,7 @@ public class SalesOperationModule {
     }
     
     public void menuSalesOperation() throws InvalidAccessRightException{
-        /*if(currentEmployee.getAccessRightEnum() != AccessRightEnum.SALES)
+        if(currentEmployee.getAccessRightEnum() != AccessRightEnum.SALES)
         {
             throw new InvalidAccessRightException("You don't have SALES Employee rights to access the sales operation module.");
         }
@@ -61,15 +61,15 @@ public class SalesOperationModule {
                 }
                 else if(response == 2)
                 {
-                    doViewAuctionListingDetails();
+                    //doViewAuctionListingDetails();
                 }
                 else if(response == 3)
                 {
-                    doViewAllAuctionListings();
+                    //doViewAllAuctionListings();
                 }
                 else if(response == 4)
                 {
-                    doViewAllAuctionListingsRequiringManualIntervention();
+                    //doViewAllAuctionListingsRequiringManualIntervention();
                 }
                 else if (response == 5)
                 {
@@ -103,7 +103,7 @@ public class SalesOperationModule {
         System.out.println("New auctionListingcreated successfully!: " + newAuctionListing.getAuctionListingId()+ "\n");
     }
     
-    private void doViewAuctionListingDetails()
+    /*private void doViewAuctionListingDetails()
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -216,7 +216,7 @@ public class SalesOperationModule {
         scanner.nextLine();
     }
     private void doViewAllAuctionListingsRequiringManualIntervention()
-    {*/
+    {
         
-    }
+    }*/
 }
