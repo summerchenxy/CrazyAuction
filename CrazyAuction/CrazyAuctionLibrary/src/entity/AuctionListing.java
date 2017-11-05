@@ -29,6 +29,8 @@ public class AuctionListing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long auctionListingId;
+    @Column(precision = 11, scale = 2)
+    private BigDecimal startingBidAmount;
     @Column(nullable = false)
     private Date startDateTime;
     @Column(nullable = false)
@@ -39,6 +41,7 @@ public class AuctionListing {
     @Column(precision = 11, scale = 2)
     private BigDecimal reservePrice;    
     private Bid winningBid;
+    private BigDecimal winningBidValue; 
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -75,7 +78,8 @@ public class AuctionListing {
     public AuctionListing() {
     }
 
-    public AuctionListing(Date startDateTime, Date endDateTime, AuctionStatus status, String description, BigDecimal reservePrice) {
+    public AuctionListing(BigDecimal startingBidAmount, Date startDateTime, Date endDateTime, AuctionStatus status, String description, BigDecimal reservePrice) {
+        this.startingBidAmount = startingBidAmount;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.status = status;
@@ -95,6 +99,14 @@ public class AuctionListing {
      */
     public void setAuctionListingId(Long auctionListingId) {
         this.auctionListingId = auctionListingId;
+    }
+
+    public BigDecimal getStartingBidAmount() {
+        return startingBidAmount;
+    }
+
+    public void setStartingBidAmount(BigDecimal startingBidAmount) {
+        this.startingBidAmount = startingBidAmount;
     }
 
     /**
@@ -157,6 +169,9 @@ public class AuctionListing {
      * @return the reservePrice
      */
     public BigDecimal getReservePrice() {
+        if (reservePrice == null){
+            System.out.print("No reserve price!");
+        }
         return reservePrice;
     }
 
@@ -171,6 +186,9 @@ public class AuctionListing {
      * @return the winningBid
      */
     public Bid getWinningBid() {
+        if (winningBid == null){
+            System.out.print("No winning bid!");
+        }
         return winningBid;
     }
 
@@ -179,6 +197,24 @@ public class AuctionListing {
      */
     public void setWinningBid(Bid winningBid) {
         this.winningBid = winningBid;
+    }
+    
+    public final void setWinningBidManually(Bid winningBid){
+        setWinningBid(winningBid);
+    }
+    
+    public void setWinningBidValue(BigDecimal winningBidValue) {
+        this.winningBidValue = winningBidValue;
+    }
+    
+    public final void setWinningBidValueManually(BigDecimal winningBidValue){
+        setWinningBidValue(winningBidValue);
+    }
+    public BigDecimal getWinningBidValue() {
+        if (winningBidValue == null){
+            System.out.print("No winning bid!");
+        }
+        return winningBidValue;
     }
 
     /**
@@ -199,6 +235,9 @@ public class AuctionListing {
      * @return the bidList
      */
     public List<Bid> getBidList() {
+        if (bidList.isEmpty()){
+            System.out.print("Empty Bid List!");
+        }
         return bidList;
     }
 

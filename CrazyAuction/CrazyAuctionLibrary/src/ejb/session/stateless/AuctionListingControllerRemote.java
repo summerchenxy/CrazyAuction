@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.AuctionListing;
+import java.math.BigDecimal;
 import java.util.List;
 import util.exception.AuctionListingNotFoundException;
 
@@ -24,5 +25,7 @@ public interface AuctionListingControllerRemote {
     List<AuctionListing> retrieveAllAuctionListings();
 
     AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException;
+    
+    List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention();
     
 }

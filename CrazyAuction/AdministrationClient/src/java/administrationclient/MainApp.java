@@ -7,6 +7,7 @@ package administrationclient;
 
 import ejb.session.stateless.EmployeeControllerRemote;
 import entity.Employee;
+import java.text.ParseException;
 import java.util.Scanner;
 import util.enumeration.AccessRightEnum;
 import util.exception.InvalidAccessRightException;
@@ -31,7 +32,7 @@ public class MainApp {
     public MainApp(EmployeeControllerRemote employeeControllerRemote) {
         this.employeeControllerRemote = employeeControllerRemote;
     }
-    public void runApp() throws InvalidAccessRightException
+    public void runApp() throws InvalidAccessRightException, ParseException
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -111,7 +112,7 @@ public class MainApp {
     
     
     
-    private void menuMain() throws InvalidLoginCredentialException, InvalidAccessRightException
+    private void menuMain() throws InvalidLoginCredentialException, InvalidAccessRightException, ParseException
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -182,7 +183,7 @@ public class MainApp {
         }
     }
     
-    private void doSpecifyRole() throws InvalidAccessRightException{
+    private void doSpecifyRole() throws InvalidAccessRightException, ParseException{
         Scanner scanner = new Scanner(System.in);        
         String input;
         while(true)

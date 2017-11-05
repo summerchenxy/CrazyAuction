@@ -123,6 +123,14 @@ public class Customer implements Serializable {
     public void setCreditBalance(BigDecimal creditBalance) {
         this.creditBalance = creditBalance;
     }
+    
+    public void addCreditBalance(BigDecimal amount) {
+        this.creditBalance = creditBalance.add(amount);
+    }
+    
+    public void subtractCreditBalance(BigDecimal amount) {
+        this.creditBalance = creditBalance.subtract(amount);
+    }
 
     public List<CreditTransaction> getCreditTransactionHistory() {
         return creditTransactionHistory;

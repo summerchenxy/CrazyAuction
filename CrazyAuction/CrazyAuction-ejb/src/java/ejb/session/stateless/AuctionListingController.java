@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.AuctionListing;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -13,6 +14,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.AuctionStatus;
 import static util.enumeration.AuctionStatus.CLOSED;
 import util.exception.AuctionListingNotFoundException;
 
@@ -75,9 +77,23 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     public List<entity.AuctionListing> retrieveAllAuctionListings()
     {
         Query query = em.createQuery("SELECT s FROM AuctionListing s");
-        
         return query.getResultList();
     }
+    
+    @Override
+    public List<entity.AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention()
+    {
+        /*must fullfil all 3 conditions:
+            1. auction listing is closed
+            2. auction listing has bids / winning bid is not 0
+            3. acution listing has winning bid lower than the reserve price
+        */
+        AuctionStatus status = CLOSED;
+        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus AND s.winningBidValue > 0 AND s.winningBidValue < s.reservePrice");
+        query.setParameter("inStatus", status);
+        return query.getResultList();
+    }
+    
 
     @Override
     public entity.AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException
@@ -93,6 +109,7 @@ public class AuctionListingController implements AuctionListingControllerRemote,
             throw new AuctionListingNotFoundException("Auction Listing ID " + auctionListingId + " does not exist!");
         }
     }
+
 
     public void persist(Object object) {
         em.persist(object);

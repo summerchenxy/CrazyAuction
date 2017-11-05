@@ -6,9 +6,17 @@
 package ejb.session.stateless;
 
 import entity.Bid;
+import java.math.BigDecimal;
+import util.exception.BidNotFoundException;
 
 public interface BidControllerLocal {
 
-    public Bid createNewBid(Bid bid);
+    Bid createNewBid(Bid bid);
+
+    void refundToCustomer(Bid bid);
+
+    Bid retrieveBidByBidId(Long bidId) throws BidNotFoundException;
+
+    Bid retrieveBidByCreditValue(BigDecimal creditValue) throws BidNotFoundException;
     
 }
