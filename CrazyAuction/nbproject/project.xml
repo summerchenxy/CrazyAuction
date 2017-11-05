@@ -11,9 +11,15 @@
                     <file>${reference.CrazyAuction-ejb.dist-ear}</file>
                     <path-in-war>/</path-in-war>
                 </library>
-
+                <library>
+                    <file>${reference.CrazyAuctionClient.j2ee-module-car}</file>
+                </library>
                 <library>
                     <file>${reference.AdministrationClient.j2ee-module-car}</file>
+                    <path-in-war>/</path-in-war>
+                </library>
+                <library>
+                    <file>${reference.AuctionClient.j2ee-module-car}</file>
                     <path-in-war>/</path-in-war>
                 </library>
             </web-module-additional-libraries>
@@ -24,6 +30,14 @@
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
                 <foreign-project>AdministrationClient</foreign-project>
+                <artifact-type>j2ee_ear_archive</artifact-type>
+                <script>build.xml</script>
+                <target>dist-ear</target>
+                <clean-target>clean-ear</clean-target>
+                <id>j2ee-module-car</id>
+            </reference>
+            <reference>
+                <foreign-project>AuctionClient</foreign-project>
                 <artifact-type>j2ee_ear_archive</artifact-type>
                 <script>build.xml</script>
                 <target>dist-ear</target>
