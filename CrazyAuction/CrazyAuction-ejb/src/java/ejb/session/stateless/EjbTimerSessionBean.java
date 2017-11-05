@@ -34,7 +34,7 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
     @Override
     public void auctionListingStatusCheckTimer()
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
         Date currentDate = new Date();
         String currentDateString = sdf.format(currentDate);
         //System.out.println("********** EjbTimerSession.auctionListingStatusCheckTimer(): Timeout at " + currentDate);

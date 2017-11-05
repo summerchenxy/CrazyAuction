@@ -9,6 +9,10 @@ import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.EmployeeControllerRemote;
 import entity.AuctionListing;
 import entity.Employee;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 import util.enumeration.AccessRightEnum;
 import util.exception.InvalidAccessRightException;
@@ -21,6 +25,7 @@ public class SalesOperationModule {
     private EmployeeControllerRemote employeeControllerRemote;
     private AuctionListingControllerRemote auctionListingControllerRemote;
     private Employee currentEmployee;
+    private static DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
 
     public SalesOperationModule() {
     }
@@ -31,7 +36,7 @@ public class SalesOperationModule {
         this.currentEmployee = currentEmployee;
     }
     
-    public void menuSalesOperation() throws InvalidAccessRightException{
+    public void menuSalesOperation() throws InvalidAccessRightException, ParseException{
         if(currentEmployee.getAccessRightEnum() != AccessRightEnum.SALES)
         {
             throw new InvalidAccessRightException("You don't have SALES Employee rights to access the sales operation module.");
@@ -87,17 +92,24 @@ public class SalesOperationModule {
             }
         }
     }
-    private void doCreateNewAuctionListing()
+    private void doCreateNewAuctionListing() throws ParseException
     {
         Scanner scanner = new Scanner(System.in);
         AuctionListing newAuctionListing = new AuctionListing();
         
         System.out.println("*** OAS Administration Panel :: Sales Operation :: Create New Auction Listing ***\n");
-        System.out.print("Enter Initial Credit> ");
-        newAuctionListing.setPrice(scanner.nextBigDecimal());
-        newAuctionListing.setInitialCredit(scanner.nextBigDecimal());
-        newAuctionListing.setAvailableCredit(newAuctionListing.getInitialCredit());
-        newAuctionListing.setEnabled(Boolean.TRUE);//assume that credit package is by default enabled when it is created
+        System.out.print("Enter Start Date in yyyy.MM.dd format> ");
+        String startDateString = scanner.next();
+        Date startDate = formatter.parse(startDateString);
+        newAuctionListing.setStartDateTime(startDate);
+        System.out.print("Enter End Date in yyyy.MM.dd format> ");
+        String endDateString = scanner.next();
+        Date endDate = formatter.parse(endDateString);
+        newAuctionListing.setEndDateTime(endDate);
+        System.out.print("Enter Description> ");
+        newAuctionListing.setDescription(scanner.nextLine().trim());
+        System.out.print("Enter Reserve Price (Enter 0 if no reserve price)> ");
+        newAuctionListing.setReservePrice(scanner.nextBigDecimal());
         
         newAuctionListing = auctionListingControllerRemote.createAuctionListing(newAuctionListing);
         System.out.println("New auctionListingcreated successfully!: " + newAuctionListing.getAuctionListingId()+ "\n");
