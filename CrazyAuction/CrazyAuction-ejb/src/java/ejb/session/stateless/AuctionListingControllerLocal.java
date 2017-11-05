@@ -5,10 +5,25 @@
  */
 package ejb.session.stateless;
 
+
 import entity.AuctionListing;
+import java.util.List;
+import util.exception.AuctionListingNotFoundException;
 
+/**
+ *
+ * @author Summer
+ */
 public interface AuctionListingControllerLocal {
+    
+    AuctionListing createAuctionListing(entity.AuctionListing auctionListing);
 
-    public AuctionListing createNewAuctionListing(AuctionListing auctionListing);
+    void updateAuctionListing(entity.AuctionListing auctionListing);
+
+    void deleteAuctionListing(Long auctionListingId) throws AuctionListingNotFoundException;
+
+    List<entity.AuctionListing> retrieveAllAuctionListings();
+
+    entity.AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException;
     
 }

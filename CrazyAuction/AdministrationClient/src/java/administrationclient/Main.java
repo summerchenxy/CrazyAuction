@@ -5,19 +5,26 @@
  */
 package administrationclient;
 
+import ejb.session.stateless.EmployeeControllerRemote;
+import javax.ejb.EJB;
+import util.exception.InvalidAccessRightException;
+
 /**
  *
  * @author Summer
  */
 public class Main {
-
+    @EJB
+    private static EmployeeControllerRemote employeeControllerRemote;
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidAccessRightException {
         // TODO code application logic here
-        
-        System.out.println("hello world");
+
+        MainApp mainApp = new MainApp(employeeControllerRemote);
+        mainApp.runApp();
+
     }
     
 }

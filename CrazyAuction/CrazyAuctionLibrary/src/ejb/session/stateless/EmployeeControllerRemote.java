@@ -30,30 +30,10 @@ public interface EmployeeControllerRemote {
 
     void deleteEmployee(Long employeeId) throws EmployeeNotFoundException;
 
-    List<Employee> retrieveAllStaffs();
+    List<Employee> retrieveAllEmployees();
 
     Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException;
 
     Employee retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException;
-    
-    CreditPackage createCreditPackage(CreditPackage creditPackage);
-
-    void updateCreditPackage(CreditPackage creditPackage);
-
-    void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException;
-
-    List<CreditPackage> retrieveAllCreditPackages();
-
-    CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException;
-    
-    AuctionListing createAuctionListing(AuctionListing auctionListing);
-
-    void updateAuctionListing(AuctionListing auctionListing);
-
-    void deleteAuctionListing(Long auctionListingId) throws AuctionListingNotFoundException;
-
-    List<AuctionListing> retrieveAllAuctionListings();
-
-    AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException;
     
 }
