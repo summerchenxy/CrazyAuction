@@ -17,10 +17,9 @@ import util.exception.CustomerPasswordChangeException;
 public interface CustomerControllerLocal {
 
     public Customer createNewCustomer(Customer customer);
+    
     public void updateCustomer(Customer customer);
 
-    public Customer retrieveCustomerById(Long customerId, Boolean fetchAddresses, Boolean fetchCreditBalance, Boolean fetchCreditTransactionHistory) throws CustomerNotFoundException;
-
-    public void changePassword(Long customerId, String currentPassword, String newPassword) throws CustomerNotFoundException, CustomerPasswordChangeException;
+    public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
     
 }

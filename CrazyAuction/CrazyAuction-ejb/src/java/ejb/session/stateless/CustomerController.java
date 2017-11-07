@@ -60,37 +60,19 @@ public class CustomerController implements CustomerControllerRemote, CustomerCon
     }
     
     @Override
-    public Customer retrieveCustomerById(Long customerId, Boolean fetchAddresses, Boolean fetchCreditBalance, Boolean fetchCreditTransactionHistory) throws CustomerNotFoundException
+    public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException
     {
-        Customer customer = em.find(Customer.class, customerId);
-        if (customer!=null)
-        {
-            if (fetchAddresses)
-                customer.getAddresses();
-            if(fetchCreditBalance)
-                customer.getCreditBalance();
-            if (fetchCreditTransactionHistory)
-                customer.getCreditTransactionHistory();
-            return customer;
-        }
-        else
-        {
-            throw new CustomerNotFoundException("Customer ID " + customerId + " does not exist");
-        }
-    }
-    
-    @Override
-    public void changePassword(Long customerId, String currentPassword, String newPassword) throws CustomerNotFoundException, CustomerPasswordChangeException
-    {
-        Customer customer = retrieveCustomerById(customerId, false, false, false);
+        Query query = em.createQuery("SELECT s FROM Customer s WHERE s.username = :inUsername");
+        query.setParameter("inUsername", username);
         
-        if(customer.getPassword().equals(currentPassword))
+        try
         {
-            customer.setPassword(newPassword);
+            return (Customer)query.getSingleResult();
         }
-        else
+        catch(NoResultException | NonUniqueResultException ex)
         {
-            throw new CustomerPasswordChangeException("Current password is invalid");
+            throw new CustomerNotFoundException("Customer Username " + username + " does not exist!");
         }
     }
+
 }
