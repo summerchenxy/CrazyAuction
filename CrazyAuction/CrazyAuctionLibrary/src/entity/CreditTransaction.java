@@ -36,26 +36,36 @@ public class CreditTransaction implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer purchasingCustomer;
-    @ManyToOne
-    private CreditPackage creditPackages;  
+    @OneToOne(optional=true)
+    private CreditPackage creditPackages; 
+    private int creditPacketUnit;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TransactionTypeEnum type;
     @OneToOne(mappedBy = "creditTransaction", optional=true)
     private Bid bid;
+    
 
 
     public CreditTransaction() {
     }
 
-    public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage creditPackages, TransactionTypeEnum type, Bid bid) {
+    public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage creditPackages, int creditPacketUnit, TransactionTypeEnum type, Bid bid) {
         this.transactionDateTime = transactionDateTime;
         this.purchasingCustomer = purchasingCustomer;
         this.creditPackages = creditPackages;
+        this.creditPacketUnit = creditPacketUnit;
         this.type = type;
         this.bid = bid;
     }
 
+    public int getCreditPacketUnit() {
+        return creditPacketUnit;
+    }
+
+    public void setCreditPacketUnit(int creditPacketUnit) {
+        this.creditPacketUnit = creditPacketUnit;
+    }
 
     public TransactionTypeEnum getType() {
         return type;

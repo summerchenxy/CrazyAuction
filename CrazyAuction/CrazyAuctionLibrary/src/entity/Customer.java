@@ -42,7 +42,7 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "purchasingCustomer")
     private List<CreditTransaction> creditTransactionHistory = new ArrayList<CreditTransaction>();
     @Column(length=32, nullable = false, unique = true)
-    private String loginCredential;
+    private String username;
 
 
 
@@ -57,7 +57,7 @@ public class Customer implements Serializable {
         this.identificationNumber = identificationNumber;
         this.password = password;
         this.creditBalance = creditBalance;
-        this.loginCredential = loginCredential;
+        this.username = loginCredential;
     }
 
     public Long getCustomerId() {
@@ -140,11 +140,11 @@ public class Customer implements Serializable {
         this.creditTransactionHistory = creditTransactionHistory;
     }
     
-    public String getLoginCredential() {
-        return loginCredential;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLoginCredential(String loginCredential) {
-        this.loginCredential = loginCredential;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
