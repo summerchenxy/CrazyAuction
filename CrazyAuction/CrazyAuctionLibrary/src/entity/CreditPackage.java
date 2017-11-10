@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -35,11 +36,8 @@ public class CreditPackage {
     private BigDecimal availableCredit;
     @Column(nullable = false)
     private Boolean enabled;
-    @OneToMany(mappedBy = "purchasedCreditPackage")
-    private List<CreditTransaction> transactions = new ArrayList<CreditTransaction>();
-    @ManyToOne
-    @JoinColumn(nullable = true)
-    private Bid bid;
+    @OneToOne(mappedBy = "purchasedCreditPackage")
+    private CreditTransaction transactions;
             
     public CreditPackage() {
     }
@@ -91,13 +89,15 @@ public class CreditPackage {
         this.enabled = enabled;
     }
 
-    public List<CreditTransaction> getTransactions() {
+    public CreditTransaction getTransactions() {
         return transactions;
     }
 
-    public void setTransactions(List<CreditTransaction> transactions) {
+    public void setTransactions(CreditTransaction transactions) {
         this.transactions = transactions;
     }
+
+
     
     
 }

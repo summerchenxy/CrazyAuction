@@ -33,8 +33,6 @@ public class Bid implements Serializable {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Address address; 
-    @OneToMany(mappedBy = "bid")
-    private List<CreditPackage> creditPackages  = new ArrayList<CreditPackage>();
     @ManyToOne
     @JoinColumn(nullable = false)
     private AuctionListing auctionListing; 
@@ -73,14 +71,6 @@ public class Bid implements Serializable {
 
     public void setAddress(Address address) {
         this.address = address;
-    }
-
-    public List<CreditPackage> getCreditPackages() {
-        return creditPackages;
-    }
-
-    public void setCreditPackages(List<CreditPackage> creditPackages) {
-        this.creditPackages = creditPackages;
     }
 
     public AuctionListing getAuctionListing() {
