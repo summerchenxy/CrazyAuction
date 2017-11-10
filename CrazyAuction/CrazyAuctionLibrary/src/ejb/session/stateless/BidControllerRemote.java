@@ -6,7 +6,6 @@
 package ejb.session.stateless;
 
 import entity.Bid;
-import javax.ejb.Remote;
 
 
 public interface BidControllerRemote {
