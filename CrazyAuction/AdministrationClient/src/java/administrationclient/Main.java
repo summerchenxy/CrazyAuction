@@ -6,6 +6,7 @@
 package administrationclient;
 
 import ejb.session.stateless.EmployeeControllerRemote;
+import java.text.ParseException;
 import javax.ejb.EJB;
 import util.exception.InvalidAccessRightException;
 
@@ -19,7 +20,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws InvalidAccessRightException {
+    public static void main(String[] args) throws InvalidAccessRightException, ParseException {
         // TODO code application logic here
 
         MainApp mainApp = new MainApp(employeeControllerRemote);

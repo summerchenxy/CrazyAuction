@@ -116,7 +116,7 @@ public class FinanceOperationModule {
             CreditPackage creditPackage = creditPackageControllerRemote.retrieveCreditPackageByCreditPackageId(creditPackageId);
             System.out.printf("%8s%20s%20s%15s%20s%20s\n", "CreditPackage ID", "Price", "Initial Credit", "Available Credit", "Enabled Status", "Credit Transactions");
             System.out.printf("%8s%20s%20s%15s%20s%20s\n", 
-                    creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(),creditPackage.getInitialCredit().toString(), creditPackage.getAvailableCredit().toString(), creditPackage.getEnabled().toString(), creditPackage.getTransactions().toArray().toString());         
+                    creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(),creditPackage.getInitialCredit().toString(), creditPackage.getAvailableCredit().toString(), creditPackage.getEnabled().toString(), creditPackage.getTransactions().toString());         
             System.out.println("------------------------");
             System.out.println("1: Update Credit Package");
             System.out.println("2: Delete Credit Package");
@@ -148,7 +148,7 @@ public class FinanceOperationModule {
         
         System.out.print("Enter Price (blank if no change)> ");
         newPrice = scanner.nextBigDecimal();
-        if(creditPackage.getTransactions().isEmpty())
+        if(creditPackage.getTransactions()==null)
         {
             creditPackage.setPrice(newPrice);
         }
@@ -208,7 +208,7 @@ public class FinanceOperationModule {
 
         for(CreditPackage creditPackage:allCreditPackages)
         {
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n", creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(),creditPackage.getInitialCredit().toString(), creditPackage.getAvailableCredit().toString(), creditPackage.getEnabled().toString(), creditPackage.getTransactions().toArray().toString());
+            System.out.printf("%8s%20s%20s%15s%20s%20s\n", creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(),creditPackage.getInitialCredit().toString(), creditPackage.getAvailableCredit().toString(), creditPackage.getEnabled().toString(), creditPackage.getTransactions().toString());
         }
         
         System.out.print("Press any key to continue...> ");
