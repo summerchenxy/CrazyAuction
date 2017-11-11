@@ -37,7 +37,7 @@ public class CreditPackage {
     @Column(nullable = false)
     private Boolean enabled;
     @OneToOne(mappedBy = "purchasedCreditPackage")
-    private List<CreditTransaction> transactions;
+    private CreditTransaction transaction;
             
     public CreditPackage() {
     }
@@ -89,15 +89,13 @@ public class CreditPackage {
         this.enabled = enabled;
     }
 
-    public List<CreditTransaction> getTransactions() {
-        return transactions;
+    public CreditTransaction getTransactions() {
+        return transaction;
     }
 
-    public void setTransactions(List<CreditTransaction> transactions) {
-        this.transactions = transactions;
+    public void setTransaction(CreditTransaction transaction) {
+        this.transaction = transaction;
     }
-
-
 
 
     
