@@ -6,7 +6,9 @@
 package auctionclient;
 
 import ejb.session.stateless.AddressControllerRemote;
+import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.BidControllerRemote;
+import ejb.session.stateless.CreditPackageControllerRemote;
 import ejb.session.stateless.CreditTransactionControllerRemote;
 import ejb.session.stateless.CustomerControllerRemote;
 import javax.ejb.EJB;
@@ -17,6 +19,13 @@ import javax.ejb.EJB;
  */
 public class Main {
 
+    @EJB
+    private static AuctionListingControllerRemote auctionListingController;
+
+    @EJB
+    private static CreditPackageControllerRemote creditPackageController;
+
+    
     @EJB
     private static CustomerControllerRemote customerController;
 
@@ -34,7 +43,7 @@ public class Main {
      */
     public static void main(String[] args)
         {
-            MainApp mainApp = new MainApp(customerController,creditTransactionController,bidController,addressController );
+            MainApp mainApp = new MainApp(customerController,creditTransactionController,bidController,addressController,creditPackageController,auctionListingController);
             mainApp.runApp();
         }
     
