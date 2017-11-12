@@ -24,13 +24,16 @@ public class AddressController implements AddressControllerRemote, AddressContro
     @PersistenceContext(unitName = "CrazyAuction-ejbPU")
     private EntityManager em;
 
-
     @Override
-    public Address createNewAddress(Address address)
-    {
+    public Address createNewAddress(Address address) {
         em.persist(address);
         em.flush();
         em.refresh(address);
         return address;
+    }
+
+    @Override
+    public Address retrieveAddressById(Long addressId) {
+        return (Address) em.find(Address.class, addressId);
     }
 }

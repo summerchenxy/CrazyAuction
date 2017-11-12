@@ -6,16 +6,11 @@
 package entity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 /**
@@ -31,13 +26,11 @@ public class CreditPackage {
     @Column(nullable = false, precision = 18, scale = 4)
     private BigDecimal price;
     @Column(nullable = false, precision = 18, scale = 4)
-    private BigDecimal initialCredit;
-    @Column(nullable = false, precision = 18, scale = 4)
-    private BigDecimal availableCredit;
+    private BigDecimal credit;
     @Column(nullable = false)
     private Boolean enabled;
-    @OneToOne(mappedBy = "purchasedCreditPackage")
-    private CreditTransaction transaction;
+    @OneToOne(mappedBy = "purchasedCreditPackage", optional = true)
+    private List<CreditTransaction> transactions;
             
     public CreditPackage() {
     }
@@ -45,7 +38,7 @@ public class CreditPackage {
     public CreditPackage(Long creditPackageId, BigDecimal price, BigDecimal initialCredit, Boolean enabled) {
         this.price = price;
         this.creditPackageId = creditPackageId;
-        this.initialCredit = initialCredit;
+        this.credit = initialCredit;
         this.enabled = enabled;
     }
 
@@ -65,21 +58,14 @@ public class CreditPackage {
         this.price = price;
     }
 
-    public BigDecimal getInitialCredit() {
-        return initialCredit;
+    public BigDecimal getCredit() {
+        return credit;
     }
 
-    public final void setInitialCredit(BigDecimal initialCredit) {
-        this.initialCredit = initialCredit;
+    public final void setCredit(BigDecimal credit) {
+        this.credit = credit;
     }
 
-    public BigDecimal getAvailableCredit() {
-        return availableCredit;
-    }
-
-    public void setAvailableCredit(BigDecimal availableCredit) {
-        this.availableCredit = availableCredit;
-    }
 
     public Boolean getEnabled() {
         return enabled;
@@ -89,15 +75,11 @@ public class CreditPackage {
         this.enabled = enabled;
     }
 
-    public CreditTransaction getTransactions() {
-        return transaction;
+    public List<CreditTransaction> getTransactions() {
+        return transactions;
     }
 
-    public void setTransaction(CreditTransaction transaction) {
-        this.transaction = transaction;
-    }
-
-
-    
-    
+    public void setTransactions(List<CreditTransaction> transactions) {
+        this.transactions = transactions;
+    }   
 }

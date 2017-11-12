@@ -8,7 +8,9 @@ package ejb.session.stateless;
 import entity.Address;
 
 public interface AddressControllerRemote {
-    
-     public Address createNewAddress(Address address);
-     
+
+    public Address createNewAddress(Address address);
+
+    public Address retrieveAddressById(Long addressId);
+
 }

@@ -55,7 +55,7 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     public void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException
     {
         entity.CreditPackage creditPackage = retrieveCreditPackageByCreditPackageId(creditPackageId);
-        if (creditPackage.getInitialCredit().equals(creditPackage.getAvailableCredit())){
+        if (creditPackage.getCredit().equals(creditPackage.getCredit())){
             em.remove(creditPackage);
             em.flush();
         }

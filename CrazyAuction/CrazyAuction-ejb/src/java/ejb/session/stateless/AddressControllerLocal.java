@@ -10,5 +10,7 @@ import entity.Address;
 public interface AddressControllerLocal {
 
     public Address createNewAddress(Address address);
+
+    public Address retrieveAddressById(Long addressId);
     
 }

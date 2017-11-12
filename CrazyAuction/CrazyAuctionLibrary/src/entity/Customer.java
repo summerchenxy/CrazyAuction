@@ -27,30 +27,30 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
-    
-    @Column (length = 32, nullable = false)
+
+    @Column(length = 32, nullable = false)
     private String firstName;
-    @Column (length = 32, nullable = false)
+    @Column(length = 32, nullable = false)
     private String lastName;
-    @Column (length = 9, nullable = false, unique = true)
+    @Column(length = 9, nullable = false, unique = true)
     private String identificationNumber;
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false, precision = 18, scale = 4)
     private BigDecimal creditBalance;
     @OneToMany(mappedBy = "customer")
-    private List<Address> addresses= new ArrayList<Address>();
+    private List<Address> addresses = new ArrayList<Address>();
     @OneToMany(mappedBy = "purchasingCustomer")
     private List<CreditTransaction> creditTransactionHistory = new ArrayList<CreditTransaction>();
-    @Column(length=32, nullable = false, unique = true)
+    @Column(length = 32, nullable = false, unique = true)
     private String username;
-
-
-
+    @Column(nullable = true)
+    private List<Bid> wonBids = new ArrayList<Bid>();
 
     public Customer() {
+        this.creditBalance = new BigDecimal(0);
     }
 
-    
     public Customer(String firstName, String lastName, String identificationNumber, String password, BigDecimal creditBalance, String loginCredential) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -115,7 +115,7 @@ public class Customer implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     public BigDecimal getCreditBalance() {
         return creditBalance;
     }
@@ -123,11 +123,11 @@ public class Customer implements Serializable {
     public void setCreditBalance(BigDecimal creditBalance) {
         this.creditBalance = creditBalance;
     }
-    
+
     public void addCreditBalance(BigDecimal amount) {
         this.creditBalance = creditBalance.add(amount);
     }
-    
+
     public void subtractCreditBalance(BigDecimal amount) {
         this.creditBalance = creditBalance.subtract(amount);
     }
@@ -139,12 +139,20 @@ public class Customer implements Serializable {
     public void setCreditTransactionHistory(List<CreditTransaction> creditTransactionHistory) {
         this.creditTransactionHistory = creditTransactionHistory;
     }
-    
+
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public List<Bid> getWonBids() {
+        return wonBids;
+    }
+
+    public void setWonBids(List<Bid> wonBids) {
+        this.wonBids = wonBids;
     }
 }
