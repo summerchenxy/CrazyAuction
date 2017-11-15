@@ -24,8 +24,9 @@ import util.enumeration.AuctionStatus;
  * @author Summer
  */
 public class AuctionListing {
+
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long auctionListingId;
@@ -36,13 +37,15 @@ public class AuctionListing {
     @Column(nullable = false)
     private Date endDateTime;
     private AuctionStatus status;
-    @Column(length = 32, nullable = false)    
-    private String description;    
+    @Column(length = 32, nullable = false)
+    private String description;
     @Column(precision = 11, scale = 2)
-    private BigDecimal reservePrice;    
+    private BigDecimal reservePrice;
     private Bid winningBid;
-    private BigDecimal winningBidValue; 
-    
+    private BigDecimal winningBidValue;
+    @Column(nullable = true)
+    private Boolean isFinal; //true if is manually intervened 
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Timer timer;
@@ -73,8 +76,7 @@ public class AuctionListing {
         }
         return true;
     }
-    
-    
+
     public AuctionListing() {
     }
 
@@ -169,7 +171,7 @@ public class AuctionListing {
      * @return the reservePrice
      */
     public BigDecimal getReservePrice() {
-        if (reservePrice == null){
+        if (reservePrice == null) {
             System.out.print("No reserve price!");
         }
         return reservePrice;
@@ -186,7 +188,7 @@ public class AuctionListing {
      * @return the winningBid
      */
     public Bid getWinningBid() {
-        if (winningBid == null){
+        if (winningBid == null) {
             System.out.print("No winning bid!");
         }
         return winningBid;
@@ -198,20 +200,23 @@ public class AuctionListing {
     public void setWinningBid(Bid winningBid) {
         this.winningBid = winningBid;
     }
-    
-    public final void setWinningBidManually(Bid winningBid){
+
+    public final void setWinningBidManually(Bid winningBid) {
         setWinningBid(winningBid);
+        this.isFinal = true;
     }
-    
+
     public void setWinningBidValue(BigDecimal winningBidValue) {
         this.winningBidValue = winningBidValue;
     }
-    
-    public final void setWinningBidValueManually(BigDecimal winningBidValue){
+
+    public final void setWinningBidValueManually(BigDecimal winningBidValue) {
         setWinningBidValue(winningBidValue);
+        this.isFinal = true;
     }
+
     public BigDecimal getWinningBidValue() {
-        if (winningBidValue == null){
+        if (winningBidValue == null) {
             System.out.print("No winning bid!");
         }
         return winningBidValue;
@@ -235,7 +240,7 @@ public class AuctionListing {
      * @return the bidList
      */
     public List<Bid> getBidList() {
-        if (bidList.isEmpty()){
+        if (bidList.isEmpty()) {
             System.out.print("Empty Bid List!");
         }
         return bidList;
@@ -247,6 +252,13 @@ public class AuctionListing {
     public void setBidList(List<Bid> bidList) {
         this.bidList = bidList;
     }
-    
-    
+
+    public Boolean getIsFinal() {
+        return isFinal;
+    }
+
+    public void setIsFinal(Boolean isFinal) {
+        this.isFinal = isFinal;
+    }
+
 }
