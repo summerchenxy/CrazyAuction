@@ -5,12 +5,14 @@
  */
 package entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,15 +23,15 @@ import util.enumeration.AuctionStatus;
 
 /**
  *
- * @author Summer
+ * @author alex_zy
  */
-public class AuctionListing {
+@Entity
+public class AuctionListing implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long auctionListingId;
+     Long auctionListingId;
     @Column(precision = 11, scale = 2)
     private BigDecimal startingBidAmount;
     @Column(nullable = false)
@@ -260,5 +262,5 @@ public class AuctionListing {
     public void setIsFinal(Boolean isFinal) {
         this.isFinal = isFinal;
     }
-
+    
 }

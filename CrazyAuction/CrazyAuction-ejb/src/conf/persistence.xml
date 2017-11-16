@@ -3,6 +3,12 @@
   <persistence-unit name="CrazyAuction-ejbPU" transaction-type="JTA">
     <jta-data-source>jdbc/crazyAuction</jta-data-source>
     <class>entity.Employee</class>
+    <class>entity.Address</class>
+    <class>entity.Bid</class>
+    <class>entity.CreditTransaction</class>
+    <class>entity.Customer</class>
+    <class>entity.CreditPackage</class>
+    <class>entity.AuctionListing</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
