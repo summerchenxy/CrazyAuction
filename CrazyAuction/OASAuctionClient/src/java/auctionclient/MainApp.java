@@ -17,6 +17,7 @@ import entity.Bid;
 import entity.CreditPackage;
 import entity.CreditTransaction;
 import entity.Customer;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -29,6 +30,7 @@ import util.exception.CreditPackageNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import util.enumeration.AuctionStatus;
@@ -77,10 +79,14 @@ class MainApp {
 
             while (response < 1 || response > 3) {
                 System.out.print("> ");
-                response = sc.nextInt();
+                try {
+                    response = Integer.valueOf(sc.nextLine().trim());
+                } catch (Exception ex) {
+                    response = 0;
+                }
 
                 if (response < 1 || response > 3) {
-                    System.out.println("Invalid option, please try again!\n");
+                    System.err.println("\nInvalid option, please try again!");
                 }
             }
 
@@ -97,6 +103,9 @@ class MainApp {
                 case 3:
                     break;
             }
+            if (response == 3) {
+                break;
+            }
         }
     }
 
@@ -105,30 +114,39 @@ class MainApp {
         Customer customer = new Customer();
         System.out.println("\n*** Auction Client :: Register New User***\n");
         customer.setFirstName(doReadFirstName());
+        System.out.println();
         customer.setLastName(doReadLastName());
+        System.out.println();
         customer.setIdentificationNumber(doReadNric());
+        System.out.println();
         customer.setAddresses(doReadAddresses());
+        System.out.println();
         customer.setPassword(doReadPassword());
+        System.out.println();
         customer.setUsername(doReadUsername());
-
+        System.out.println();
         customerController.createNewCustomer(customer);
-        System.out.printf("You have registered successfully, %s%s.%nPlease use %s to login",
+        System.out.printf("You have registered successfully, %s %s.%nPlease use %s to login",
                 customer.getFirstName(), customer.getLastName(), customer.getUsername());
 
     }
 
     private Address doReadAddress(int i, int numberOfAddress, Customer newCustomer) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("enter the 1st line of your address (" + i + " of " + numberOfAddress + "):");
+        System.out.println("enter the 1st line of your address (" + (++i) + " of " + numberOfAddress + "):");
+        System.out.print("> ");
         String lineOne = sc.nextLine().trim();
         while (lineOne.length() > 32) {
-            System.err.println("enter the 1st line of your address (" + i + " of " + numberOfAddress + ", maximum 32 characters):");
+            System.err.println("\nenter the 1st line of your address (" + (++i) + " of " + numberOfAddress + ", maximum 32 characters):");
+            System.out.print("> ");
             lineOne = sc.nextLine().trim();
         }
-        System.out.println("enter the 2nd line of your address (" + i + " of " + numberOfAddress + "):");
+        System.out.println("enter the 2nd line of your address (" + (++i) + " of " + numberOfAddress + "):");
+        System.out.print("> ");
         String lineTwo = sc.nextLine().trim();
         while (lineTwo.length() > 32) {
-            System.err.println("enter the 2nd line of your address (" + i + " of " + numberOfAddress + ", maximum 32 characters):");
+            System.out.print("> ");
+            System.err.println("\nenter the 2nd line of your address (" + (++i) + " of " + numberOfAddress + ", maximum 32 characters):");
             lineOne = sc.nextLine().trim();
         }
         return (new Address(lineOne, lineOne, newCustomer));
@@ -136,12 +154,11 @@ class MainApp {
 
     private String doReadFirstName() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("please enter your first name: \n> ");
-        System.out.print("> ");
+        System.out.print("please enter your first name: \n> ");
         String firstName = sc.next();
         sc.nextLine();
         while (firstName.length() > 32) {
-            System.err.println("please enter your first name(maximum 32 characters): ");
+            System.err.println("\nplease enter your first name(maximum 32 characters): ");
             System.out.print("> ");
             firstName = sc.next();
             sc.nextLine();
@@ -152,10 +169,10 @@ class MainApp {
     private String doReadLastName() {
         Scanner sc = new Scanner(System.in);
         System.out.print("please enter your last name: \n> ");
+        String lastName = sc.next();
         sc.nextLine();
-        String lastName = sc.nextLine().trim();
         while (lastName.length() > 32) {
-            System.err.println("please enter your last name(maximum 32 characters): ");
+            System.err.println("\nplease enter your last name(maximum 32 characters): ");
             System.out.print("> ");
             lastName = sc.next();
             sc.nextLine();
@@ -171,8 +188,8 @@ class MainApp {
         String identificationNumber = sc.next();
         sc.nextLine();
         while (identificationNumber.length() != 9) {
-            System.err.println("please enter your NRIC or passport Number(9 characters): ");
-            System.err.print("> ");
+            System.err.println("\nplease enter your NRIC or passport Number(9 characters, no blackspace allowed): ");
+            System.out.print("> ");
             identificationNumber = sc.next();
             sc.nextLine();
         }
@@ -183,23 +200,40 @@ class MainApp {
         Scanner sc = new Scanner(System.in);
         System.out.println("You are going to provide your address for shipping purposes. Do you wish to enter more than 1 address? (Y/N)");
         System.out.print("> ");
-        String response = sc.next();
-        sc.nextLine();
+        String response = sc.nextLine().trim();
         int numberOfAddress;
         List<Address> addresses = new ArrayList<Address>();
         while (true) {
             if (response.equalsIgnoreCase("y")) {
-                System.out.println("enter the number of addresses you wish to provide:");
-                System.out.print("> ");
-                numberOfAddress = sc.nextInt();
-                sc.nextLine();
-                break;
+                numberOfAddress = 0;
+                try {
+                    System.out.println("Enter number of addresses");
+                    System.out.print("> ");
+                    try {
+                        numberOfAddress = Integer.valueOf(sc.nextLine().trim());
+                    } catch (Exception ex) {
+//                        ex.printStackTrace();
+                    }
+                    while (numberOfAddress <= 0) {
+                        System.err.println("\nInvalid input. Please try again");
+                        System.out.print("> ");
+                        try {
+                            numberOfAddress = Integer.valueOf(sc.nextLine().trim());
+                        } catch (Exception ex) {
+//                            ex.printStackTrace();
+                        }
+                    }
+                } catch (Exception ex) {
+                }
+                if (numberOfAddress > 0) {
+                    break;
+                }
             } else if (response.equalsIgnoreCase("n")) {
                 numberOfAddress = 1;
                 break;
             } else {
-                System.err.println("Invalid input. Please try again");
-                System.err.print("> ");
+                System.err.println("\nInvalid input. Please try again");
+                System.out.print("> ");
                 response = sc.next();
                 sc.nextLine();
             }
@@ -218,20 +252,18 @@ class MainApp {
         boolean firstAttempt = true;
         while (!password1.equals(password2)) {
             if (!firstAttempt) {
-                System.err.println("please make sure you have entered the same password");
+                System.err.println("Make sure you have entered the same password twice./n");
             }
-            System.out.println("Please enter your password:");
+            System.out.println("Please enter your password");
             System.out.print("> ");
-            password1 = sc.next();
-            sc.nextLine();
+            password1 = sc.nextLine().trim();
             if (password1.indexOf(' ') != -1) {
-                System.err.println("password cannot contain blankspace");
+                System.err.println("password cannot contain blankspace/n");
                 continue;
             }
-            System.out.println("Please enter your password again:");
+            System.out.println("Please enter your password again");
             System.out.print("> ");
-            password2 = sc.next();
-            sc.nextLine();
+            password2 = sc.nextLine().trim();
             firstAttempt = false;
         }
         return password1;
@@ -240,22 +272,22 @@ class MainApp {
     private String doReadUsername() {
         Scanner sc = new Scanner(System.in);
 
-        System.out.print("Please enter your email or phone number. "
-                + "This cannot be changed and will be used as your username for login.\n");
+        System.out.print("You can use your email or phone nunber as your username. "
+                + "It cannot be changed.\n");
 
         String username1 = "login1";
         String username2 = "login2";
         boolean firstAttempt = true;
         while (!username1.equals(username2)) {
             if (!firstAttempt) {
-                System.err.println("please make sure you have entered the same email or phone number");
+                System.err.println("Make sure you have entered the same email or phone number/n");
             }
             System.out.println("Please enter your email or phone number:");
             System.out.print("> ");
             username1 = sc.next();
             sc.nextLine();
             if (username1.indexOf(' ') != -1) {
-                System.err.println("email or phone number cannot contain blankspace");
+                System.err.println("email or phone number cannot contain blankspace/n");
                 continue;
             }
             System.out.println("Please enter your email or phone number again:");
@@ -357,7 +389,7 @@ class MainApp {
                     try {
                         menusAuctionAndBid();
                     } catch (CustomerInsufficientCreditBalance ex) {
-                        
+
                     }
                 } else if (response == 4) {
                     menuCredit();
