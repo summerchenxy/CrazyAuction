@@ -12,6 +12,7 @@ import ejb.session.stateless.CreditPackageControllerRemote;
 import ejb.session.stateless.CreditTransactionControllerRemote;
 import ejb.session.stateless.CustomerControllerRemote;
 import javax.ejb.EJB;
+import util.exception.CustomerNotFoundException;
 
 /**
  *

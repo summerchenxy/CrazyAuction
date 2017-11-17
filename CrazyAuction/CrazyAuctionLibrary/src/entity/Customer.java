@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 /**
@@ -44,7 +45,7 @@ public class Customer implements Serializable {
     private List<CreditTransaction> creditTransactionHistory = new ArrayList<CreditTransaction>();
     @Column(length = 32, nullable = false, unique = true)
     private String username;
-    @Column(nullable = true)
+    @JoinColumn(nullable = true)
     private List<Bid> wonBids = new ArrayList<Bid>();
 
     public Customer() {
