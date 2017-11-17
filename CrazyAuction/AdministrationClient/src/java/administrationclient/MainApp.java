@@ -5,6 +5,8 @@
  */
 package administrationclient;
 
+import ejb.session.stateless.AuctionListingControllerRemote;
+import ejb.session.stateless.CreditPackageControllerRemote;
 import ejb.session.stateless.EmployeeControllerRemote;
 import entity.Employee;
 import java.text.ParseException;
@@ -19,6 +21,8 @@ import util.exception.InvalidLoginCredentialException;
  */
 public class MainApp {
     private EmployeeControllerRemote employeeControllerRemote;
+    private CreditPackageControllerRemote creditPackageControllerRemote;
+    private AuctionListingControllerRemote auctionListingControllerRemote;
     
     private Employee currentEmployee;
     
@@ -78,7 +82,7 @@ public class MainApp {
             }
         }
     }
-    private void doLogin() throws InvalidLoginCredentialException
+    private void doLogin() throws InvalidLoginCredentialException//runnable for all cases
     {
         Scanner scanner = new Scanner(System.in);
         String username;
@@ -156,7 +160,7 @@ public class MainApp {
             }
         }
     }
-    private void doChangePassword() throws InvalidLoginCredentialException{
+    private void doChangePassword() throws InvalidLoginCredentialException{//runnable
         Scanner scanner = new Scanner(System.in); 
         String currentPassword = "";
         String newPassword = "";
@@ -172,9 +176,10 @@ public class MainApp {
                 confirmNewPassword = scanner.nextLine().trim();
                 if (newPassword.equals(confirmNewPassword)){
                     currentEmployee.setPassword(newPassword);
+                    System.out.println("New password changed successfully");
                 }
                 else {
-                    System.out.print("New password does not match");
+                    System.out.println("New password does not match");
                 }
             }
         }
@@ -188,23 +193,26 @@ public class MainApp {
         String input;
         while(true)
         {
-            System.out.print("Specify your role (0: No Change, 1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
+            System.out.println("Specify your role (0: No Change, 1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
             Integer accessRightInt = scanner.nextInt();
             
             if(accessRightInt >= 1 && accessRightInt <= 3)
             {
                 if (!AccessRightEnum.values()[accessRightInt-1].equals(currentEmployee.getAccessRightEnum())){
-                    System.out.print("You have chosen an incorrect role.");
+                    System.out.println("You have chosen an incorrect role.");
                     break;
                 }
                 else {
                     if (accessRightInt == 1){
+                        systemAdministrationModule = new SystemAdministrationModule(employeeControllerRemote, currentEmployee);
                         systemAdministrationModule.menuSystemAdministration();
                     }
                     else if (accessRightInt == 2){
+                        financeOperationModule = new FinanceOperationModule(employeeControllerRemote, creditPackageControllerRemote, currentEmployee);
                         financeOperationModule.menuFinanceOperation();
                     }
                     else if (accessRightInt == 3){
+                        salesOperationModule = new SalesOperationModule(employeeControllerRemote, auctionListingControllerRemote, currentEmployee);
                         salesOperationModule.menuSalesOperation();
                     }
                 }

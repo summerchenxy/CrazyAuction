@@ -119,7 +119,7 @@ public class EmployeeController implements EmployeeControllerRemote, EmployeeCon
     @Override
     public Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException
     {
-        Query query = em.createQuery("SELECT s FROM Employee s WHERE s.username = :inUsername");
+        Query query = em.createQuery("SELECT s FROM Employee s WHERE s.userName = :inUsername");
         query.setParameter("inUsername", username);
         
         try
