@@ -19,4 +19,6 @@ public interface CustomerControllerRemote {
     public Customer createNewCustomer(Customer customer);
     public void updateCustomer(Customer customer);
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
+
+   
 }

@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -48,9 +47,6 @@ public class AuctionListing implements Serializable {
     @Column(nullable = true)
     private Boolean isFinal; //true if is manually intervened 
 
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
-    private Timer timer;
     @OneToMany(mappedBy = "auctionListing")
     private List<Bid> bidList;
 
@@ -222,20 +218,6 @@ public class AuctionListing implements Serializable {
             System.out.print("No winning bid!");
         }
         return winningBidValue;
-    }
-
-    /**
-     * @return the timer
-     */
-    public Timer getTimer() {
-        return timer;
-    }
-
-    /**
-     * @param timer the timer to set
-     */
-    public void setTimer(Timer timer) {
-        this.timer = timer;
     }
 
     /**

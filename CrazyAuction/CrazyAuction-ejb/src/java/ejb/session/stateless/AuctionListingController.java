@@ -16,6 +16,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.AuctionStatus;
 import static util.enumeration.AuctionStatus.CLOSED;
+import static util.enumeration.AuctionStatus.OPENED;
 import util.exception.AuctionListingNotFoundException;
 
 /**
@@ -43,7 +44,7 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     
     
     @Override
-    public entity.AuctionListing createAuctionListing(entity.AuctionListing auctionListing)
+    public AuctionListing createAuctionListing(AuctionListing auctionListing)
     {
         em.persist(auctionListing);
         em.flush();
@@ -54,7 +55,7 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     }
     
     @Override
-    public void updateAuctionListing(entity.AuctionListing auctionListing)
+    public void updateAuctionListing(AuctionListing auctionListing)
     {
         em.merge(auctionListing);
     }
@@ -62,7 +63,7 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     @Override
     public void deleteAuctionListing(Long auctionListingId) throws AuctionListingNotFoundException
     {
-        entity.AuctionListing auctionListing = retrieveAuctionListingByAuctionListingId(auctionListingId);
+        AuctionListing auctionListing = retrieveAuctionListingByAuctionListingId(auctionListingId);
         if (auctionListing.getBidList().isEmpty()){
             em.remove(auctionListing);
             em.flush();
@@ -74,14 +75,14 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     
  
     @Override
-    public List<entity.AuctionListing> retrieveAllAuctionListings()
+    public List<AuctionListing> retrieveAllAuctionListings()
     {
         Query query = em.createQuery("SELECT s FROM AuctionListing s");
         return query.getResultList();
     }
     
     @Override
-    public List<entity.AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention()
+    public List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention()
     {
         /*must fullfil all 3 conditions:
             1. auction listing is closed
@@ -96,9 +97,9 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     
 
     @Override
-    public entity.AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException
+    public AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException
     {
-        entity.AuctionListing auctionListing = em.find(entity.AuctionListing.class, auctionListingId);
+        AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
         
         if(auctionListingId != null)
         {
@@ -108,6 +109,18 @@ public class AuctionListingController implements AuctionListingControllerRemote,
         {
             throw new AuctionListingNotFoundException("Auction Listing ID " + auctionListingId + " does not exist!");
         }
+    }
+    
+    @Override
+    public void openAuction(AuctionListing auctionListing){
+        auctionListing.setStatus(CLOSED);
+        updateAuctionListing(auctionListing);
+    }
+    
+    @Override
+    public void closeAuction(AuctionListing auctionListing){
+        auctionListing.setStatus(OPENED);
+        updateAuctionListing(auctionListing);
     }
 
 
