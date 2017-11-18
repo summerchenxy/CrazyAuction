@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.CreditPackage;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -32,19 +33,18 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     @Override
-    public entity.CreditPackage createCreditPackage(entity.CreditPackage creditPackage)
+    public CreditPackage createCreditPackage(CreditPackage creditPackage)
     {
         em.persist(creditPackage);
         em.flush();
         em.refresh(creditPackage);
-        
-        
+
         return creditPackage;
     }
     
     
     @Override
-    public void updateCreditPackage(entity.CreditPackage creditPackage)
+    public void updateCreditPackage(CreditPackage creditPackage)
     {
         em.merge(creditPackage);
     }
@@ -54,19 +54,26 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     @Override
     public void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException
     {
-        entity.CreditPackage creditPackage = retrieveCreditPackageByCreditPackageId(creditPackageId);
-        if (creditPackage.getCredit().equals(creditPackage.getCredit())){
+        CreditPackage creditPackage = retrieveCreditPackageByCreditPackageId(creditPackageId);
+        if (creditPackage.getCreditTransactions().isEmpty()){
             em.remove(creditPackage);
             em.flush();
         }
         else{//package used. mark as disabled
-            creditPackage.setEnabled(Boolean.FALSE);
+            disableCreditPackage(creditPackage);
         }
+    }
+    
+    @Override
+    public void disableCreditPackage(CreditPackage creditPackage)
+    {
+        creditPackage.setEnabled(Boolean.FALSE);
+        updateCreditPackage(creditPackage);
     }
     
   
     @Override
-    public List<entity.CreditPackage> retrieveAllCreditPackages()
+    public List<CreditPackage> retrieveAllCreditPackages()
     {
         Query query = em.createQuery("SELECT s FROM CreditPackage s");
         
@@ -74,9 +81,9 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     }
 
     @Override
-    public entity.CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException
+    public CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException
     {
-        entity.CreditPackage creditPackage = em.find(entity.CreditPackage.class, creditPackageId);
+        CreditPackage creditPackage = em.find(CreditPackage.class, creditPackageId);
         
         if(creditPackageId != null)
         {

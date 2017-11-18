@@ -37,7 +37,7 @@ public class CreditTransaction implements Serializable {
     @JoinColumn(nullable = false)
     private Customer purchasingCustomer;
     @OneToOne(optional=true)
-    private CreditPackage creditPackages; 
+    private CreditPackage creditPackage; 
     private int creditPacketUnit;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -53,7 +53,7 @@ public class CreditTransaction implements Serializable {
     public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage creditPackages, int creditPacketUnit, TransactionTypeEnum type, Bid bid) {
         this.transactionDateTime = transactionDateTime;
         this.purchasingCustomer = purchasingCustomer;
-        this.creditPackages = creditPackages;
+        this.creditPackage = creditPackages;
         this.creditPacketUnit = creditPacketUnit;
         this.type = type;
         this.bid = bid;
@@ -99,12 +99,12 @@ public class CreditTransaction implements Serializable {
         this.purchasingCustomer = purchasingCustomer;
     }
 
-    public CreditPackage getCreditPackages() {
-        return creditPackages;
+    public CreditPackage getCreditPackage() {
+        return creditPackage;
     }
 
-    public void setCreditPackages(CreditPackage creditPackages) {
-        this.creditPackages = creditPackages;
+    public void setCreditPackage(CreditPackage creditPackage) {
+        this.creditPackage = creditPackage;
     }
 
     public Bid getBid() {

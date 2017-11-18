@@ -50,9 +50,12 @@ public class Customer implements Serializable {
 
     public Customer() {
         this.creditBalance = new BigDecimal(0);
+        this.addresses = new ArrayList<>();
+        this.creditTransactionHistory = new ArrayList<>();
     }
 
     public Customer(String firstName, String lastName, String identificationNumber, String password, BigDecimal creditBalance, String loginCredential) {
+        this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.identificationNumber = identificationNumber;

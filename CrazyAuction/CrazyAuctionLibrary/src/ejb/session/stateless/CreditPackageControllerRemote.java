@@ -26,4 +26,5 @@ public interface CreditPackageControllerRemote {
     
     CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException;
 
+    void disableCreditPackage(CreditPackage creditPackage);
 }

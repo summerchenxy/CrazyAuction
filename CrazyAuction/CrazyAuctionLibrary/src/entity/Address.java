@@ -40,10 +40,12 @@ public class Address implements Serializable {
     private boolean enabled;
 
     public Address() { 
+        this.bids = new ArrayList<>();
         enabled = true;
     }
 
     public Address(String lineOne, String lineTwo, Customer customer) {
+        this();
         this.customer = customer;
         this.lineOne = lineOne;
         this.lineTwo = lineTwo;

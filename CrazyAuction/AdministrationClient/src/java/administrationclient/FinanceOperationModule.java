@@ -15,6 +15,7 @@ import java.util.Scanner;
 import util.enumeration.AccessRightEnum;
 import util.exception.CreditPackageNotFoundException;
 import util.exception.InvalidAccessRightException;
+import entity.CreditTransaction;
 
 /**
  *
@@ -24,22 +25,23 @@ public class FinanceOperationModule {
 
     private EmployeeControllerRemote employeeControllerRemote;
     private CreditPackageControllerRemote creditPackageControllerRemote;
-    private Employee currentEmployee;
+    private Employee currEmployee;
 
     public FinanceOperationModule() {
     }
 
-    public FinanceOperationModule(EmployeeControllerRemote employeeControllerRemote, CreditPackageControllerRemote creditPackageControllerRemote, Employee currenteEmployee) {
+    public FinanceOperationModule(Employee currenteEmployee, EmployeeControllerRemote employeeControllerRemote, CreditPackageControllerRemote creditPackageControllerRemote) {
+
+        this.currEmployee = currenteEmployee;
         this.employeeControllerRemote = employeeControllerRemote;
         this.creditPackageControllerRemote = creditPackageControllerRemote;
-        this.currentEmployee = currentEmployee;
     }
 
     public void menuFinanceOperation() throws InvalidAccessRightException {
         //System.out.println(creditPackageControllerRemote.toString());
-        System.out.println(currentEmployee.getEmployeeId());
-        //System.out.println(currentEmployee.getAccessRightEnum().toString());
-        if (currentEmployee.getAccessRightEnum() != AccessRightEnum.FINANCE) {
+        //System.out.println(currEmployee.getEmployeeId());
+        //System.out.println(currEmployee.getAccessRightEnum().toString());
+        if (currEmployee.getAccessRightEnum() != AccessRightEnum.FINANCE) {
             throw new InvalidAccessRightException("You don't have FINANCE Employee rights to access the finance operation module.");
         }
 
@@ -88,24 +90,26 @@ public class FinanceOperationModule {
         while (price == null) {
             try {
                 System.out.print("> ");
-                newCreditPackage.setPrice(scanner.nextBigDecimal());
+                newCreditPackage.setPrice(BigDecimal.valueOf(scanner.nextDouble()));
+                price = newCreditPackage.getPrice();
             } catch (Exception ex) {
             }
         }
-        System.out.print("Enter Initial Credit> ");
+        System.out.println("Enter Credit Value");
 
         BigDecimal credit = null;
         while (credit == null) {
             try {
                 System.out.print("> ");
-                newCreditPackage.setCredit(scanner.nextBigDecimal());
+                newCreditPackage.setCredit(BigDecimal.valueOf(scanner.nextDouble()));
+                credit = newCreditPackage.getCredit();
             } catch (Exception ex) {
             }
         }
         newCreditPackage.setEnabled(Boolean.TRUE);//assume that credit package is by default enabled when it is created
 
         newCreditPackage = creditPackageControllerRemote.createCreditPackage(newCreditPackage);
-        System.out.println("New creditPackagecreated successfully!: " + newCreditPackage.getCreditPackageId() + "\n");
+        System.out.println("New creditPackagecreated successfully!: ID " + newCreditPackage.getCreditPackageId() + "\n");
     }
 
     private void doViewCreditPackageDetails() {
@@ -113,14 +117,37 @@ public class FinanceOperationModule {
         Integer response = 0;
 
         System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details ***\n");
-        System.out.print("Enter CreditPackage ID> ");
+        System.out.print("Enter Credit Package ID> ");
         Long creditPackageId = scanner.nextLong();
 
         try {
             CreditPackage creditPackage = creditPackageControllerRemote.retrieveCreditPackageByCreditPackageId(creditPackageId);
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n", "CreditPackage ID", "Price", "Credit", "Enabled Status", "Credit Transactions");
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n",
-                    creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), creditPackage.getEnabled().toString(), creditPackage.getTransactions().toString());
+//            List<CreditTransaction> creditTransactions = creditPackage.getCreditTransactions();
+//            System.out.println(creditTransactions.toString());
+//            System.out.println(creditTransactions==null);
+//            System.out.println(creditTransactions.size());
+//            if (!creditTransactions.isEmpty()){
+//                System.out.printf("%8s%20s%20s%15s%20s%20s\n", "CreditPackage ID", "Price", "Credit Value", "Enabled Status", 
+//                    "Credit Transaction Date Time", "Credit Transaction Purchasing Customer ID", "Credit Transaction Type");
+//            
+//                for (CreditTransaction ct : creditTransactions) {
+//                    System.out.printf("%8s%20s%20s%15s%20s%20s\n",
+//                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), creditPackage.getEnabled().toString(), 
+//                            ct.getTransactionDateTime().toString(), ct.getPurchasingCustomer().getCustomerId(),ct.getType().toString());
+//                }          
+//            }
+//            else{
+//no need to print transactions
+            System.out.printf("%1s%20s%20s%15s\n", "CreditPackage ID", "Price", "Credit Value", "Enabled Status");
+            if (creditPackage.getEnabled()==true){
+                System.out.printf("%1s%20s%20s%15s\n",
+                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Enabled");
+            }
+            else{
+                System.out.printf("%1s%20s%20s%15s\n",
+                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Disabled");
+            }
+//            }
             System.out.println("------------------------");
             System.out.println("1: Update Credit Package");
             System.out.println("2: Delete Credit Package");
@@ -146,24 +173,30 @@ public class FinanceOperationModule {
         System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details :: Update Credit Package ***\n");
 
         System.out.print("Enter Price (blank if no change)> ");
-        newPrice = scanner.nextBigDecimal();
-        if (creditPackage.getTransactions() == null) {
+        newPrice = BigDecimal.valueOf(scanner.nextDouble());
+        if (creditPackage.getCreditTransactions().isEmpty()) {
             creditPackage.setPrice(newPrice);
         } else {
             System.out.println("Price of the Credit Package cannot be updated as it has been purchased");
         }
 
-        System.out.print("Enter 'Enabled' or 'Disabled'> ");
+        System.out.print("Enter 'Enabled' or 'Disabled'");
         input = scanner.nextLine().trim();
-        if (input.equals("Enabled")) {
-            creditPackage.setEnabled(Boolean.TRUE);
-        } else if (input.equals("Disabled")) {
-            creditPackage.setEnabled(Boolean.FALSE);
-        } else {
-            System.out.println("Invalid option!\n");
+        while (!input.equals("Enabled") && !input.equals("Disabled")) {
+            try {
+                System.out.print("> ");
+                input = scanner.nextLine().trim();
+                if (input.equals("Enabled")) {
+                    creditPackage.setEnabled(Boolean.TRUE);
+                } else if (input.equals("Disabled")) {
+                    creditPackageControllerRemote.disableCreditPackage(creditPackage);
+                } 
+            } catch (Exception ex) {
+            }
         }
+
         creditPackageControllerRemote.updateCreditPackage(creditPackage);
-        System.out.println("creditPackage updated successfully!\n");
+        System.out.println("Credit Package with ID "+ creditPackage.getCreditPackageId()+"updated successfully!\n");
     }
 
     private void doDeleteCreditPackage(CreditPackage creditPackage) throws CreditPackageNotFoundException {
@@ -171,21 +204,20 @@ public class FinanceOperationModule {
         String input;
 
         System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details :: Delete Credit Package ***\n");
-        System.out.printf("Confirm Delete CreditPackage of price %s and initial credit of %s (Credit Package ID: %d) (Enter 'Y' to Delete)> ", creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), creditPackage.getCreditPackageId());
+        System.out.print("Confirm Delete Credit Package of ID:" +creditPackage.getCreditPackageId()+"(Enter 'Y' to Delete)> ");
         input = scanner.nextLine().trim();
 
         if (input.equals("Y")) {
-            /*if(creditPackage.getInitialCredit().equals(creditPackage.getAvailableCredit())){
+            if (creditPackage.getCreditTransactions().isEmpty()) {
+                System.out.println(creditPackage.getCreditPackageId());
                 creditPackageControllerRemote.deleteCreditPackage(creditPackage.getCreditPackageId());
                 System.out.println("Credit Package deleted successfully!\n");
-            }
-            else{//credit package is used and is marked as disabled
-                creditPackage.setEnabled(Boolean.FALSE);
-                creditPackageControllerRemote.updateCreditPackage(creditPackage);
+            } else {//credit package is used and is marked as disabled
+                creditPackageControllerRemote.disableCreditPackage(creditPackage);
                 System.out.println("Credit Package has been used hence it is disabled but not deleted!\n");
-            }*/
+            }
         } else {
-            System.out.println("CreditPackage NOT deleted!\n");
+            System.out.println("Credit Package NOT deleted!\n");
         }
     }
 
@@ -195,10 +227,17 @@ public class FinanceOperationModule {
         System.out.println("*** OAS Administration Panel :: Finance Operation :: View All CreditPackages ***\n");
 
         List<CreditPackage> allCreditPackages = creditPackageControllerRemote.retrieveAllCreditPackages();
-        System.out.printf("%8s%20s%20s%15s%20s%20s\n", "CreditPackage ID", "Price", "Credit", "Enabled Status", "Credit Transactions");
+        System.out.printf("%8s%20s%20s%15s%\n", "CreditPackage ID", "Price", "Credit", "Enabled Status");
 
         for (CreditPackage creditPackage : allCreditPackages) {
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n", creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), creditPackage.getEnabled().toString(), creditPackage.getTransactions().toString());
+            if (creditPackage.getEnabled()==true){
+                System.out.printf("%8s%20s%20s%15s\n",
+                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Enabled");
+            }
+            else{
+                System.out.printf("%8s%20s%20s%15s\n",
+                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Disabled");
+            }
         }
 
         System.out.print("Press any key to continue...> ");

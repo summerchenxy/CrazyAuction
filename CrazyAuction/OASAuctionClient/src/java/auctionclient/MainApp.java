@@ -539,7 +539,7 @@ class MainApp {
         System.out.printf("%8s%20s%15s\n", "CreditPackage ID", "Price", "Available Credit");
         for (CreditPackage cp : allCreditPackages) {
             //customer can only purchase the credit package if no one has bought it befoure 
-            if (cp.getTransactions() == null && cp.getEnabled()) {
+            if (cp.getCreditTransactions() == null && cp.getEnabled()) {
                 System.out.printf("%8s%20s%15s\n", cp.getCreditPackageId(), cp.getPrice(), cp.getCredit());
             }
         }
@@ -559,7 +559,7 @@ class MainApp {
         //make transaction
         CreditTransaction creditTransaction = new CreditTransaction(new Date(), currentCustomer, creditPackage, unit, TransactionTypeEnum.CREDIT, null); //add transaction to customer and credit package 
         //add to credit package
-        creditPackage.getTransactions().add(creditTransaction);
+        creditPackage.getCreditTransactions().add(creditTransaction);
         creditPackageController.updateCreditPackage(creditPackage);
         //add to customer
         currentCustomer.getCreditTransactionHistory().add(creditTransaction);
@@ -605,7 +605,7 @@ class MainApp {
         }
     }
 
-//display a grossry for all active listings. prompt to view details or refresh
+//display a glossary for all active listings. prompt to view details or refresh
     private void viewAllAuctionListings() {
         Scanner sc = new Scanner(System.in);
         System.out.println("\n*** Auction Client :: Auction&Bid Menu :: View Auction Listing ***\n");

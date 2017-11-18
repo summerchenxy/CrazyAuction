@@ -7,6 +7,7 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -79,9 +80,11 @@ public class AuctionListing implements Serializable {
     }
 
     public AuctionListing() {
+        this.bidList = new ArrayList<>();
     }
 
     public AuctionListing(BigDecimal startingBidAmount, Date startDateTime, Date endDateTime, String description, BigDecimal reservePrice) {
+        this();
         this.startingBidAmount = startingBidAmount;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;

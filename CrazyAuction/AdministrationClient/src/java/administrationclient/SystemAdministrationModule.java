@@ -28,9 +28,11 @@ public class SystemAdministrationModule {
     public SystemAdministrationModule(EmployeeControllerRemote employeeControllerRemote, Employee currentEmployee) {
         this.employeeControllerRemote = employeeControllerRemote;
         this.currentEmployee = currentEmployee;
+        System.out.println(currentEmployee.toString());
     }
     
     public void menuSystemAdministration() throws InvalidAccessRightException{
+        System.out.println(currentEmployee.getUsername());
         if(currentEmployee.getAccessRightEnum() != AccessRightEnum.ADMIN)
         {
             throw new InvalidAccessRightException("You don't have ADMIN rights to access the system administration module.");

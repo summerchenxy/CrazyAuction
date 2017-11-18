@@ -12,6 +12,9 @@ import entity.Employee;
 import java.text.ParseException;
 import java.util.Scanner;
 import util.enumeration.AccessRightEnum;
+import static util.enumeration.AccessRightEnum.ADMIN;
+import static util.enumeration.AccessRightEnum.FINANCE;
+import static util.enumeration.AccessRightEnum.SALES;
 import util.exception.InvalidAccessRightException;
 import util.exception.InvalidLoginCredentialException;
 
@@ -27,7 +30,7 @@ public class MainApp {
     private Employee currentEmployee;
     
     private SystemAdministrationModule systemAdministrationModule;
-    private FinanceOperationModule financeOperationModule;
+//    private FinanceOperationModule financeOperationModule;
     private SalesOperationModule salesOperationModule;
 
     public MainApp() {
@@ -130,7 +133,7 @@ public class MainApp {
             System.out.println("*** RCBS - Teller Terminal ***\n");
             System.out.println("You are login. \n");
             System.out.println("1: Change password");
-            System.out.println("2: Specify role to carry out more tasks");
+            System.out.println("2: Perform more tasks");
             System.out.println("3: Logout\n");
             response = 0;
             
@@ -146,7 +149,7 @@ public class MainApp {
                 }
                 else if(response == 2)
                 {
-                    doSpecifyRole();
+                    doRoleSpecificTasks();
                 }
                 else if (response == 3)
                 {
@@ -194,47 +197,25 @@ public class MainApp {
         scanner.nextLine();
     }
     
-    private void doSpecifyRole() throws InvalidAccessRightException, ParseException{
-        Scanner scanner = new Scanner(System.in);        
-        String input;
-        while(true)
-        {
-            System.out.print("Specify your role (1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
-            Integer accessRightInt = scanner.nextInt();
-            scanner.nextLine();
-            if(accessRightInt >= 1 && accessRightInt <= 3)
-            {
-                if (!AccessRightEnum.values()[accessRightInt-1].equals(currentEmployee.getAccessRightEnum())){
-                    System.out.println("You have chosen an incorrect role.");
-                    break;
-                }
-                else {
-                    if (accessRightInt == 1){
-                        systemAdministrationModule = new SystemAdministrationModule(employeeControllerRemote, currentEmployee);
-                        systemAdministrationModule.menuSystemAdministration();
-                    }
-                    else if (accessRightInt == 2){
-                        financeOperationModule = new FinanceOperationModule(employeeControllerRemote, creditPackageControllerRemote, currentEmployee);
-                        //System.out.println(currentEmployee.getAccessRightEnum().toString());
-                        //System.out.println(creditPackageControllerRemote.toString());
-                        financeOperationModule.menuFinanceOperation();
-                    }
-                    else if (accessRightInt == 3){
-                        salesOperationModule = new SalesOperationModule(employeeControllerRemote, auctionListingControllerRemote, currentEmployee);
-                        salesOperationModule.menuSalesOperation();
-                    }
-                }
-                break;
-            }
-            else if (accessRightInt == 0)
-            {
-                break;
-            }
-            else
-            {
-                System.out.println("Invalid option, please try again!\n");
-            }
+    private void doRoleSpecificTasks() throws InvalidAccessRightException, ParseException{
+ 
+        AccessRightEnum accessRightEnum;
+        accessRightEnum = currentEmployee.getAccessRightEnum();
+        if (accessRightEnum.equals(ADMIN)){
+            systemAdministrationModule = new SystemAdministrationModule(employeeControllerRemote, currentEmployee);
+            systemAdministrationModule.menuSystemAdministration();
         }
-        scanner.nextLine();
+        else if (accessRightEnum.equals(FINANCE)){
+            //Employee employee = new Employee("test", "sian", "plswork", "password", AccessRightEnum.FINANCE);
+            FinanceOperationModule financeOperationModule = new FinanceOperationModule(currentEmployee, employeeControllerRemote, creditPackageControllerRemote);
+            //System.out.println(currentEmployee.getAccessRightEnum().toString());
+            //System.out.println(creditPackageControllerRemote.toString());
+            financeOperationModule.menuFinanceOperation();
+        }
+        else if (accessRightEnum.equals(SALES)){
+            salesOperationModule = new SalesOperationModule(employeeControllerRemote, auctionListingControllerRemote, currentEmployee);
+            salesOperationModule.menuSalesOperation();
+        }
+
     }
 }

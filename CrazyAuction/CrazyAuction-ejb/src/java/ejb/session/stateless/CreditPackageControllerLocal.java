@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.CreditPackage;
 import java.util.List;
 import util.exception.CreditPackageNotFoundException;
 
@@ -14,14 +15,16 @@ import util.exception.CreditPackageNotFoundException;
  * @author Summer
  */
 public interface CreditPackageControllerLocal {
-    entity.CreditPackage createCreditPackage(entity.CreditPackage creditPackage);
+    CreditPackage createCreditPackage(CreditPackage creditPackage);
 
-    void updateCreditPackage(entity.CreditPackage creditPackage);
+    void updateCreditPackage(CreditPackage creditPackage);
 
     void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException;
 
-    List<entity.CreditPackage> retrieveAllCreditPackages();
+    List<CreditPackage> retrieveAllCreditPackages();
     
-    entity.CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException;
+    CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException;
+
+
 
 }

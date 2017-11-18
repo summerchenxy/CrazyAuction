@@ -30,20 +30,20 @@ public class SalesOperationModule {
 
     private EmployeeControllerRemote employeeControllerRemote;
     private AuctionListingControllerRemote auctionListingControllerRemote;
-    private Employee currentEmployee;
+    private Employee currEmployee;
     private static DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
 
     public SalesOperationModule() {
     }
 
-    public SalesOperationModule(EmployeeControllerRemote employeeControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote, Employee currenteEmployee) {
+    public SalesOperationModule(EmployeeControllerRemote employeeControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote, Employee currentEmployee) {
         this.employeeControllerRemote = employeeControllerRemote;
         this.auctionListingControllerRemote = auctionListingControllerRemote;
-        this.currentEmployee = currentEmployee;
+        this.currEmployee = currentEmployee;
     }
 
     public void menuSalesOperation() throws InvalidAccessRightException, ParseException {
-        if (currentEmployee.getAccessRightEnum() != AccessRightEnum.SALES) {
+        if (currEmployee.getAccessRightEnum() != AccessRightEnum.SALES) {
             throw new InvalidAccessRightException("You don't have SALES Employee rights to access the sales operation module.");
         }
 
@@ -90,7 +90,7 @@ public class SalesOperationModule {
 
         System.out.println("*** OAS Administration Panel :: Sales Operation :: Create New Auction Listing ***\n");
         System.out.print("Enter Starting Bid Amount> ");
-        newAuctionListing.setStartingBidAmount(scanner.nextBigDecimal());
+        newAuctionListing.setStartingBidAmount(BigDecimal.valueOf(scanner.nextDouble()));
         System.out.print("Enter Start Date in yyyy.MM.dd.HH format> ");
         String startDateString = scanner.nextLine().trim();
         Date startDate = formatter.parse(startDateString);
@@ -104,7 +104,7 @@ public class SalesOperationModule {
         System.out.print("Enter Description> ");
         newAuctionListing.setDescription(scanner.nextLine().trim());
         System.out.print("Enter Reserve Price (blank if no reserve price)> ");
-        newAuctionListing.setReservePrice(scanner.nextBigDecimal());
+        newAuctionListing.setReservePrice(BigDecimal.valueOf(scanner.nextDouble()));
         scanner.next();
 
         newAuctionListing = auctionListingControllerRemote.createAuctionListing(newAuctionListing);
@@ -148,7 +148,7 @@ public class SalesOperationModule {
         System.out.println("*** OAS Administration Panel :: Sales Operation :: View Auction Listing Details :: Update Auction Listing ***\n");
 
         System.out.print("Enter Starting Bid Amount (blank if not change)> ");
-        auctionListing.setStartingBidAmount(scanner.nextBigDecimal());
+        auctionListing.setStartingBidAmount(BigDecimal.valueOf(scanner.nextDouble()));
         scanner.next();
 
         System.out.print("Enter Start Date in yyyy.MM.dd.HH format (blank if no change)> ");
@@ -172,7 +172,7 @@ public class SalesOperationModule {
         }
 
         System.out.print("Enter Reserve Price (blank if no change)> ");
-        auctionListing.setReservePrice(scanner.nextBigDecimal());
+        auctionListing.setReservePrice(BigDecimal.valueOf(scanner.nextDouble()));
         scanner.next();
 
         auctionListingControllerRemote.updateAuctionListing(auctionListing);
