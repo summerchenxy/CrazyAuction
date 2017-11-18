@@ -17,7 +17,6 @@ import entity.Bid;
 import entity.CreditPackage;
 import entity.CreditTransaction;
 import entity.Customer;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -30,9 +29,6 @@ import util.exception.CreditPackageNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import java.util.Date;
-import java.util.InputMismatchException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import util.enumeration.AuctionStatus;
 import util.exception.AuctionListingNotFoundException;
 import util.exception.CustomerInsufficientCreditBalance;
@@ -61,7 +57,6 @@ class MainApp {
         this.creditTransactionController = creditTransactionController;
         this.bidController = bidController;
         this.addressController = addressController;
-        this.currentCustomer = currentCustomer;
         this.creditPackageController = creditPackageController;
         this.auctionListingController = auctionListingController;
     }
@@ -91,15 +86,16 @@ class MainApp {
             }
 
             switch (response) {
-                case 1: {
+                case 1:
                     try {
-                        DoLogin(sc);
+                        DoLogin();
+                        menuMain();
                     } catch (InvalidLoginCredentialException ex) {
-                        System.out.println(ex.getMessage());
                     }
-                }
+                    break;
                 case 2:
                     doRegisterNewUser();
+                    break;
                 case 3:
                     break;
             }
@@ -301,7 +297,7 @@ class MainApp {
 
     private void viewAllAddresses(Boolean delete) {
         Scanner sc = new Scanner(System.in);
-        if (Thread.currentThread().getStackTrace()[1].getMethodName().equals("menuAddress")) {
+        if (Thread.currentThread().getStackTrace()[1].getMethodName().equals("uAddress")) {
             System.out.println("\n*** Auction Client :: View All Addresses ***\n");
         }
 
@@ -336,39 +332,43 @@ class MainApp {
         sc.nextLine();
     }
 
-    private void DoLogin(Scanner sc) throws InvalidLoginCredentialException {
-        Customer customer = null;
+    private void DoLogin() throws InvalidLoginCredentialException {
+        Scanner sc = new Scanner(System.in);
+        String username;
+        String password = "";
+
         System.out.println("\n*** Auction Client :: Login***\n");
-        String username = doReadToken(sc, "username");
-        try {
-            customer = customerController.retrieveCustomerByUsername(username);
-        } catch (CustomerNotFoundException ex) {
-            System.out.println("Invalid login credential: " + ex.getMessage() + "\n");
-            throw new InvalidLoginCredentialException();
-        }
-        String password = doReadToken(sc, "password");
-        if (customer.getPassword().equals(password)) {
-            currentCustomer = customer;
-            menuMain(sc);
+        username = doReadToken("username");
+        password = doReadToken("password");
+        if (username.length() > 0 && password.length() > 0) {
+            try {
+                currentCustomer = customerController.DoLogin(username, password);
+                System.out.println();
+                System.out.println("Login successful!\n");
+            } catch (InvalidLoginCredentialException ex) {
+                System.out.println("Invalid login credential: " + ex.getMessage() + "\n");
+                throw new InvalidLoginCredentialException();
+            }
         } else {
-            throw new InvalidLoginCredentialException("Invalid login credential!");
+            throw new InvalidLoginCredentialException("Login credential was not provided!");
         }
     }
 
-    private String doReadToken(Scanner sc, String tokenName) {
-        System.out.printf("Please enter your %s%n", tokenName);
+    private String doReadToken(String tokenName) {
+        Scanner sc = new Scanner(System.in);
+        System.out.printf("Enter your %s%n", tokenName);
         System.out.print("> ");
         String token = sc.next();
         sc.nextLine();
         return token;
     }
 
-    private void menuMain(Scanner sc) {
+    private void menuMain() {
+        Scanner sc = new Scanner(System.in);
         Integer response = 0;
-
         while (true) {
-            System.out.println("\n*** Auction C lient :: Menu Main***\n");
-            System.out.printf("You are login as %s\n", currentCustomer.getUsername());
+            System.out.println("\n*** Auction Client :: Menu Main***\n");
+            System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             System.out.println("1: manage my profile");
             System.out.println("2: manage addresses");
             System.out.println("3: auction & bid");
@@ -411,10 +411,10 @@ class MainApp {
         Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.println("\n*** Auction Client :: Profile Menu***\n");
-            System.out.printf("You are login as %s\n", currentCustomer.getUsername());
+            System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             System.out.println("1: view my profile");
             System.out.println("2: update profile");
-            System.out.println("3: Logout\n");
+            System.out.println("3: exit to main menu\n");
             response = 0;
 
             while (response < 1 || response > 3) {
@@ -426,6 +426,8 @@ class MainApp {
                     doViewProfile();
                 } else if (response == 2) {
                     doUpdateProfile();
+                } else if (response == 3) {
+                    break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
@@ -447,7 +449,9 @@ class MainApp {
         System.out.printf("username: %s%n", currentCustomer.getUsername());
         System.out.printf("credit balance: %s%n", currentCustomer.getCreditBalance());
         System.out.printf("password: %s%n", currentCustomer.getPassword());
-        if (Thread.currentThread().getStackTrace()[1].getMethodName().equals("doUpdateProfile")) {
+        if (Thread.currentThread().getStackTrace()[2].getMethodName().equals("doUpdateProfile")) {
+//            System.out.println("called by doupdateprofile");
+        } else {
             System.out.printf("enter any key to continue...%n");
             System.out.print("> ");
             scanner.nextLine();
@@ -459,33 +463,39 @@ class MainApp {
         Scanner sc = new Scanner(System.in);
         System.out.println("\n*** Auction Client :: Update Profile ***\n");
         while (true) {
-            doViewProfile();
-            System.out.println("1. change name");
-            System.out.println("2. change password");
-            System.out.println("3. exit");
-            int response = 0;
-            while (response < 1 || response > 3) {
-                System.out.print("> ");
-                response = sc.nextInt();
-                sc.nextLine();
-                if (response == 1) {
-                    String firtname = doReadFirstName();
-                    String lastName = doReadLastName();
-                    currentCustomer.setFirstName(firtname);
-                    currentCustomer.setLastName(lastName);
-                    customerController.updateCustomer(currentCustomer);
-                } else if (response == 2) {
-                    List<Address> addresses = doReadAddresses();
-                    currentCustomer.setAddresses(addresses);
-                    customerController.updateCustomer(currentCustomer);
-                } else if (response == 3) {
-                    break;
-                } else {
-                    System.out.println("Invalid option, please try again!\n");
+            try {
+                doViewProfile();
+                System.out.println("1. change name");
+                System.out.println("2. change password");
+                System.out.println("3. exit");
+                int response = 0;
+                while (response < 1 || response > 3) {
+                    System.out.print("> ");
+                    response = sc.nextInt();
+                    sc.nextLine();
+                    if (response == 1) {
+                        String firstName = doReadFirstName();
+                        String lastName = doReadLastName();
+//                        customerController.changeCustomerName(currentCustomer.getCustomerId(),firstName, lastName);
+                        currentCustomer.setFirstName(firstName);
+                        currentCustomer.setLastName(lastName);
+//                        customerController.updateCustomer(currentCustomer);
+                        customerController.updateCustomer(currentCustomer);
+                    } else if (response == 2) {
+                        String password = doReadPassword();
+                        currentCustomer.setPassword(password);
+                        customerController.updateCustomer(currentCustomer);
+                    } else if (response == 3) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option, please try again!\n");
+                    }
                 }
-            }
-            if (response == 3) {
-                break;
+                if (response == 3) {
+                    break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -495,11 +505,11 @@ class MainApp {
         Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.println("\n*** Auction Client :: Address Menu***\n");
-            System.out.printf("You are login as %s\n", currentCustomer.getUsername());
+            System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             System.out.println("1. view all address(es)");
             System.out.println("2. add address(es)");
             System.out.println("3. disable an address");
-            System.out.println("4: Logout\n");
+            System.out.println("4: exit to main menu\n");
             response = 0;
 
             while (response < 1 || response > 4) {
@@ -532,11 +542,11 @@ class MainApp {
         Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.println("\n*** Auction Client :: Credit Menu***\n");
-            System.out.printf("You are login as %s\n", currentCustomer.getUsername());
+            System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             System.out.println("1. purchase new credit package");
             System.out.println("2. add address(es)");
             System.out.println("3. disable an address");
-            System.out.println("4: Logout\n");
+            System.out.println("4: exit to main menu\n");
             response = 0;
 
             while (response < 1 || response > 4) {
@@ -606,11 +616,11 @@ class MainApp {
         Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.println("\n*** Auction Client :: Auction&Bid Menu***\n");
-            System.out.printf("You are login as %s\n", currentCustomer.getUsername());
+            System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             System.out.println("1. view all auction listings");//browse -> for details
             System.out.println("2. place new bid");//browser -> for place bidding
-            System.out.println("4. Browse won auction listing(s)");//browser -> for place bidding
-            System.out.println("4: exit\n");
+            System.out.println("3. Browse won auction listing(s)");//browser -> for place bidding
+            System.out.println("4: exit to main menu\n");
             response = 0;
 
             while (response < 1 || response > 4) {
@@ -843,7 +853,6 @@ class MainApp {
         }
         System.out.print("Press any key to continue...> ");
         sc.nextLine();
-        return;
     }
 
 }
