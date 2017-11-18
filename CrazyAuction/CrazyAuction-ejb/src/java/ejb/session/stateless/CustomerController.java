@@ -22,9 +22,7 @@ import javax.xml.ws.WebServiceRef;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerPasswordChangeException;
 import util.exception.InvalidLoginCredentialException;
-//import ws.client.CrazyAuctionWebService_Service;
-//import ws.client.CustomerNotFoundException_Exception;
-//import ws.client.InvalidLoginCredentialException_Exception;
+
 
 /**
  *
@@ -35,8 +33,6 @@ import util.exception.InvalidLoginCredentialException;
 @Remote(CustomerControllerRemote.class)
 public class CustomerController implements CustomerControllerRemote, CustomerControllerLocal {
 
-//    @WebServiceRef(wsdlLocation = "META-INF/wsdl/localhost_8080/CrazyAuctionWebService/CrazyAuctionWebService.wsdl")
-//    private CrazyAuctionWebService_Service service;
     @EJB
     private AddressControllerLocal addressController;
 
@@ -76,13 +72,8 @@ public class CustomerController implements CustomerControllerRemote, CustomerCon
             throw new CustomerNotFoundException("Customer Username " + username + " does not exist!");
         }
     }
-
-//    private void remoteLogin(java.lang.String username, java.lang.String password) throws InvalidLoginCredentialException_Exception, CustomerNotFoundException_Exception {
-//        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
-//        // If the calling of port operations may lead to race condition some synchronization is required.
-//        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
-//        port.remoteLogin(username, password);
-//    }
+  
+  @Override
     public Customer DoLogin(String username, String password) throws InvalidLoginCredentialException {
 
         try {
@@ -103,5 +94,6 @@ public class CustomerController implements CustomerControllerRemote, CustomerCon
 //            updateCustomer(customer);
 //            return customer;
 //        }
+
 
 }

@@ -23,4 +23,5 @@ public interface CustomerControllerRemote {
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
     public Customer DoLogin(String username, String password) throws InvalidLoginCredentialException;
 //    public Customer changeCustomerName(Long customerId, String firstName, String lastName);
+
 }

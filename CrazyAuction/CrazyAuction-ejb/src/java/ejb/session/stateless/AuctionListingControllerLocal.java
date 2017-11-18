@@ -28,5 +28,15 @@ public interface AuctionListingControllerLocal {
     entity.AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException;
 
     List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention();
+
+    void openAuction();
+
+    void closeAuction();
+
+    List<AuctionListing> retrieveOpenedAuctions();
+
+    List<AuctionListing> retrieveClosedAuctions();
+
+    void assignWinningBid(AuctionListing auctionListing);
     
 }

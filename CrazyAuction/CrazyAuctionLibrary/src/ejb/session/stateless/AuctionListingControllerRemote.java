@@ -28,4 +28,14 @@ public interface AuctionListingControllerRemote {
     
     List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention();
     
+    void openAuction();
+
+    void closeAuction();
+    
+    List<AuctionListing> retrieveOpenedAuctions();
+
+    List<AuctionListing> retrieveClosedAuctions();
+
+    void assignWinningBid(AuctionListing auctionListing);
+    
 }

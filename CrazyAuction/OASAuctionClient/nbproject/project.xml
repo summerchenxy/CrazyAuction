@@ -3,7 +3,7 @@
     <type>org.netbeans.modules.j2ee.clientproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/car-project/1">
-            <name>AuctionClient</name>
+            <name>OASAuctionClient</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <source-roots>
                 <root id="src.dir" name="源包"/>
