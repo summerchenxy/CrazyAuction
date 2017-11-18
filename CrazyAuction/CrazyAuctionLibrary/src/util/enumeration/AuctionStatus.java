@@ -12,5 +12,5 @@ package util.enumeration;
 public enum AuctionStatus {
     OPENED,
     CLOSED,
-    DISABLED
+    MANUAL
 }

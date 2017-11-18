@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import util.enumeration.AuctionStatus;
+import static util.enumeration.AuctionStatus.CLOSED;
 
 /**
  *
@@ -44,6 +45,8 @@ public class AuctionListing implements Serializable {
     private BigDecimal reservePrice;
     private Bid winningBid;
     private BigDecimal winningBidValue;
+    @Column(nullable = false)
+    private Boolean enabled;//false if it is disabled
     @Column(nullable = true)
     private Boolean isFinal; //true if is manually intervened 
 
@@ -78,11 +81,11 @@ public class AuctionListing implements Serializable {
     public AuctionListing() {
     }
 
-    public AuctionListing(BigDecimal startingBidAmount, Date startDateTime, Date endDateTime, AuctionStatus status, String description, BigDecimal reservePrice) {
+    public AuctionListing(BigDecimal startingBidAmount, Date startDateTime, Date endDateTime, String description, BigDecimal reservePrice) {
         this.startingBidAmount = startingBidAmount;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
-        this.status = status;
+        this.status = CLOSED;//close until start date is reached
         this.description = description;
         this.reservePrice = reservePrice;
     }
@@ -107,6 +110,14 @@ public class AuctionListing implements Serializable {
 
     public void setStartingBidAmount(BigDecimal startingBidAmount) {
         this.startingBidAmount = startingBidAmount;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**
@@ -196,7 +207,9 @@ public class AuctionListing implements Serializable {
      * @param winningBid the winningBid to set
      */
     public void setWinningBid(Bid winningBid) {
-        this.winningBid = winningBid;
+        if (isFinal = false){
+            this.winningBid = winningBid;
+        }
     }
 
     public final void setWinningBidManually(Bid winningBid) {
@@ -205,7 +218,10 @@ public class AuctionListing implements Serializable {
     }
 
     public void setWinningBidValue(BigDecimal winningBidValue) {
-        this.winningBidValue = winningBidValue;
+        if (isFinal = false)
+        {
+            this.winningBidValue = winningBidValue;//only can be changedd if it is not final
+        }
     }
 
     public final void setWinningBidValueManually(BigDecimal winningBidValue) {

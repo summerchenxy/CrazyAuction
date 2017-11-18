@@ -176,6 +176,7 @@ public class MainApp {
                 confirmNewPassword = scanner.nextLine().trim();
                 if (newPassword.equals(confirmNewPassword)){
                     currentEmployee.setPassword(newPassword);
+                    employeeControllerRemote.updateEmployee(currentEmployee);
                     System.out.println("New password changed successfully");
                 }
                 else {

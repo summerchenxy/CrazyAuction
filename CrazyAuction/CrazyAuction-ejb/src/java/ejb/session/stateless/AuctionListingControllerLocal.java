@@ -29,8 +29,14 @@ public interface AuctionListingControllerLocal {
 
     List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention();
 
-    void openAuction(AuctionListing auctionListing);
+    void openAuction();
 
-    void closeAuction(AuctionListing auctionListing);
+    void closeAuction();
+
+    List<AuctionListing> retrieveOpenedAuctions();
+
+    List<AuctionListing> retrieveClosedAuctions();
+
+    void assignWinningBid(AuctionListing auctionListing);
     
 }

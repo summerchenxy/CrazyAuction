@@ -6,7 +6,10 @@
 package ejb.session.stateless;
 
 import entity.AuctionListing;
+import entity.Bid;
+import static java.lang.Boolean.FALSE;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -16,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.AuctionStatus;
 import static util.enumeration.AuctionStatus.CLOSED;
+import static util.enumeration.AuctionStatus.MANUAL;
 import static util.enumeration.AuctionStatus.OPENED;
 import util.exception.AuctionListingNotFoundException;
 
@@ -69,7 +73,7 @@ public class AuctionListingController implements AuctionListingControllerRemote,
             em.flush();
         }
         else{//listing used. mark as disabled
-            auctionListing.setStatus(CLOSED);
+            auctionListing.setEnabled(FALSE);
         };
     }
     
@@ -82,20 +86,33 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     }
     
     @Override
-    public List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention()
-    {
-        /*must fullfil all 3 conditions:
-            1. auction listing is closed
-            2. auction listing has bids / winning bid is not 0
-            3. acution listing has winning bid lower than the reserve price
-        */
-        AuctionStatus status = CLOSED;
-        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus AND s.winningBidValue > 0 AND s.winningBidValue < s.reservePrice");
-        query.setParameter("inStatus", status);
-        return query.getResultList();
+    public void assignWinningBid(AuctionListing auctionListing){
+        auctionListing.setStatus(CLOSED);
+        BigDecimal highestBidValue = BigDecimal.ZERO;
+        Bid highestBid = new Bid();
+        //1. has no bid hence no winner
+        if (auctionListing.getBidList().isEmpty()){
+            auctionListing.setWinningBid(null);
+            auctionListing.setWinningBidValue(BigDecimal.ZERO);
+        }
+        else{
+            for (Bid bid: auctionListing.getBidList()){
+                highestBidValue = highestBidValue.max(bid.getCreditValue());
+                if (highestBidValue.compareTo(bid.getCreditValue())==0){
+                    highestBid = bid;
+                }
+            }
+            auctionListing.setWinningBid(highestBid);
+            auctionListing.setWinningBidValue(highestBidValue);
+            //done for 2. no reserve price but has bids or 3a. highest bid above reserve price
+            //set manual for 3b. highest bid same or below reserve price. 
+            if (auctionListing.getReservePrice().compareTo(BigDecimal.ZERO) > 0 
+                    && auctionListing.getReservePrice().compareTo(highestBidValue) > 0){
+                auctionListing.setStatus(MANUAL);
+            }
+        }
     }
     
-
     @Override
     public AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException
     {
@@ -112,15 +129,47 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     }
     
     @Override
-    public void openAuction(AuctionListing auctionListing){
-        auctionListing.setStatus(CLOSED);
-        updateAuctionListing(auctionListing);
+    public List<AuctionListing> retrieveClosedAuctions(){
+        AuctionStatus status = CLOSED;
+        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
+        query.setParameter("inStatus", status);
+        return query.getResultList();
     }
     
     @Override
-    public void closeAuction(AuctionListing auctionListing){
-        auctionListing.setStatus(OPENED);
-        updateAuctionListing(auctionListing);
+    public List<AuctionListing> retrieveOpenedAuctions(){
+        AuctionStatus status = OPENED;
+        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
+        query.setParameter("inStatus", status);
+        return query.getResultList();
+    }
+    
+    @Override
+    public List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention()
+    {
+        AuctionStatus status = MANUAL;
+        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
+        query.setParameter("inStatus", status);
+        return query.getResultList();
+    }
+    @Override
+    public void openAuction(){
+        List<AuctionListing> auctionListings = retrieveClosedAuctions();
+        for (AuctionListing auctionListing: auctionListings){
+            if (auctionListing.getStartDateTime().compareTo(new Date())<=0){
+                auctionListing.setStatus(OPENED);
+            }
+        }
+    }
+    
+    @Override
+    public void closeAuction(){
+        List<AuctionListing> auctionListings = retrieveOpenedAuctions();
+        for (AuctionListing auctionListing: auctionListings){
+            if (auctionListing.getEndDateTime().compareTo(new Date())>=0){
+                assignWinningBid(auctionListing);
+            }
+        }
     }
 
 

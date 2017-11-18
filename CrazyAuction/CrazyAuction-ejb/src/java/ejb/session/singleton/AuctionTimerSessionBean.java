@@ -36,13 +36,13 @@ public class AuctionTimerSessionBean {
     public void automaticActivateAuctionTimer()
     {
         System.out.println("Activate Auction Timer event "+new Date());
-        //auctionListingControllerLocal.openAuction(auctionListing);
+        auctionListingControllerLocal.openAuction();
     }
     @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
     public void automaticCloseAuctionTimer()
     {
         System.out.println("Activate Auction Timer event "+new Date());
-        //auctionListingControllerLocal.closeAuction(auctionListing);
+        auctionListingControllerLocal.closeAuction();
     }
     
 }
