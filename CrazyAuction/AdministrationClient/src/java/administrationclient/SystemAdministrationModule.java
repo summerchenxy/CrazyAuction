@@ -76,7 +76,7 @@ public class SystemAdministrationModule {
                 }
             }
             
-            if(response == 7)
+            if(response == 4)
             {
                 break;
             }
@@ -116,7 +116,7 @@ public class SystemAdministrationModule {
         newEmployee.setPassword(scanner.nextLine().trim());
         
         newEmployee = employeeControllerRemote.createNewEmployee(newEmployee);
-        System.out.println("New employeecreated successfully!: " + newEmployee.getEmployeeId()+ "\n");
+        System.out.println("New employeecreated successfully! ID: " + newEmployee.getEmployeeId()+ "\n");
     }
     
     private void doViewEmployeeDetails()

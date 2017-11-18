@@ -78,7 +78,7 @@ public class SalesOperationModule {
                 }
             }
 
-            if (response == 7) {
+            if (response == 4) {
                 break;
             }
         }

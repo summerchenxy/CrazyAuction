@@ -33,9 +33,13 @@ public class MainApp {
     public MainApp() {
     }
 
-    public MainApp(EmployeeControllerRemote employeeControllerRemote) {
+    public MainApp(EmployeeControllerRemote employeeControllerRemote, CreditPackageControllerRemote creditPackageControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote) {
         this.employeeControllerRemote = employeeControllerRemote;
+        this.creditPackageControllerRemote = creditPackageControllerRemote;
+        this.auctionListingControllerRemote = auctionListingControllerRemote;
     }
+
+    
     public void runApp() throws InvalidAccessRightException, ParseException
     {
         Scanner scanner = new Scanner(System.in);
@@ -187,6 +191,7 @@ public class MainApp {
         else{
             throw new InvalidLoginCredentialException("Password entered was incorrect!");
         }
+        scanner.nextLine();
     }
     
     private void doSpecifyRole() throws InvalidAccessRightException, ParseException{
@@ -194,9 +199,9 @@ public class MainApp {
         String input;
         while(true)
         {
-            System.out.println("Specify your role (0: No Change, 1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
+            System.out.print("Specify your role (1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
             Integer accessRightInt = scanner.nextInt();
-            
+            scanner.nextLine();
             if(accessRightInt >= 1 && accessRightInt <= 3)
             {
                 if (!AccessRightEnum.values()[accessRightInt-1].equals(currentEmployee.getAccessRightEnum())){
@@ -210,6 +215,8 @@ public class MainApp {
                     }
                     else if (accessRightInt == 2){
                         financeOperationModule = new FinanceOperationModule(employeeControllerRemote, creditPackageControllerRemote, currentEmployee);
+                        //System.out.println(currentEmployee.getAccessRightEnum().toString());
+                        //System.out.println(creditPackageControllerRemote.toString());
                         financeOperationModule.menuFinanceOperation();
                     }
                     else if (accessRightInt == 3){
@@ -228,5 +235,6 @@ public class MainApp {
                 System.out.println("Invalid option, please try again!\n");
             }
         }
+        scanner.nextLine();
     }
 }
