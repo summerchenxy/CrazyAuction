@@ -76,6 +76,7 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
         }
     }
     
+
     @Override
     public void updateBid(Bid bid) {
         em.merge(bid);

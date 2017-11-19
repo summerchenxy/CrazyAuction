@@ -11,6 +11,7 @@ import java.text.ParseException;
 import javax.ejb.EJB;
 import util.exception.InvalidAccessRightException;
 import ejb.session.stateless.AuctionListingControllerRemote;
+import ejb.session.stateless.CustomerControllerRemote;
 
 /**
  *
@@ -19,6 +20,8 @@ import ejb.session.stateless.AuctionListingControllerRemote;
 public class Main {
     @EJB
     private static EmployeeControllerRemote employeeControllerRemote;
+    @EJB
+    private static CustomerControllerRemote customergeControllerRemote;
     @EJB
     private static CreditPackageControllerRemote creditPackageControllerRemote;
     @EJB
@@ -29,7 +32,7 @@ public class Main {
     public static void main(String[] args) throws InvalidAccessRightException, ParseException {
         // TODO code application logic here
 
-        MainApp mainApp = new MainApp(employeeControllerRemote, creditPackageControllerRemote, auctionListingControllerRemote);
+        MainApp mainApp = new MainApp(employeeControllerRemote, customergeControllerRemote, creditPackageControllerRemote, auctionListingControllerRemote);
         mainApp.runApp();
 
     }

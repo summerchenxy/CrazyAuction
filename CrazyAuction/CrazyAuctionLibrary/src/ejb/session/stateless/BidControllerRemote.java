@@ -20,4 +20,6 @@ public interface BidControllerRemote {
     Bid retrieveBidByCreditValue(BigDecimal creditValue) throws BidNotFoundException;
 
     public void updateBid(Bid bid);
+    public void placeBid(Bid bid);
+
 }
