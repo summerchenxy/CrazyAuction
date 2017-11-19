@@ -18,5 +18,9 @@ public interface BidControllerLocal {
     Bid retrieveBidByBidId(Long bidId) throws BidNotFoundException;
 
     Bid retrieveBidByCreditValue(BigDecimal creditValue) throws BidNotFoundException;
+
+    public void placeBid(Bid bid);
+    
+    public void updateBid(Bid bid);
     
 }

@@ -6,9 +6,11 @@
 package ejb.session.stateless;
 
 import entity.Address;
+import entity.CreditPackage;
 import entity.CreditTransaction;
 import entity.Customer;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Scanner;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -20,6 +22,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.xml.ws.WebServiceRef;
+import util.enumeration.TransactionTypeEnum;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerPasswordChangeException;
 import util.exception.InvalidLoginCredentialException;
@@ -77,6 +80,11 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
     }
 
     @Override
+    public Customer retrieveCustomerById(String id) throws CustomerNotFoundException {
+        return em.find(Customer.class, id);
+    }
+
+    @Override
     public Customer doLogin(String username, String password) throws InvalidLoginCredentialException {
         try {
             Customer customer = retrieveCustomerByUsername(username);
@@ -106,6 +114,17 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
     @Override
     public Customer retrieveCustomerById(Long id) throws CustomerNotFoundException {
         return em.find(Customer.class, id);
+    }
+
+    @Override
+    public void doPurchaseCreditPackage(Long creditPackageId, Long customerId, int unit){ // - need to handle exceptions here
+        CreditPackage cp = em.find(CreditPackage.class, creditPackageId);
+        Customer customer =em.find(Customer.class,customerId);
+        CreditTransaction ct = new  CreditTransaction(new Date(), customer, cp, unit, TransactionTypeEnum.CREDIT, null);
+        customer.getCreditTransactionHistory().add(ct);
+        cp.getCreditTransactions().add(ct);
+        em.persist(ct);
+        System.out.println("Thank you for purchasing the credit package(s)");
     }
 
 }
