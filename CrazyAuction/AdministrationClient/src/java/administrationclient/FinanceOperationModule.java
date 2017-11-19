@@ -36,6 +36,9 @@ public class FinanceOperationModule {
     }
 
     public void menuFinanceOperation() throws InvalidAccessRightException {
+        //System.out.println(creditPackageControllerRemote.toString());
+        System.out.println(currentEmployee.getEmployeeId());
+        //System.out.println(currentEmployee.getAccessRightEnum().toString());
         if (currentEmployee.getAccessRightEnum() != AccessRightEnum.FINANCE) {
             throw new InvalidAccessRightException("You don't have FINANCE Employee rights to access the finance operation module.");
         }
@@ -68,7 +71,7 @@ public class FinanceOperationModule {
                 }
             }
 
-            if (response == 7) {
+            if (response == 4) {
                 break;
             }
         }

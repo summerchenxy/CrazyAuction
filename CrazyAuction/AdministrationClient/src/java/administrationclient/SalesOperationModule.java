@@ -78,7 +78,7 @@ public class SalesOperationModule {
                 }
             }
 
-            if (response == 7) {
+            if (response == 4) {
                 break;
             }
         }
@@ -193,7 +193,7 @@ public class SalesOperationModule {
                 auctionListingControllerRemote.deleteAuctionListing(auctionListing.getAuctionListingId());
                 System.out.println("Auction Listing deleted successfully!\n");
             } else {//auction listing is used and is marked as disabled
-                auctionListing.setStatus(AuctionStatus.DISABLED);
+                auctionListing.setEnabled(Boolean.FALSE);
                 //refund the credits to the customer
                 for (Bid bid : bidList) {
                     bid.refundToCustomer();
@@ -250,31 +250,30 @@ public class SalesOperationModule {
         scanner.nextLine();
     }
 
-    public void doManuallyAssignWinningBids(List<AuctionListing> allAuctionListings) {
+    public void doManuallyAssignWinningBids(List<AuctionListing> auctionListings) {
         Scanner scanner = new Scanner(System.in);
-        for (AuctionListing auctionListing : allAuctionListings) {
+        for (AuctionListing auctionListing : auctionListings) {
             BigDecimal winningBidValue = auctionListing.getWinningBidValue();
             BigDecimal reservePrice = auctionListing.getReservePrice();
             //require manual intervention for case where highest bid is same or below reserve price
-            if (winningBidValue.compareTo(reservePrice) <= 0) {
-                System.out.print("Reserve Price of Auction Listing ID " + auctionListing.getAuctionListingId().toString());
-                System.out.println(" has a reserve price of " + reservePrice.toString());
-                System.out.print(". Do you want to assign Bid with the credit value of " + reservePrice.toString() + " ?");
-                System.out.println("Enter 'Y' to mark it as winning bid and 'N' to demark it");
-                String input = scanner.nextLine().trim();
+            System.out.print("Reserve Price of Auction Listing ID " + auctionListing.getAuctionListingId().toString());
+            System.out.println(" has a reserve price of " + reservePrice.toString()+" .");
+            System.out.print("Do you want to assign Bid with the credit value of " + winningBidValue.toString() + " ?");
+            System.out.println("Enter 'Y' to mark it as winning bid and 'N' to demark it");
+            String input = scanner.nextLine().trim();
 
-                if (input.equalsIgnoreCase("Y")) {
+            if (input.equalsIgnoreCase("Y")) {
+                auctionListing.setWinningBidManually(auctionListing.getWinningBid());
+                auctionListing.setWinningBidValueManually(auctionListing.getWinningBidValue());
+            } else if (input.equalsIgnoreCase("N")) {
+                //decide not to mark the highest bid as winning bid hence no winner
+                //final and cannot be changed
+                auctionListing.setWinningBidManually(null);
+                auctionListing.setWinningBidValueManually(null);
+            }//ALEX: DO INPUT VALIDATION WITH A LOOP HERE
 
-                } else if (input.equalsIgnoreCase("N")) {
-                    //decide not to mark the highest bid as winning bid hence no winner
-                    //final and cannot be changed
-                    auctionListing.setWinningBidManually(null);
-                    auctionListing.setWinningBidValueManually(null);
-                }//ALEX: DO INPUT VALIDATION WITH A LOOP HERE
-
-                auctionListingControllerRemote.updateAuctionListing(auctionListing);
-                System.out.println("auctionListing winning bid assigned successfully!\n");
-            }
+            auctionListingControllerRemote.updateAuctionListing(auctionListing);
+            System.out.println("auctionListing winning bid assigned successfully!\n");
         }
     }
 }
