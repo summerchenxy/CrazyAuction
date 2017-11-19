@@ -154,7 +154,6 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus AND s.isFinal = :inFinal");
         query.setParameter("inStatus", status);
         query.setParameter("inFinal", checkFinal);
-        
 
         List<AuctionListing> als = query.getResultList();
         for (AuctionListing al : als) {
