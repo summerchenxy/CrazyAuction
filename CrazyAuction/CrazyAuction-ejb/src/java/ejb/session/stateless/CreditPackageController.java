@@ -51,7 +51,9 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     public void deleteCreditPackage(CreditPackage creditPackage) {
         System.out.println("Delete method" + creditPackage.getCreditPackageId());
         if (getTransactionsNum(creditPackage) == 0) {
-            em.remove(creditPackage);
+            creditPackage.setCreditTransactions(null);
+            CreditPackage toBeRemoved = em.merge(creditPackage);
+            em.remove(toBeRemoved);
             em.flush();
         } else {//package used. mark as disabled
             disableCreditPackage(creditPackage);
