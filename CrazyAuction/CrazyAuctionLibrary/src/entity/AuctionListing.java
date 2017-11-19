@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,15 +32,13 @@ public class AuctionListing implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long auctionListingId;
+     Long auctionListingId;
     @Column(precision = 11, scale = 2)
     private BigDecimal startingBidAmount;
     @Column(nullable = false)
     private Date startDateTime;
     @Column(nullable = false)
     private Date endDateTime;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private AuctionStatus status;
     @Column(length = 32, nullable = false)
     private String description;
@@ -85,7 +81,7 @@ public class AuctionListing implements Serializable {
 
     public AuctionListing() {
         this.bidList = new ArrayList<>();
-        this.status = CLOSED;//by default close until start date is reached
+        this.status = AuctionStatus.CLOSED;//by default close until start date is reached
         this.enabled = true;
         this.isFinal = false;
     }
@@ -206,9 +202,7 @@ public class AuctionListing implements Serializable {
      * @return the winningBid
      */
     public Bid getWinningBid() {
-        if (winningBid == null) {
-            System.out.print("No winning bid!");
-        }
+        
         return winningBid;
     }
 
@@ -216,7 +210,7 @@ public class AuctionListing implements Serializable {
      * @param winningBid the winningBid to set
      */
     public void setWinningBid(Bid winningBid) {
-        if (isFinal = false) {
+        if (isFinal = false){
             this.winningBid = winningBid;
         }
     }
@@ -227,7 +221,8 @@ public class AuctionListing implements Serializable {
     }
 
     public void setWinningBidValue(BigDecimal winningBidValue) {
-        if (isFinal = false) {
+        if (isFinal = false)
+        {
             this.winningBidValue = winningBidValue;//only can be changedd if it is not final
         }
     }
@@ -238,9 +233,7 @@ public class AuctionListing implements Serializable {
     }
 
     public BigDecimal getWinningBidValue() {
-        if (winningBidValue == null) {
-            System.out.print("No winning bid!");
-        }
+        
         return winningBidValue;
     }
 
@@ -248,6 +241,9 @@ public class AuctionListing implements Serializable {
      * @return the bidList
      */
     public List<Bid> getBidList() {
+        if (bidList.isEmpty()) {
+            //System.out.print("Empty Bid List!");
+        }
         return bidList;
     }
 
@@ -265,5 +261,5 @@ public class AuctionListing implements Serializable {
     public void setIsFinal(Boolean isFinal) {
         this.isFinal = isFinal;
     }
-
+    
 }

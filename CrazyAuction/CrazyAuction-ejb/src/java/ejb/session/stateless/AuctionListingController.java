@@ -7,6 +7,8 @@ package ejb.session.stateless;
 
 import entity.AuctionListing;
 import entity.Bid;
+import entity.CreditTransaction;
+import entity.Customer;
 import static java.lang.Boolean.FALSE;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -23,6 +25,7 @@ import util.enumeration.AuctionStatus;
 import static util.enumeration.AuctionStatus.CLOSED;
 import static util.enumeration.AuctionStatus.MANUAL;
 import static util.enumeration.AuctionStatus.OPENED;
+import util.enumeration.TransactionTypeEnum;
 import util.exception.AuctionListingNotFoundException;
 
 /**
@@ -97,14 +100,16 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             auctionListing.setWinningBid(null);
             auctionListing.setWinningBidValue(BigDecimal.ZERO);
         } else {
-            for (Bid bid : auctionListing.getBidList()) {
-                highestBidValue = highestBidValue.max(bid.getCreditValue());
-                if (highestBidValue.compareTo(bid.getCreditValue()) == 0) {
-                    highestBid = bid;
-                }
-            }
+            highestBid = getHighestBid(auctionListing);
+            highestBidValue = highestBid.getCreditValue();
             auctionListing.setWinningBid(highestBid);
             auctionListing.setWinningBidValue(highestBidValue);
+            //refund the non-winning bids
+            for (Bid bid : auctionListing.getBidList()) {
+                if (highestBid.getBidId().compareTo(bid.getBidId())!=0) {
+                    refundBid(bid);
+                }
+            }
             //done for 2. no reserve price but has bids or 3a. highest bid above reserve price
             //set manual for 3b. highest bid same or below reserve price. 
             if (auctionListing.getReservePrice().compareTo(BigDecimal.ZERO) > 0
@@ -113,6 +118,33 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             }
         }
         updateAuctionListing(auctionListing);
+    }
+    
+    @Override
+    public void refundBid(Bid bid){
+        //create a new transaction to add back the credit to customer
+        Customer customer = bid.getCreditTransaction().getCustomer();
+        CreditTransaction ct = new CreditTransaction();
+        ct.setType(TransactionTypeEnum.REFUND);
+        ct.setCustomer(customer);
+        customer.addCreditBalance(bid.getCreditValue());
+        em.merge(customer);
+        em.persist(ct);
+        em.flush();
+        em.refresh(ct);
+    }
+    
+    @Override
+    public Bid getHighestBid(AuctionListing auctionListing){
+        BigDecimal highestBidValue = BigDecimal.ZERO;
+        Bid highestBid = new Bid();
+        for (Bid bid : auctionListing.getBidList()) {
+                highestBidValue = highestBidValue.max(bid.getCreditValue());
+                if (highestBidValue.compareTo(bid.getCreditValue()) == 0) {
+                    highestBid = bid;
+                }
+            }
+        return highestBid;
     }
 
     @Override
@@ -156,8 +188,10 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     @Override
     public List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention() {
         AuctionStatus status = AuctionStatus.MANUAL;
-        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
+        Boolean checkFinal = false;
+        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus AND s.isFinal = :inFinal");
         query.setParameter("inStatus", status);
+        query.setParameter("inFinal", checkFinal);
 
         List<AuctionListing> als = query.getResultList();
         for (AuctionListing al : als) {
@@ -182,6 +216,8 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         List<AuctionListing> auctionListings = retrieveOpenedAuctions();
         for (AuctionListing auctionListing : auctionListings) {
             if (auctionListing.getEndDateTime().compareTo(new Date()) >= 0) {
+
+                auctionListing.setStatus(CLOSED);
                 assignWinningBid(auctionListing.getAuctionListingId());
             }
         }
