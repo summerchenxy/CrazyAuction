@@ -22,6 +22,8 @@ import util.enumeration.AuctionStatus;
 import util.exception.AuctionListingNotFoundException;
 import util.exception.InvalidAccessRightException;
 import ejb.session.stateless.AuctionListingControllerRemote;
+import ejb.session.stateless.CustomerControllerRemote;
+import entity.Customer;
 import java.text.DecimalFormat;
 
 /**
@@ -31,6 +33,7 @@ import java.text.DecimalFormat;
 public class SalesOperationModule {
 
     private EmployeeControllerRemote employeeControllerRemote;
+    private CustomerControllerRemote customerControllerRemote;
     private AuctionListingControllerRemote auctionListingControllerRemote;
     private Employee currEmployee;
     private static DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
@@ -38,8 +41,9 @@ public class SalesOperationModule {
     public SalesOperationModule() {
     }
 
-    public SalesOperationModule(EmployeeControllerRemote employeeControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote, Employee currentEmployee) {
+    public SalesOperationModule(EmployeeControllerRemote employeeControllerRemote, CustomerControllerRemote customerControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote, Employee currentEmployee) {
         this.employeeControllerRemote = employeeControllerRemote;
+        this.customerControllerRemote = customerControllerRemote;
         this.auctionListingControllerRemote = auctionListingControllerRemote;
         this.currEmployee = currentEmployee;
     }
@@ -329,6 +333,10 @@ public class SalesOperationModule {
                 auctionListing.setWinningBidManually(null);
                 auctionListing.setWinningBidValueManually(null);
                 auctionListingControllerRemote.refundBid(winningBid);
+                //remove it from winning bid list of the customer
+                Customer customer = winningBid.getCreditTransaction().getCustomer();
+                customer.getWonBids().remove(winningBid);
+                customerControllerRemote.updateCustomer(customer);
             }//ALEX: DO INPUT VALIDATION WITH A LOOP HERE
 
             auctionListingControllerRemote.updateAuctionListing(auctionListing);

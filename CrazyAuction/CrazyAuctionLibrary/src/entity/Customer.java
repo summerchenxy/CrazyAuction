@@ -115,13 +115,6 @@ public class Customer implements Serializable {
         this.addresses = addresses;
     }
 
-    public List<CreditTransaction> getreditTransactionHistory() {
-        return creditTransactionHistory;
-    }
-
-    public void setCreditBalance(List<CreditTransaction> creditTransactionHistory) {
-        this.creditTransactionHistory = creditTransactionHistory;
-    }
 
     public String getPassword() {
         return password;
