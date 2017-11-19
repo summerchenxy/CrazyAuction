@@ -694,7 +694,6 @@ class MainApp {
         Scanner sc = new Scanner(System.in);
         System.out.println("\n*** Auction Client :: Auction&Bid Menu :: View Auction Listing ***\n");
 
-
         List<AuctionListing> allAuctionListings = auctionListingController.retrieveOpenedAuctions();
         System.out.printf("%8s%30s%20s\n", "ID", "End Date Time", "Current Bid");
         for (AuctionListing auctionListing : allAuctionListings) {
@@ -702,65 +701,21 @@ class MainApp {
             //assign non-null current highest bid 
             if (auctionListing.getBidList() != null && auctionListing.getBidList().size() != 0) {
                 highestBid = new BigDecimal(0);
-              
-        viewActiveAuctionListingSimple(); //only display active ones
-        AuctionListing al = null;
-        System.out.println("enter the auction listing ID to display details, or R to refresh.");
-        while (al == null) {
-            String token = sc.nextLine().trim();
-            if (token.equalsIgnoreCase("r")) {
-                viewAllAuctionListings();
-            } else {
-                try {
-                    Long alId = Long.valueOf(token);
-                    al = auctionListingController.retrieveAuctionListingByAuctionListingId(alId);
-                    viewAnAuctionListing(al);
-                } catch (AuctionListingNotFoundException ex) {
-                    System.out.println("An error has occurred while retrieving auctionListing: " + ex.getMessage() + "\n");
-                }
-            }
-        }
-
-    }
-
-    private void viewAnAuctionListing(AuctionListing al) {
-
-        System.out.println("Auction Listing ID: " + al.getAuctionListingId());
-        System.out.println("Start Date: " + al.getStartDateTime());
-        System.out.println("End Date: " + al.getEndDateTime());
-        System.out.println("Reserve Price: " + al.getReservePrice());
-        List<Bid> bids = al.getBidList();
-        BigDecimal highestBid = new BigDecimal(0);
-        for (Bid b : bids) {
-            if (b.getCreditValue().compareTo(highestBid) == 1) {
-                highestBid = b.getCreditValue();
-            }
-        }
-        DecimalFormat df = new DecimalFormat("0.00");
-        System.out.println("Current Highest Bid: " + df.format(highestBid.floatValue()));
-//        may display current smallest increment here
-        System.out.println();
-    }
-
-    //display all active listing as a grossry
-    private void viewActiveAuctionListingSimple() {
-        List<AuctionListing> allAuctionListings = auctionListingController.retrieveAllAuctionListings();
-        System.out.printf("%8s%20s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Current Bid");
-
-        for (AuctionListing auctionListing : allAuctionListings) {
-            if (auctionListing.getStatus() == AuctionStatus.OPENED) {
                 List<Bid> bids = auctionListing.getBidList();
-                BigDecimal highestBid = new BigDecimal(0);
                 for (Bid b : bids) {
                     if (b.getCreditValue().compareTo(highestBid) == 1) {
                         highestBid = b.getCreditValue();
                     }
                 }
-                DecimalFormat df = new DecimalFormat("0.00");
-                System.out.printf("%8s%20s%20s%20s\n",
-                        auctionListing.getAuctionListingId().toString(), auctionListing.getStartingBidAmount().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
-                        df.format(highestBid.floatValue()));
             }
+            String highestBidString;
+            if (highestBid != null) {
+                highestBidString = highestBid.setScale(2).toString();
+            } else {
+                highestBidString = "N.A.";
+            }
+            System.out.printf("%8s%30s%20s\n",
+                    auctionListing.getAuctionListingId().toString(), auctionListing.getEndDateTime().toString(), highestBidString);
         }
         //sub meu
         Integer response = 0;
@@ -841,26 +796,6 @@ class MainApp {
             for (Bid b : bids) {
                 if (b.getCreditValue().compareTo(highestBid) == 1) {
                     highestBid = b.getCreditValue();
-                  
-    //display a grossry for all active listings. prompt the user to refresh or bid on one listing
-    private void placeNewBid() throws CustomerInsufficientCreditBalance {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("\n*** Auction Client :: Auction&Bid Menu :: View Auction Listing ***\n");
-
-        viewActiveAuctionListingSimple(); //only display active ones
-        AuctionListing al = null;
-        System.out.println("enter the auction listing ID to display details, or R to refresh.");
-        while (al == null) {
-            String token = sc.nextLine().trim();
-            if (token.equalsIgnoreCase("r")) {
-                viewAllAuctionListings();
-            } else {
-                try {
-                    Long alId = Long.valueOf(token);
-                    al = auctionListingController.retrieveAuctionListingByAuctionListingId(alId);
-                    doPlaceBid(al);
-                } catch (AuctionListingNotFoundException ex) {
-                    System.out.println("An error has occurred while retrieving auctionListing: " + ex.getMessage() + "\n");
                 }
             }
             DecimalFormat df = new DecimalFormat("0.00");
@@ -944,7 +879,7 @@ class MainApp {
             //record credit transaction
             CreditTransaction ct = new CreditTransaction();
             ct.setTransactionDateTime(new Date());
-            ct.setPurchasingCustomer(currentCustomer);
+            ct.setCustomer(currentCustomer);
             ct.setType(TransactionTypeEnum.DEBIT);
             ct.setBid(newBid);
             //associate transaction to bid
@@ -962,25 +897,6 @@ class MainApp {
             //System.out.println("test2");
             System.err.println("Invalid address ID");
         }
-
-        Address address = currentCustomer.getAddresses().get(indexOfAddressToShip);
-        Bid newBid = new Bid(bidAmount, address);
-        //record credit transaction
-        CreditTransaction ct = new CreditTransaction();
-        ct.setTransactionDateTime(new Date());
-        ct.setCustomer(currentCustomer);
-        ct.setType(TransactionTypeEnum.DEBIT);
-        ct.setBid(newBid);
-        creditTransactionController.createNewCreditTransaction(ct);
-
-        //associate transaction to bid
-        newBid.setCreditTransaction(ct);
-        bidController.createNewBid(newBid);
-        //associate transaction to customer
-        currentCustomer.getCreditTransactionHistory().add(ct);
-        customerController.updateCustomer(currentCustomer);
-
-        System.out.println("you have successfully bid fot the item!");
     }
 
     //validate input (smallest amount placeable, smallest increment, must be higher than current highest bid)
