@@ -171,7 +171,7 @@ public class SalesOperationModule {
             if (al.getWinningBidValue()!=null){
                 winningBid = al.getWinningBidValue().toString();
             }
-            System.out.println("Current Highest Bid: " + winningBid);
+            System.out.println("Winning Bid: " + winningBid);
     
             System.out.println("------------------------");
             System.out.println("1: Update Auction Listing");
@@ -262,13 +262,14 @@ public class SalesOperationModule {
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListings();
         System.out.printf("%8s%20s%20s%10s%10s%10s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
         String winningBid;
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
         for (AuctionListing auctionListing : allAuctionListings) {
             winningBid = "NA";
             if (auctionListing.getWinningBidValue()!=null){
                 winningBid = auctionListing.getWinningBidValue().toString();
             }
             System.out.printf("%8s%20s%20s%10s%10s%10s\n",
-                    auctionListing.getAuctionListingId().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
+                    auctionListing.getAuctionListingId().toString(), format.format(auctionListing.getStartDateTime()).toString(), format.format(auctionListing.getEndDateTime()).toString(),
                     auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), winningBid);
         }
         System.out.print("Press any key to continue...> ");
@@ -309,6 +310,7 @@ public class SalesOperationModule {
     public void doManuallyAssignWinningBids(List<AuctionListing> auctionListings) {
         Scanner scanner = new Scanner(System.in);
         for (AuctionListing auctionListing : auctionListings) {
+            Bid winningBid = auctionListing.getWinningBid();
             BigDecimal winningBidValue = auctionListing.getWinningBidValue();
             BigDecimal reservePrice = auctionListing.getReservePrice();
             //require manual intervention for case where highest bid is same or below reserve price
@@ -319,13 +321,14 @@ public class SalesOperationModule {
             String input = scanner.nextLine().trim();
 
             if (input.equalsIgnoreCase("Y")) {
-                auctionListing.setWinningBidManually(auctionListing.getWinningBid());
-                auctionListing.setWinningBidValueManually(auctionListing.getWinningBidValue());
+                auctionListing.setWinningBidManually(winningBid);
+                auctionListing.setWinningBidValueManually(winningBidValue);
             } else if (input.equalsIgnoreCase("N")) {
                 //decide not to mark the highest bid as winning bid hence no winner
                 //final and cannot be changed
                 auctionListing.setWinningBidManually(null);
                 auctionListing.setWinningBidValueManually(null);
+                auctionListingControllerRemote.refundBid(winningBid);
             }//ALEX: DO INPUT VALIDATION WITH A LOOP HERE
 
             auctionListingControllerRemote.updateAuctionListing(auctionListing);

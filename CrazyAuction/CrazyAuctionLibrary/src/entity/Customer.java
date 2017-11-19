@@ -41,7 +41,7 @@ public class Customer implements Serializable {
     private BigDecimal creditBalance;
     @OneToMany(mappedBy = "customer")
     private List<Address> addresses = new ArrayList<Address>();
-    @OneToMany(mappedBy = "purchasingCustomer")
+    @OneToMany(mappedBy = "customer")
     private List<CreditTransaction> creditTransactionHistory = new ArrayList<CreditTransaction>();
     @Column(length = 32, nullable = false, unique = true)
     private String username;

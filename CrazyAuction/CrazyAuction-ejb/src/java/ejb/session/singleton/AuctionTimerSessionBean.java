@@ -46,7 +46,7 @@ public class AuctionTimerSessionBean {
     @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
     public void automaticCloseAuctionTimer()
     {
-        System.out.println("Activate Auction Timer event "+new Date());
+        System.out.println("Close Auction Timer event "+new Date());
         auctionListingControllerLocal.closeAuction();
     }
     @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")

@@ -44,7 +44,7 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
     @Override
     public void refundToCustomer(Bid bid) {
         BigDecimal creditValue = bid.getCreditValue();
-        Customer customer = bid.getCreditTransaction().getPurchasingCustomer();
+        Customer customer = bid.getCreditTransaction().getCustomer();
         customer.addCreditBalance(creditValue);
         bid.setCreditValue(BigDecimal.ZERO);
         em.merge(bid);
@@ -72,5 +72,9 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new BidNotFoundException("Bid of credit value " + creditValue.toString() + " does not exist!");
         }
+    }
+    
+    public void placeBid(Bid bid){
+        
     }
 }
