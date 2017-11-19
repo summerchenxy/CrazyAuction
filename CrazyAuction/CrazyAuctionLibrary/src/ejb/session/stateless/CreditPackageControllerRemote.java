@@ -20,11 +20,12 @@ public interface CreditPackageControllerRemote {
 
     void updateCreditPackage(CreditPackage creditPackage);
 
-    void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException;
+    void deleteCreditPackage(CreditPackage creditPackage);
 
     List<CreditPackage> retrieveAllCreditPackages();
     
     CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException;
 
     void disableCreditPackage(CreditPackage creditPackage);
+    int getTransactionsNum(CreditPackage creditPackage);
 }

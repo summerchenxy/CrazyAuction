@@ -16,7 +16,7 @@ import util.exception.AuctionListingNotFoundException;
  */
 public interface AuctionListingControllerRemote {
     
-    AuctionListing createAuctionListing(AuctionListing auctionListing);
+    Long createAuctionListing(AuctionListing auctionListing);
 
     void updateAuctionListing(AuctionListing auctionListing);
 

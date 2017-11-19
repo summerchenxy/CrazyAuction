@@ -19,11 +19,15 @@ public interface CreditPackageControllerLocal {
 
     void updateCreditPackage(CreditPackage creditPackage);
 
-    void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException;
+    void deleteCreditPackage(CreditPackage creditPackage);
 
     List<CreditPackage> retrieveAllCreditPackages();
     
     CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException;
+
+    int getTransactionsNum(CreditPackage creditPackage);
+    
+    void disableCreditPackage(CreditPackage creditPackage);
 
 
 

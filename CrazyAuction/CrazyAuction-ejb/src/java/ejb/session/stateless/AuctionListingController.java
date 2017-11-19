@@ -48,14 +48,13 @@ public class AuctionListingController implements AuctionListingControllerRemote,
     
     
     @Override
-    public AuctionListing createAuctionListing(AuctionListing auctionListing)
+    public Long createAuctionListing(AuctionListing auctionListing)
     {
         em.persist(auctionListing);
         em.flush();
-        em.refresh(auctionListing);
+        //em.refresh(auctionListing);
         
-        
-        return auctionListing;
+        return auctionListing.getAuctionListingId();
     }
     
     @Override
@@ -90,8 +89,9 @@ public class AuctionListingController implements AuctionListingControllerRemote,
         auctionListing.setStatus(CLOSED);
         BigDecimal highestBidValue = BigDecimal.ZERO;
         Bid highestBid = new Bid();
+        int size = auctionListing.getBidList().size();
         //1. has no bid hence no winner
-        if (auctionListing.getBidList().isEmpty()){
+        if (size == 0){
             auctionListing.setWinningBid(null);
             auctionListing.setWinningBidValue(BigDecimal.ZERO);
         }
@@ -111,6 +111,7 @@ public class AuctionListingController implements AuctionListingControllerRemote,
                 auctionListing.setStatus(MANUAL);
             }
         }
+        updateAuctionListing(auctionListing);
     }
     
     @Override
@@ -158,6 +159,7 @@ public class AuctionListingController implements AuctionListingControllerRemote,
         for (AuctionListing auctionListing: auctionListings){
             if (auctionListing.getStartDateTime().compareTo(new Date())<=0){
                 auctionListing.setStatus(OPENED);
+                updateAuctionListing(auctionListing);
             }
         }
     }

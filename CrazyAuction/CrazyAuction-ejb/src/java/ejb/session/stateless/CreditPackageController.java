@@ -52,10 +52,10 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     
    
     @Override
-    public void deleteCreditPackage(Long creditPackageId) throws CreditPackageNotFoundException
+    public void deleteCreditPackage(CreditPackage creditPackage)
     {
-        CreditPackage creditPackage = retrieveCreditPackageByCreditPackageId(creditPackageId);
-        if (creditPackage.getCreditTransactions().isEmpty()){
+        System.out.println("Delete method" +creditPackage.getCreditPackageId());
+        if (getTransactionsNum(creditPackage)==0){
             em.remove(creditPackage);
             em.flush();
         }
@@ -71,6 +71,13 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
         updateCreditPackage(creditPackage);
     }
     
+    @Override
+    public int getTransactionsNum(CreditPackage creditPackage){
+        Long creditPackageId = creditPackage.getCreditPackageId();
+        Query query = em.createQuery("SELECT ct FROM CreditTransaction ct WHERE ct.creditPackage.creditPackageId = :inCreditPackageId");
+        query.setParameter("inCreditPackageId", creditPackageId);
+        return query.getResultList().size();
+    }
   
     @Override
     public List<CreditPackage> retrieveAllCreditPackages()

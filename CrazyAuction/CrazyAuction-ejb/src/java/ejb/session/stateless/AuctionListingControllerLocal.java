@@ -17,7 +17,7 @@ import util.exception.AuctionListingNotFoundException;
  */
 public interface AuctionListingControllerLocal {
     
-    AuctionListing createAuctionListing(entity.AuctionListing auctionListing);
+    Long createAuctionListing(entity.AuctionListing auctionListing);
 
     void updateAuctionListing(entity.AuctionListing auctionListing);
 

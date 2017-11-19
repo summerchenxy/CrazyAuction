@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import util.enumeration.AccessRightEnum;
 import util.enumeration.AuctionStatus;
@@ -89,26 +90,62 @@ public class SalesOperationModule {
         AuctionListing newAuctionListing = new AuctionListing();
 
         System.out.println("*** OAS Administration Panel :: Sales Operation :: Create New Auction Listing ***\n");
-        System.out.print("Enter Starting Bid Amount> ");
-        newAuctionListing.setStartingBidAmount(BigDecimal.valueOf(scanner.nextDouble()));
-        System.out.print("Enter Start Date in yyyy.MM.dd.HH format> ");
-        String startDateString = scanner.nextLine().trim();
-        Date startDate = formatter.parse(startDateString);
+        System.out.print("Enter Starting Bid Amount ");
+        BigDecimal bidAmount = null;
+        while (bidAmount == null) {
+            try {
+                System.out.print("> ");
+                newAuctionListing.setStartingBidAmount(BigDecimal.valueOf(scanner.nextDouble()));
+                bidAmount = newAuctionListing.getStartingBidAmount();
+            } catch (Exception ex) {
+            }
+        }
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+        System.out.println("It is now " + format.format(new Date()));
+        System.out.println("Enter Start Date in yyyy.MM.dd.HH.mm format ");
+        Date date = null;
+        while (date == null) {
+            System.out.print("> ");
+            String line = scanner.nextLine();
+            try {
+                date = format.parse(line);
+            } catch (ParseException e) {
+                System.out.println("Sorry, that's not valid. Please try again.");
+            }
+        }
+        Date startDate = date;
         newAuctionListing.setStartDateTime(startDate);
-        System.out.print("Enter End Date in yyyy.MM.dd.HH format> ");
-        String endDateString = scanner.nextLine().trim();
-        Date endDate = formatter.parse(endDateString);
+        System.out.println("Enter End Date in yyyy.MM.dd.HH format ");
+        date = null;
+        while (date == null) {
+            System.out.print("> ");
+            String line = scanner.nextLine();
+            try {
+                date = format.parse(line);
+            } catch (ParseException e) {
+                System.out.println("Sorry, that's not valid. Please try again.");
+            }
+        }
+        Date endDate = date;
         newAuctionListing.setEndDateTime(endDate);
-        //by default set it as disabled upon creation
+        //by default set it as closed upon creation
         newAuctionListing.setStatus(AuctionStatus.CLOSED);
         System.out.print("Enter Description> ");
         newAuctionListing.setDescription(scanner.nextLine().trim());
-        System.out.print("Enter Reserve Price (blank if no reserve price)> ");
-        newAuctionListing.setReservePrice(BigDecimal.valueOf(scanner.nextDouble()));
-        scanner.next();
-
-        newAuctionListing = auctionListingControllerRemote.createAuctionListing(newAuctionListing);
-        System.out.println("New auctionListingcreated successfully!: " + newAuctionListing.getAuctionListingId() + "\n");
+        System.out.print("Enter Reserve Price (0 if no reserve price) ");
+        BigDecimal reservePrice = null;
+        while (reservePrice == null) {
+            try {
+                System.out.print("> ");
+                newAuctionListing.setReservePrice(BigDecimal.valueOf(scanner.nextDouble()));
+                reservePrice = newAuctionListing.getReservePrice();
+            } catch (Exception ex) {
+            }
+        }
+        //System.out.println("debug");
+        
+        Long newAuctionListingId = auctionListingControllerRemote.createAuctionListing(newAuctionListing);
+        System.out.println("New auctionListingcreated successfully! ID: " + newAuctionListingId + "\n");
     }
 
     private void doViewAuctionListingDetails() throws ParseException {

@@ -81,6 +81,9 @@ public class AuctionListing implements Serializable {
 
     public AuctionListing() {
         this.bidList = new ArrayList<>();
+        this.status = CLOSED;//by default close until start date is reached
+        this.enabled = true;
+        this.isFinal = false;
     }
 
     public AuctionListing(BigDecimal startingBidAmount, Date startDateTime, Date endDateTime, String description, BigDecimal reservePrice) {
@@ -88,7 +91,6 @@ public class AuctionListing implements Serializable {
         this.startingBidAmount = startingBidAmount;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
-        this.status = CLOSED;//close until start date is reached
         this.description = description;
         this.reservePrice = reservePrice;
     }
