@@ -156,13 +156,14 @@ public class SalesOperationModule {
         System.out.println("*** OAS Administration Panel :: Sales Operation :: View Auction Listing Details ***\n");
         System.out.print("Enter AuctionListing ID> ");
         Long auctionListingId = scanner.nextLong();
-
+        
         try {
             AuctionListing al = auctionListingControllerRemote.retrieveAuctionListingByAuctionListingId(auctionListingId);
+            DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
             System.out.println("Auction Listing ID: " + al.getAuctionListingId());
-            System.out.println("Auction Listing ID: "+al.getStartingBidAmount().toString());
-            System.out.println("Start Date: " + al.getStartDateTime().toString());
-            System.out.println("End Date: " + al.getEndDateTime().toString());
+            System.out.println("Starting Bid Amount: "+al.getStartingBidAmount().toString());
+            System.out.println("Start Date: " + format.format(al.getStartDateTime()).toString());
+            System.out.println("End Date: " + format.format(al.getEndDateTime()).toString());
             System.out.println("Status: " + al.getStatus().toString());
             System.out.println("Description: " + al.getDescription());
             System.out.println("Reserve Price: " + al.getReservePrice().toString());
@@ -259,12 +260,16 @@ public class SalesOperationModule {
         System.out.println("*** OAS Administration Panel :: System Administration :: View All AuctionListings ***\n");
 
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListings();
-        System.out.printf("%8s%20s%20s%20s%20s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
-
+        System.out.printf("%8s%20s%20s%10s%10s%10s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
+        String winningBid;
         for (AuctionListing auctionListing : allAuctionListings) {
-            System.out.printf("%8s%20s%20s%20s%20s\n",
-                    auctionListing.getAuctionListingId().toString(), auctionListing.getStartingBidAmount().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
-                    auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), auctionListing.getWinningBid().toString());
+            winningBid = "NA";
+            if (auctionListing.getWinningBidValue()!=null){
+                winningBid = auctionListing.getWinningBidValue().toString();
+            }
+            System.out.printf("%8s%20s%20s%10s%10s%10s\n",
+                    auctionListing.getAuctionListingId().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
+                    auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), winningBid);
         }
         System.out.print("Press any key to continue...> ");
         scanner.nextLine();
@@ -277,8 +282,12 @@ public class SalesOperationModule {
 
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListingsRequiringManualIntervention();
         System.out.printf("%8s%20s%20s%15s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Status", "Description", "Reserve Price", "Bid List", "Winning Bid");
-
+        String winningBid;
         for (AuctionListing auctionListing : allAuctionListings) {
+            winningBid = "NA";
+            if (auctionListing.getWinningBidValue()!=null){
+                winningBid = auctionListing.getWinningBidValue().toString();
+            }
             System.out.printf("%8s%20s%20s%15s%20s%20s\n",
                     auctionListing.getAuctionListingId().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(), auctionListing.getStatus().toString(), auctionListing.getDescription(), auctionListing.getDescription().toString(), auctionListing.getBidList().toArray().toString(), auctionListing.getWinningBid().toString());
         }

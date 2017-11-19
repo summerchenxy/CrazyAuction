@@ -81,7 +81,7 @@ public class AuctionListing implements Serializable {
 
     public AuctionListing() {
         this.bidList = new ArrayList<>();
-        this.status = CLOSED;//by default close until start date is reached
+        this.status = AuctionStatus.CLOSED;//by default close until start date is reached
         this.enabled = true;
         this.isFinal = false;
     }
