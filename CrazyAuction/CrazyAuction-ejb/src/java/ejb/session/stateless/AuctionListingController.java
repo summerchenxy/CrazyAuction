@@ -35,7 +35,7 @@ import util.exception.AuctionListingNotFoundException;
 @Stateless
 @Local(AuctionListingControllerLocal.class)
 @Remote(AuctionListingControllerRemote.class)
-public class AuctionListingController implements AuctionListingControllerRemote, AuctionListingControllerLocal {
+public class AuctionListingController implements AuctionListingControllerLocal, AuctionListingControllerRemote {
 
     @PersistenceContext(unitName = "CrazyAuction-ejbPU")
     private EntityManager em;

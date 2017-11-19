@@ -32,7 +32,7 @@ import static util.enumeration.AccessRightEnum.SALES;
  */
 @Singleton
 @LocalBean
-@Startup
+//@Startup
 public class DataInitialisationBean {
 
     @PersistenceContext(unitName = "CrazyAuction-ejbPU")
@@ -48,21 +48,21 @@ public class DataInitialisationBean {
     public DataInitialisationBean() {
     }
 
-    @PostConstruct
-    public void postConstruct() {
-        if (em.find(Employee.class, 1l) == null) {
-            initialiseEmployeeData();
-        }
-        if (em.find(Customer.class, 1l) == null) {
-            initialiseCustomerData();
-        }
-        if (em.find(CreditPackage.class, 1l) == null) {
-            initialiseCreditPackageData();
-        }
-        if (em.find(AuctionListing.class, 1l) == null) {
-            initialiseAuctionListingData();
-        }
-    }
+//    @PostConstruct
+//    public void postConstruct() {
+//        if (em.find(Employee.class, 1l) == null) {
+//            initialiseEmployeeData();
+//        }
+//        if (em.find(Customer.class, 1l) == null) {
+//            initialiseCustomerData();
+//        }
+//        if (em.find(CreditPackage.class, 1l) == null) {
+//            initialiseCreditPackageData();
+//        }
+//        if (em.find(AuctionListing.class, 1l) == null) {
+//            initialiseAuctionListingData();
+//        }
+//    }
 
     private void initialiseEmployeeData() {
         Employee employee = new Employee("Bob", "Brown", "BobManager", "password", ADMIN);

@@ -5,17 +5,28 @@
  */
 package proxyclient;
 
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Scanner;
+import ws.client.AuctionListing;
+import ws.client.AuctionListingNotFoundException_Exception;
+import ws.client.CustomerNotFoundException_Exception;
+import ws.client.InvalidLoginCredentialException;
+import ws.client.InvalidLoginCredentialException_Exception;
 
 /**
  *
  * @author Summer
  */
 public class MainApp {
+    private static DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
+    private ws.client.Customer currentCustomer;
 
     public MainApp() {
     }
-    public void runApp()
+    public void runApp() throws InvalidLoginCredentialException_Exception, CustomerNotFoundException_Exception, AuctionListingNotFoundException_Exception
     {
         Scanner sc = new Scanner(System.in);
         while (true) {
@@ -39,8 +50,8 @@ public class MainApp {
 
             switch (response) {
                 case 1:
-                    remoteLogin();
-                    menuMain();
+                    doRemoteLogin();
+                    doCheckIfPremium();
                     break;
                 case 2:
                     break;
@@ -51,25 +62,82 @@ public class MainApp {
         }
     }
     
-    public void remoteLogin(){
-        
+    public void doRemoteLogin() throws InvalidLoginCredentialException_Exception, CustomerNotFoundException_Exception{
+        Scanner sc = new Scanner(System.in);
+        String username;
+        String password = "";
+
+        System.out.println("\n*** Proxy Bidding cum Sniping Agent:: Login***\n");
+        username = doReadToken("username");
+        password = doReadToken("password");
+        if (username.length() > 0 && password.length() > 0) {
+            currentCustomer = remoteLogin(username, password);
+            System.out.println();
+            System.out.println("Login successful!\n");
+        }
     }
     
-    public void menuMain(){
+    private String doReadToken(String tokenName) {
+        Scanner sc = new Scanner(System.in);
+        System.out.printf("Enter your %s%n", tokenName);
+        System.out.print("> ");
+        String token = sc.next();
+        sc.nextLine();
+        return token;
+    }
+    
+    public void doCheckIfPremium() throws AuctionListingNotFoundException_Exception{
+        if(checkIfPremium(currentCustomer)){
+            menuMain();
+        }
+        else{
+            Scanner sc = new Scanner(System.in);
+            while (true) {
+                Integer response = 0;
+                System.out.println("1: Register as a premium customer");
+                System.out.println("2: Exit\n");
+
+                while (response < 1 || response > 2) {
+                    System.out.print("> ");
+                    try {
+                        response = Integer.valueOf(sc.nextLine().trim());
+                    } catch (Exception ex) {
+                        response = 0;
+                    }
+
+                    if (response < 1 || response > 2) {
+                        System.err.println("\nInvalid option, please try again!");
+                    }
+                }
+
+                switch (response) {
+                    case 1:
+                        doPremiumRegister();
+                        break;
+                    case 2:
+                        break;
+                }
+                if (response == 2) {
+                    break;
+                }
+            }
+        }
+    }
+    
+    public void menuMain() throws AuctionListingNotFoundException_Exception{
         Scanner sc = new Scanner(System.in);
 
         while (true) {
             Integer response = 0;
             System.out.println("\n*** Proxy Bidding cum Sniping Agent:: Main Menu ***\n");
-//            System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
-            System.out.println("1: Premium Registration");
-            System.out.println("2: Remote View Credit Balance");
-            System.out.println("3: Remote View An Auction Listing Details");
-            System.out.println("4: Remote Browse All Auction Listings");
-            System.out.println("5: Remote View Won Auction Listings");
-            System.out.println("6: Remote Logout\n");
+            System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
+            System.out.println("1: Remote View Credit Balance");
+            System.out.println("2: Remote View Auction Listing Details");
+            System.out.println("3: Remote Browse All Auction Listings");
+            System.out.println("4: Remote View Won Auction Listings");
+            System.out.println("5: Remote Logout\n");
 
-            while (response < 1 || response > 6) {
+            while (response < 1 || response > 5) {
                 System.out.print("> ");
                 try {
                     response = Integer.valueOf(sc.nextLine().trim());
@@ -77,51 +145,56 @@ public class MainApp {
                     response = 0;
                 }
 
-                if (response < 1 || response > 6) {
+                if (response < 1 || response > 5) {
                     System.err.println("\nInvalid option, please try again!");
                 }
             }
 
             switch (response) {
                 case 1:
-                    premiumRegister();
+                    doRemoteViewCreditBalance();
                     break;
                 case 2:
-                    remoteViewCreditBalance();
+                    doRemoteViewAuctionListingDetails();
                     break;
                 case 3:
-                    remoteViewAuctionListingDetails();
+                    doRemoteBrowseAllAuctionListings();
                     break;
                 case 4:
-                    remoteBrowseAllAuctionListing();
+                    doRemoteViewWonAuctionListings();
                     break;
                 case 5:
-                    remoteViewWonAuctionListing();
-                    break;
-                case 6:
-                    remoteLogout();
+                    doRemoteLogout();
             }
-            if (response == 6) {
-                remoteLogout();
+            if (response == 5) {
+                doRemoteLogout();
             }
         }
     }
     
-    public void premiumRegister(){
-        
+    public void doPremiumRegister() throws AuctionListingNotFoundException_Exception{
+        premiumRegistration(currentCustomer);
+        System.out.println("You have successfully registered as premium customer!");
+        menuMain();
     }
     
-    public void remoteLogout(){
-        
+    public void doRemoteLogout(){
+        remoteLogout(currentCustomer);
+        System.out.println("You have successfully logged out!");
     }
     
-    public void remoteViewCreditBalance(){
-        
+    public void doRemoteViewCreditBalance(){
+        BigDecimal creditBalance = remoteViewCreditBalance(currentCustomer);
+        DecimalFormat df = new DecimalFormat("0.00");
+        System.out.println("Your Credit balance is "+df.format(creditBalance.floatValue())+"\n");
     }
     
-    public void remoteViewAuctionListingDetails(){
+    public void doRemoteViewAuctionListingDetails() throws AuctionListingNotFoundException_Exception{
         Scanner sc = new Scanner(System.in);
-
+        System.out.println();
+        System.out.print("Enter AuctionListing ID> ");
+        Long auctionListingId = sc.nextLong();
+        AuctionListing al = remoteViewAuctionListingDetail(auctionListingId);
         while (true) {
             Integer response = 0;
             System.out.println("\n*** Proxy Bidding cum Sniping Agent:: View Auction Listing Detail ***\n");
@@ -144,10 +217,10 @@ public class MainApp {
 
             switch (response) {
                 case 1:
-                    configureProxyBidding();
+                    doConfigureProxyBidding(al);
                     break;
                 case 2:
-                    configureSniping();
+                    doConfigureSniping(al);
                     break;
                 case 3:
                     break;
@@ -158,19 +231,68 @@ public class MainApp {
         }
     }
     
-    public void configureProxyBidding(){
-        
+    public void doConfigureProxyBidding(AuctionListing al){
+        System.out.println("You have successfully configured proxy bidding for auction listing!");
     }
     
-    public void configureSniping(){
-        
+    public void doConfigureSniping(AuctionListing al){
+        System.out.println("You have successfully configured sniping for auction listing!");
     }
     
-    public void remoteBrowseAllAuctionListing(){
-        
+    public void doRemoteBrowseAllAuctionListings(){
+        remoteBrowseAllAuctionListings();
     }
     
-    public void remoteViewWonAuctionListing(){
-        
+    public void doRemoteViewWonAuctionListings(){
+        remoteViewWonAuctionListings(currentCustomer);
     }
+
+    private static ws.client.Customer remoteLogin(java.lang.String username, java.lang.String password) throws InvalidLoginCredentialException_Exception, CustomerNotFoundException_Exception {
+        ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
+        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
+        return port.remoteLogin(username, password);
+    }
+
+    private static ws.client.Customer remoteLogout(ws.client.Customer customer) {
+        ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
+        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
+        return port.remoteLogout(customer);
+    }
+
+    private static BigDecimal remoteViewCreditBalance(ws.client.Customer customer) {
+        ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
+        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
+        return port.remoteViewCreditBalance(customer);
+    }
+
+    private static ws.client.AuctionListing remoteViewAuctionListingDetail(Long auctionListingId) throws AuctionListingNotFoundException_Exception {
+        ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
+        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
+        return port.remoteViewAuctionListingDetail(auctionListingId);
+    }
+
+    private static boolean checkIfPremium(ws.client.Customer customer) {
+        ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
+        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
+        return port.checkIfPremium(customer);
+    }
+
+    private static void premiumRegistration(ws.client.Customer customer) {
+        ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
+        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
+        port.premiumRegistration(customer);
+    }
+
+    private static void remoteBrowseAllAuctionListings() {
+        ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
+        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
+        port.remoteBrowseAllAuctionListings();
+    }
+
+    private static void remoteViewWonAuctionListings(ws.client.Customer customer) {
+        ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
+        ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
+        port.remoteViewWonAuctionListings(customer);
+    }
+    
 }

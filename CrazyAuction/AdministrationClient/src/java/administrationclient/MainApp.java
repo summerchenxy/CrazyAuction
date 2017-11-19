@@ -5,7 +5,6 @@
  */
 package administrationclient;
 
-import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.CreditPackageControllerRemote;
 import ejb.session.stateless.EmployeeControllerRemote;
 import entity.Employee;
@@ -17,6 +16,7 @@ import static util.enumeration.AccessRightEnum.FINANCE;
 import static util.enumeration.AccessRightEnum.SALES;
 import util.exception.InvalidAccessRightException;
 import util.exception.InvalidLoginCredentialException;
+import ejb.session.stateless.AuctionListingControllerRemote;
 
 /**
  *
