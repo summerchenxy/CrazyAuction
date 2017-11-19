@@ -22,6 +22,7 @@ import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import ejb.session.stateless.CustomerControllerLocal;
 import ejb.session.stateless.AuctionListingControllerLocal;
+import static util.enumeration.AuctionStatus.OPENED;
 
 /**
  *
@@ -165,5 +166,22 @@ public class CrazyAuctionWebService {
             smallestIncrement = 100.00;
         }
         return smallestIncrement;
+    }
+    @WebMethod(operationName = "proxyBidding")
+    public void proxyBidding(@WebParam(name = "auctionListing") AuctionListing al,
+                                        @WebParam(name = "maxAmount") BigDecimal maxAmount) 
+    {   
+        BigDecimal highestBid = new BigDecimal(0);
+        System.out.println("********** AuctionListingWebService.proxyBidding(): " );
+        if (al.getStatus().equals(OPENED)){
+            highestBid = al.getWinningBidValue();
+        }
+    }
+    @WebMethod(operationName = "placeBid")
+    public void placeBid(@WebParam(name = "auctionListing") AuctionListing al,
+                                        @WebParam(name = "maxAmount") BigDecimal maxAmount) 
+    {   
+        System.out.println("********** AuctionListingWebService.placeBid(): " );
+        
     }
 }

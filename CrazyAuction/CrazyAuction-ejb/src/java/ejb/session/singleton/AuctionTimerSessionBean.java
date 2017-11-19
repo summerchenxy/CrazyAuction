@@ -6,6 +6,9 @@
 package ejb.session.singleton;
 
 import ejb.session.stateless.AuctionListingControllerLocal;
+import ejb.session.ws.CrazyAuctionWebService;
+import entity.AuctionListing;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -26,6 +29,8 @@ public class AuctionTimerSessionBean {
 
     @EJB
     private AuctionListingControllerLocal auctionListingControllerLocal;
+    @EJB 
+    private CrazyAuctionWebService crazyAuctionWebService;
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
@@ -44,5 +49,16 @@ public class AuctionTimerSessionBean {
         System.out.println("Activate Auction Timer event "+new Date());
         auctionListingControllerLocal.closeAuction();
     }
-    
+    @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
+    public void automaticProxyBidding()
+    {
+        System.out.println("Proxy Bidding Place Bid event "+new Date());
+        //crazyAuctionWebService.proxyBidding(AuctionListing al, BigDecimal maxAmount);
+    }
+    @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
+    public void automaticSniping()
+    {
+        System.out.println("Sniping Place Bid event "+new Date());
+        //crazyAuctionWebService.sniping();
+    }
 }

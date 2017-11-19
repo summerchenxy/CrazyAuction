@@ -110,7 +110,7 @@ public class FinanceOperationModule {
         //newCreditPackage.setCreditTransactions(new ArrayList<CreditTransaction>());
         //System.out.println(newCreditPackage.getCreditTransactions().size());
         newCreditPackage.setEnabled(Boolean.TRUE);//assume that credit package is by default enabled when it is created
-
+        creditPackageControllerRemote.getTransactionsNum(newCreditPackage);
         newCreditPackage = creditPackageControllerRemote.createCreditPackage(newCreditPackage);
         System.out.println("New creditPackagecreated successfully!: ID " + newCreditPackage.getCreditPackageId() + "\n");
     }
