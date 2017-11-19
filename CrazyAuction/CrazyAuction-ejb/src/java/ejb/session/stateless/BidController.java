@@ -31,19 +31,18 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
     @PersistenceContext(unitName = "CrazyAuction-ejbPU")
     private EntityManager em;
 
-
     @Override
-    public Bid createNewBid(Bid bid)
-    {
+    public Bid createNewBid(Bid bid) {
+
+        em.persist(bid.getCreditTransaction());
         em.persist(bid);
         em.flush();
         em.refresh(bid);
         return bid;
     }
-    
-        
+
     @Override
-    public void refundToCustomer(Bid bid){
+    public void refundToCustomer(Bid bid) {
         BigDecimal creditValue = bid.getCreditValue();
         Customer customer = bid.getCreditTransaction().getPurchasingCustomer();
         customer.addCreditBalance(creditValue);
@@ -51,34 +50,26 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
         em.merge(bid);
         em.merge(customer);
     }
-    
+
     @Override
-     public Bid retrieveBidByBidId(Long bidId) throws BidNotFoundException
-    {
+    public Bid retrieveBidByBidId(Long bidId) throws BidNotFoundException {
         Bid bid = em.find(Bid.class, bidId);
-        
-        if(bidId != null)
-        {
+
+        if (bidId != null) {
             return bid;
-        }
-        else
-        {
+        } else {
             throw new BidNotFoundException("Bid ID " + bidId + " does not exist!");
         }
     }
-     
+
     @Override
-    public Bid retrieveBidByCreditValue(BigDecimal creditValue) throws BidNotFoundException
-    {
+    public Bid retrieveBidByCreditValue(BigDecimal creditValue) throws BidNotFoundException {
         Query query = em.createQuery("SELECT s FROM Bid s WHERE s.creditValue = :inCreditValue");
         query.setParameter("inCreditValue", creditValue);
-        
-        try
-        {
-            return (Bid)query.getSingleResult();
-        }
-        catch(NoResultException | NonUniqueResultException ex)
-        {
+
+        try {
+            return (Bid) query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
             throw new BidNotFoundException("Bid of credit value " + creditValue.toString() + " does not exist!");
         }
     }

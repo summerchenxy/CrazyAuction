@@ -113,7 +113,6 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
 
         if (auctionListingId != null) {
-            System.out.print("test1");
             auctionListing.getBidList().size();
             System.out.print(auctionListing.getBidList().size());
             return auctionListing;

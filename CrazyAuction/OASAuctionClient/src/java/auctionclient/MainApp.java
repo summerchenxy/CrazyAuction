@@ -35,6 +35,7 @@ import util.exception.AuctionListingNotFoundException;
 import util.exception.CustomerInsufficientCreditBalance;
 import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.CustomerControllerRemote;
+import util.exception.AuctionListingNotFound;
 
 /**
  *
@@ -440,6 +441,7 @@ class MainApp {
                     try {
                         menusAuctionAndBid();
                     } catch (CustomerInsufficientCreditBalance ex) {
+                        System.out.println(ex.getMessage());
                     }
                 } else if (response == 4) {
                     menuCredit();
@@ -667,9 +669,7 @@ class MainApp {
             System.out.println("\n*** Auction Client :: Auction&Bid Menu***\n");
             System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             System.out.println("1. view all auction listings");//browse -> for details
-            System.out.println("2. place new bid");//browser -> for place bidding
-            System.out.println("3. Browse won auction listing(s)");//browser -> for place bidding
-            System.out.println("4: exit to main menu\n");
+            System.out.println("2: back\n");
             response = 0;
             //Summer: add "view acution listing" and only show place new bid and refresh auction listing in the view method instead of here
             while (response < 1 || response > 4) {
@@ -678,78 +678,29 @@ class MainApp {
                 if (response == 1) {
                     viewAllAuctionListings();
                 } else if (response == 2) {
-                    placeNewBid();
-                } else if (response == 3) {
-                    Boolean delete = true;
-                    viewAllAddresses();
-                } else if (response == 4) {
-                    viewCustomerWonAuctionListing();
-                } else if (response == 5) {
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
-            if (response == 4) {
+            if (response == 2) {
                 break;
             }
         }
     }
 
 //display a glossary for all active listings. prompt to view details or refresh
-    private void viewAllAuctionListings() {
+    private void viewAllAuctionListings() throws CustomerInsufficientCreditBalance {
         Scanner sc = new Scanner(System.in);
         System.out.println("\n*** Auction Client :: Auction&Bid Menu :: View Auction Listing ***\n");
 
-        viewActiveAuctionListingSimple(); //only display active ones
-        AuctionListing al = null;
-        System.out.println("enter the auction listing ID to display details, or R to refresh.");
-        while (al == null) {
-            String token = sc.nextLine().trim();
-            if (token.equalsIgnoreCase("r")) {
-                viewAllAuctionListings();
-            } else {
-                try {
-                    Long alId = Long.valueOf(token);
-                    al = auctionListingController.retrieveAuctionListingByAuctionListingId(alId);
-                    viewAnAuctionListing(al);
-                } catch (AuctionListingNotFoundException ex) {
-                    System.out.println("An error has occurred while retrieving auctionListing: " + ex.getMessage() + "\n");
-                }
-            }
-        }
-
-    }
-
-    private void viewAnAuctionListing(AuctionListing al) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println();
-        System.out.println("Auction Listing ID: " + al.getAuctionListingId());
-        System.out.println("Start Date: " + al.getStartDateTime());
-        System.out.println("End Date: " + al.getEndDateTime());
-        System.out.println("Reserve Price: " + al.getReservePrice());
-        List<Bid> bids = al.getBidList();
-        BigDecimal highestBid = new BigDecimal(0);
-        for (Bid b : bids) {
-            if (b.getCreditValue().compareTo(highestBid) == 1) {
-                highestBid = b.getCreditValue();
-            }
-        }
-        DecimalFormat df = new DecimalFormat("0.00");
-        System.out.println("Current Highest Bid: " + df.format(highestBid.floatValue()));
-//        may display current smallest increment here
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
-    }
-
-    //display all active listing as a grossry
-    private void viewActiveAuctionListingSimple() {
         List<AuctionListing> allAuctionListings = auctionListingController.retrieveOpenedAuctions();
         System.out.printf("%8s%30s%20s\n", "ID", "End Date Time", "Current Bid");
         for (AuctionListing auctionListing : allAuctionListings) {
             BigDecimal highestBid = null;
             //assign non-null current highest bid 
             if (auctionListing.getBidList() != null && auctionListing.getBidList().size() != 0) {
+                highestBid = new BigDecimal(0);
                 List<Bid> bids = auctionListing.getBidList();
                 for (Bid b : bids) {
                     if (b.getCreditValue().compareTo(highestBid) == 1) {
@@ -766,29 +717,109 @@ class MainApp {
             System.out.printf("%8s%30s%20s\n",
                     auctionListing.getAuctionListingId().toString(), auctionListing.getEndDateTime().toString(), highestBidString);
         }
-        System.out.println();
-    }
+        //sub meu
+        Integer response = 0;
+        while (true) {
+            System.out.println("1: view detail");
+            System.out.println("2: refresh");
+            System.out.println("3: place new bid");
+            System.out.println("4: back");
+            response = 0;
 
-    private void placeNewBid() throws CustomerInsufficientCreditBalance {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("\n*** Auction Client :: Auction&Bid Menu :: View Auction Listing ***\n");
+            while (response < 1 || response > 4) {
+                System.out.print("> ");
+                response = sc.nextInt();
+                if (response == 1) { //view details
+                    Long auctionListingId = null;
+                    AuctionListing auctionListing = null;
+                    while (auctionListingId == null) {
 
-        viewActiveAuctionListingSimple(); //only display active ones
-        AuctionListing al = null;
-        System.out.println("enter the auction listing ID to display details, or R to refresh.");
-        while (al == null) {
-            String token = sc.nextLine().trim();
-            if (token.equalsIgnoreCase("r")) {
-                viewAllAuctionListings();
-            } else {
-                try {
-                    Long alId = Long.valueOf(token);
-                    al = auctionListingController.retrieveAuctionListingByAuctionListingId(alId);
-                    doPlaceBid(al);
-                } catch (AuctionListingNotFoundException ex) {
+                        try {
+                            auctionListingId = Long.valueOf(doReadToken("auction listing ID"));
+                            try {
+                                auctionListing = auctionListingController.retrieveAuctionListingByAuctionListingId(auctionListingId);
+                            } catch (AuctionListingNotFoundException ex) {
+                                System.err.println("invalid auction listing ID");
+                            }
+                        } catch (Exception ex) {
+                            System.err.println("invalid input. Please try again");
+                        }
+                        //verify if the address belongs to the current user
+                        if (auctionListing.getStatus() == AuctionStatus.OPENED) {
+                            viewAnAuctionListing(auctionListingId);
+                        } else {
+                            System.err.println("Invalid address ID");
+                        }
+                        return;
+                    }
+                } else if (response == 2) {
+                    viewAllAuctionListings();
+                } else if (response == 3) {
+                    AuctionListing auctionListing = null;
+                    Long auctionListingId = Long.valueOf(doReadToken("auction listing ID"));
+                    try {
+                        auctionListing = auctionListingController.retrieveAuctionListingByAuctionListingId(auctionListingId);
+                    } catch (AuctionListingNotFoundException ex) {
+                        System.err.println("invalid auction listing ID");
+                    }
+                    //verify if the address belongs to the current user
+                    if (auctionListing.getStatus() == AuctionStatus.OPENED) {
+                        placeNewBid(auctionListingId);
+                    } else {
+                        System.err.println("Invalid address ID");
+                    }
+                    return;
+                } else if (response == 4) {
+                    return;
+                } else {
+                    System.out.println("Invalid option, please try again!\n");
                 }
             }
+            if (response == 2) {
+                break;
+            }
         }
+    }
+
+    private void viewAnAuctionListing(Long auctionListingId) {
+        AuctionListing al;
+        try {
+            al = auctionListingController.retrieveAuctionListingByAuctionListingId(auctionListingId);
+            Scanner scanner = new Scanner(System.in);
+            System.out.println();
+            System.out.println("Auction Listing ID: " + al.getAuctionListingId());
+            System.out.println("Start Date: " + al.getStartDateTime());
+            System.out.println("End Date: " + al.getEndDateTime());
+            System.out.println("Reserve Price: " + al.getReservePrice());
+            List<Bid> bids = al.getBidList();
+            BigDecimal highestBid = new BigDecimal(0);
+            for (Bid b : bids) {
+                if (b.getCreditValue().compareTo(highestBid) == 1) {
+                    highestBid = b.getCreditValue();
+                }
+            }
+            DecimalFormat df = new DecimalFormat("0.00");
+            System.out.println("Current Highest Bid: " + df.format(highestBid.floatValue()));
+//        may display current smallest increment here
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
+        } catch (AuctionListingNotFoundException ex) {
+            //won't reach here
+        }
+
+    }
+
+    private void placeNewBid(Long auctionListingId) throws CustomerInsufficientCreditBalance {
+        AuctionListing al = null;
+        try {
+            al = auctionListingController.retrieveAuctionListingByAuctionListingId(auctionListingId);
+            System.out.println();
+            doPlaceBid(al);
+            //may display current smallest increment here
+        } catch (AuctionListingNotFoundException ex) {
+            //won't reach here
+        }
+
     }
 
     private void doPlaceBid(AuctionListing al) throws CustomerInsufficientCreditBalance {
@@ -807,56 +838,65 @@ class MainApp {
         System.out.println("Current Highest Bid: " + df.format(highestBid.floatValue()));
         double minIncrement = getSmallestIncrementWithCurrentBid(highestBid);
         BigDecimal minNewBid = highestBid.add(new BigDecimal(minIncrement));
-        System.out.println("You need to bid as least" + df.format(minNewBid) + " credit(s).");
+        System.out.println("You need to bid as least " + df.format(minNewBid) + " credit(s).");
         //to enter new bid amount
         System.out.println("enter your bid with maximum 2 decimal place: ");
 
         BigDecimal bidAmount = new BigDecimal(0);
         while (bidAmount.compareTo(new BigDecimal(.05)) < 0) {
             System.out.print("> ");
-            bidAmount = new BigDecimal(scanner.nextDouble());
+            bidAmount = new BigDecimal(Double.valueOf(scanner.nextLine().trim()));
             //validate for min new bid . promote for reenter 
             if (bidAmount.compareTo(minNewBid) < 0) {
                 bidAmount = new BigDecimal(0);
                 System.out.println("Your bid must exceed" + df.format(minNewBid));
-                continue;
+//                continue;
+
             }
             //validate for enough bal. throw exception
-            if (bidAmount.compareTo(currentCustomer.getCreditBalance()) < 0) {
+            if (bidAmount.compareTo(currentCustomer.getCreditBalance()) > 0) {
+
                 throw new CustomerInsufficientCreditBalance("Please ensure you have enough credit balance");
             }
         }
-        viewAllAddresses();
 
-        System.out.println("Please enter the address index number for shipping purposes");
-        int indexOfAddressToShip = 0;
-        boolean firstAttempt = true;
-        while (indexOfAddressToShip < 0 || indexOfAddressToShip >= currentCustomer.getAddresses().size()) {
-            if (!firstAttempt) {
-                System.err.print("Invalid address index number. Please try again");
-            }
-            System.out.print("> ");
-            indexOfAddressToShip = scanner.nextInt() - 1; //adjust for 0-based indice
-            scanner.nextLine();
+        System.out.println("Please enter an address ID for shipping purposes");
+        Address address = null;
+        Long addressId = Long.valueOf(doReadToken("address ID"));
+        try {
+            address = addressController.retrieveAddressById(addressId);
+        } catch (AddressNotFoundException ex) {
+            //System.out.println("test1");
+            System.err.println("invalid address ID");
+            return;
         }
-        Address address = currentCustomer.getAddresses().get(indexOfAddressToShip);
-        Bid newBid = new Bid(bidAmount, address);
-        //record credit transaction
-        CreditTransaction ct = new CreditTransaction();
-        ct.setTransactionDateTime(new Date());
-        ct.setPurchasingCustomer(currentCustomer);
-        ct.setType(TransactionTypeEnum.DEBIT);
-        ct.setBid(newBid);
-        creditTransactionController.createNewCreditTransaction(ct);
+        //verify if the address belongs to the current user
+        if (address.getCustomer().getCustomerId().equals(currentCustomer.getCustomerId())) {
+            Bid newBid = new Bid(bidAmount, address);
+            newBid.setAuctionListing(al);
+            al.getBidList().add(newBid);
+            auctionListingController.updateAuctionListing(al);
+            //record credit transaction
+            CreditTransaction ct = new CreditTransaction();
+            ct.setTransactionDateTime(new Date());
+            ct.setPurchasingCustomer(currentCustomer);
+            ct.setType(TransactionTypeEnum.DEBIT);
+            ct.setBid(newBid);
+            //associate transaction to bid
+            newBid.setCreditTransaction(ct);
+            bidController.createNewBid(newBid);
+//            creditTransactionController.createNewCreditTransaction(ct);
 
-        //associate transaction to bid
-        newBid.setCreditTransaction(ct);
-        bidController.createNewBid(newBid);
-        //associate transaction to customer
-        currentCustomer.getCreditTransactionHistory().add(ct);
-        customerController.updateCustomer(currentCustomer);
-
-        System.out.println("you have successfully bid fot the item!");
+            //associate transaction to customer
+            currentCustomer.getCreditTransactionHistory().add(ct);
+            //subtract credit balance 
+            currentCustomer.setCreditBalance(currentCustomer.getCreditBalance().subtract(newBid.getCreditValue()));
+            customerController.updateCustomer(currentCustomer);
+            System.out.println("you have successfully bid fot the item!");
+        } else {
+            //System.out.println("test2");
+            System.err.println("Invalid address ID");
+        }
     }
 
     //validate input (smallest amount placeable, smallest increment, must be higher than current highest bid)

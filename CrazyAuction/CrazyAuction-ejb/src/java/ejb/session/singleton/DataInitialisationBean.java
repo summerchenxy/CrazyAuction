@@ -25,6 +25,7 @@ import javax.persistence.PersistenceContext;
 import static util.enumeration.AccessRightEnum.ADMIN;
 import static util.enumeration.AccessRightEnum.FINANCE;
 import static util.enumeration.AccessRightEnum.SALES;
+import util.enumeration.AuctionStatus;
 
 /**
  *
@@ -90,14 +91,17 @@ public class DataInitialisationBean {
             auctionListing = new AuctionListing(new BigDecimal(10), format.parse("2000.01.01.00.01"),
                     format.parse("2020.01.01.00.01"), "testAL1",
                     new BigDecimal(5));
+            auctionListing.setStatus(AuctionStatus.OPENED);
             em.persist(auctionListing);
             auctionListing = new AuctionListing(new BigDecimal(20), format.parse("2000.01.01.00.01"),
                     format.parse("2020.01.01.00.01"), "testAL2",
                     new BigDecimal(10));
+            auctionListing.setStatus(AuctionStatus.OPENED);
             em.persist(auctionListing);
             auctionListing = new AuctionListing(new BigDecimal(50), format.parse("2000.01.01.00.01"),
                     format.parse("2020.01.01.00.01"), "testAL3",
                     new BigDecimal(0));
+            auctionListing.setStatus(AuctionStatus.OPENED);
             em.persist(auctionListing);
         } catch (ParseException ex) {
         }

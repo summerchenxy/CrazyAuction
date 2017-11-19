@@ -31,7 +31,7 @@ public class Bid implements Serializable {
     private Long bidId;
     private BigDecimal creditValue;
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true)
     private Address address; 
     @ManyToOne
     @JoinColumn(nullable = false)
