@@ -27,7 +27,10 @@ import util.exception.CreditPackageNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import util.enumeration.AuctionStatus;
+import util.exception.AddressNotFoundException;
 import util.exception.AuctionListingNotFoundException;
 import util.exception.CustomerInsufficientCreditBalance;
 import ejb.session.stateless.AuctionListingControllerRemote;
@@ -121,30 +124,38 @@ class MainApp {
         customer.setUsername(doReadUsername());
         System.out.println();
         customerController.createNewCustomer(customer);
-        System.out.printf("You have registered successfully, %s %s.%nPlease use %s to login",
+        System.out.printf("You have registered successfully, %s %s.\nPlease use %s to login",
                 customer.getFirstName(), customer.getLastName(), customer.getUsername());
 
     }
 
-    private Address doReadAddress(int i, int numberOfAddress, Customer newCustomer) {
+    private Address doReadAddress(int curr, int numberOfAddress, Customer newCustomer) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("enter the 1st line of your address (" + (++i) + " of " + numberOfAddress + "):");
+        System.out.println("enter the 1st line of your address (" + (curr) + " of " + numberOfAddress + "):");
         System.out.print("> ");
         String lineOne = sc.nextLine().trim();
         while (lineOne.length() > 32) {
-            System.err.println("\nenter the 1st line of your address (" + (++i) + " of " + numberOfAddress + ", maximum 32 characters):");
+            System.err.println("enter the 1st line of your address (" + (curr) + " of " + numberOfAddress + ", maximum 32 characters):");
             System.out.print("> ");
             lineOne = sc.nextLine().trim();
         }
-        System.out.println("enter the 2nd line of your address (" + (++i) + " of " + numberOfAddress + "):");
+        System.out.println("enter the 2nd line of your address (" + (curr) + " of " + numberOfAddress + "):");
         System.out.print("> ");
         String lineTwo = sc.nextLine().trim();
         while (lineTwo.length() > 32) {
             System.out.print("> ");
-            System.err.println("\nenter the 2nd line of your address (" + (++i) + " of " + numberOfAddress + ", maximum 32 characters):");
+            System.err.println("enter the 2nd line of your address (" + (curr) + " of " + numberOfAddress + "): ");
             lineOne = sc.nextLine().trim();
         }
-        return (new Address(lineOne, lineOne, newCustomer));
+        System.out.println("enter zipcode (" + (curr) + " of " + numberOfAddress + "):");
+        System.out.print("> ");
+        String zipcode = sc.nextLine().trim();
+        while (zipcode.length() != 6) {
+            System.out.print("> ");
+            System.err.println("enter zipcode (" + (curr) + " of " + numberOfAddress + ", 6 digits):");
+            zipcode = sc.nextLine().trim();
+        }
+        return (new Address(lineOne, lineTwo, zipcode, newCustomer));
     }
 
     private String doReadFirstName() {
@@ -234,7 +245,7 @@ class MainApp {
             }
         }
         for (int i = 0; i < numberOfAddress; i++) {
-            Address address = doReadAddress(i, numberOfAddress, null);
+            Address address = doReadAddress(i + 1, numberOfAddress, null);
         }
 
         return addresses;
@@ -294,41 +305,82 @@ class MainApp {
         return username1;
     }
 
-    private void viewAllAddresses(Boolean delete) {
+    private void viewAllAddresses() {
         Scanner sc = new Scanner(System.in);
-        if (Thread.currentThread().getStackTrace()[1].getMethodName().equals("uAddress")) {
-            System.out.println("\n*** Auction Client :: View All Addresses ***\n");
-        }
 
+        System.out.println("\n*** Auction Client :: View All Addresses ***\n");
+
+        //display
+        System.out.printf("%8s%15s\n", "ID", "Zipcode");
         List<Address> addresses = currentCustomer.getAddresses();
-        int AddressIndex = 0;
+
+//        System.out.println("test");
+//        System.out.println(addresses.size());
         for (Address address : addresses) {
-            System.out.printf("%4d%35s%n%4s%35s%n", ++AddressIndex, address.getLineOne(), "", address.getLineTwo());
+            System.out.printf("%8d%15s\n", address.getAddressId(), address.getZipCode());
         }
-        if (!Thread.currentThread().getStackTrace()[1].getMethodName().equals("menuAddress")) {
-            return;
-        }
-        if (!delete) {
-            System.out.print("Press any key to continue...> ");
-            sc.nextLine();
-            return;
-        }
-        System.out.println("Please enter the address index number that you would like to delete:");
-        int indexOfAddressToDelete = 0;
-        boolean firstAttempt = true;
-        while (indexOfAddressToDelete < 0 || indexOfAddressToDelete >= currentCustomer.getAddresses().size()) {
-            if (!firstAttempt) {
-                System.err.print("Invalid address index number. Please try again");
+        System.out.println("(end of list)");
+        //sub menu
+        Integer response = 0;
+        while (true) {
+            System.out.println("1: view address detail");
+            System.out.println("2: back");
+            response = 0;
+
+            while (response < 1 || response > 2) {
+                System.out.print("> ");
+                response = sc.nextInt();
+                if (response == 1) { //view details
+                    Address address = null;
+                    Long addressId = Long.valueOf(doReadToken("address ID"));
+                    try {
+                        address = addressController.retrieveAddressById(addressId);
+                    } catch (AddressNotFoundException ex) {
+//                        System.out.println("test1");
+                        System.err.println("invalid address ID");
+                    }
+                    //verify if the address belongs to the current user
+                    if (address.getCustomer().getCustomerId().equals(currentCustomer.getCustomerId())) {
+                        viewAddressDetails(addressId);
+                    } else {
+//                        System.out.println("test2");
+                        System.err.println("Invalid address ID");
+                    }
+                    return;
+                } else if (response == 2) {
+                    break;
+                } else {
+                    System.out.println("Invalid option, please try again!\n");
+                }
             }
-            System.out.print("> ");
-            indexOfAddressToDelete = sc.nextInt() - 1; //adjust for 0-based indice
-            sc.nextLine();
+            if (response == 2) {
+                break;
+            }
+//            sc.nextLine();
+//            Address toDelete = null;
+//            System.out.println("Please enter the address ID that you would like to delete:");
+//            Long addressIdToDelete = null;
+//            System.out.print("> ");
+//            addressIdToDelete = Long.valueOf(sc.nextLine().trim()); //adjust for 0-based indice
+//            try {
+//                toDelete = addressController.retrieveAddressById(addressIdToDelete);
+//            } catch (AddressNotFoundException ex) {
+//                System.out.println("Invalid address ID.");
+//                return; //assuming the customer no longer want to delete address
+//            }
+//            if (toDelete.getIsAssociatedWithWinningBid()) {
+//                toDelete.setEnabled((false)); //one wining bid is associated with this address. peudo-delete
+//            } else {
+//                try {
+//                    addressController.deleteAddress(addressIdToDelete); //no winning bid is associated with this address. delete
+//                } catch (AddressNotFoundException ex) { //pre-checked. will not reach this statement
+//                }
+//            }
+//            customerController.updateCustomer(currentCustomer);
+//            System.out.println("The address has been successfully deleted");
+//            System.out.print("Press any key to continue...> ");
+//            sc.nextLine();
         }
-        currentCustomer.getAddresses().remove(indexOfAddressToDelete);
-        customerController.updateCustomer(currentCustomer);
-        System.out.println("The address has been successfully deleted");
-        System.out.print("Press any key to continue...> ");
-        sc.nextLine();
     }
 
     private void doLogin() throws InvalidLoginCredentialException {
@@ -339,12 +391,14 @@ class MainApp {
         System.out.println("\n*** Auction Client :: Login***\n");
         username = doReadToken("username");
         password = doReadToken("password");
+
         if (username.length() > 0 && password.length() > 0) {
             try {
                 currentCustomer = customerController.doLogin(username, password);
                 System.out.println();
                 System.out.println("Login successful!\n");
             } catch (InvalidLoginCredentialException ex) {
+                System.out.println("");
                 System.out.println("Invalid login credential: " + ex.getMessage() + "\n");
                 throw new InvalidLoginCredentialException();
             }
@@ -355,7 +409,7 @@ class MainApp {
 
     private String doReadToken(String tokenName) {
         Scanner sc = new Scanner(System.in);
-        System.out.printf("Enter your %s%n", tokenName);
+        System.out.printf("Enter your %s\n", tokenName);
         System.out.print("> ");
         String token = sc.next();
         sc.nextLine();
@@ -442,16 +496,16 @@ class MainApp {
         if (Thread.currentThread().getStackTrace()[1].getMethodName().equals("doUpdateProfile")) {
             System.out.println("\n*** Auction Client :: Profile Menu:: View Profile***\n");
         }
-        System.out.printf("first name: %s%n", currentCustomer.getFirstName());
-        System.out.printf("last name: %s%n", currentCustomer.getLastName());
-        System.out.printf("identification number: %s%n", currentCustomer.getIdentificationNumber());
-        System.out.printf("username: %s%n", currentCustomer.getUsername());
-        System.out.printf("credit balance: %s%n", currentCustomer.getCreditBalance());
-        System.out.printf("password: %s%n", currentCustomer.getPassword());
+        System.out.printf("first name: %s\n", currentCustomer.getFirstName());
+        System.out.printf("last name: %s\n", currentCustomer.getLastName());
+        System.out.printf("identification number: %s\n", currentCustomer.getIdentificationNumber());
+        System.out.printf("username: %s\n", currentCustomer.getUsername());
+        System.out.printf("credit balance: %s\n", currentCustomer.getCreditBalance());
+        System.out.printf("password: %s\n", currentCustomer.getPassword());
         if (Thread.currentThread().getStackTrace()[2].getMethodName().equals("doUpdateProfile")) {
 //            System.out.println("called by doupdateprofile");
         } else {
-            System.out.printf("enter any key to continue...%n");
+            System.out.printf("enter any key to continue...\n");
             System.out.print("> ");
             scanner.nextLine();
         }
@@ -506,32 +560,29 @@ class MainApp {
             System.out.println("\n*** Auction Client :: Address Menu***\n");
             System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             //Summer: sequence of use cases. add update Address.
-            System.out.println("1. view all address(es)");
-            System.out.println("2. add address(es)");
-            System.out.println("3. disable an address");//Summer: should be included in view address details instead of show up directly
-            System.out.println("4: exit to main menu\n");
+            System.out.println("1. view all addresses");
+            System.out.println("2. add address");
+            System.out.println("3: back\n");
             response = 0;
 
             while (response < 1 || response > 4) {
                 System.out.print("> ");
                 response = sc.nextInt();
                 if (response == 1) {
-                    Boolean delete = false;
-                    viewAllAddresses((delete));
+                    viewAllAddresses();
                 } else if (response == 2) {
-                    List<Address> addresses = doReadAddresses();
-                    currentCustomer.setAddresses(addresses);
+                    Address address = doReadAddress(1, 1, currentCustomer);
+                    currentCustomer.getAddresses().add(addressController.createNewAddress(address));
                     customerController.updateCustomer(currentCustomer);
+                    System.out.println("");
+                    System.out.println("New address successfully added!");
                 } else if (response == 3) {
-                    Boolean delete = true;
-                    viewAllAddresses(delete);
-                } else if (response == 4) {
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
-            if (response == 4) {
+            if (response == 3) {
                 break;
             }
         }
@@ -544,9 +595,7 @@ class MainApp {
             System.out.println("\n*** Auction Client :: Credit Menu***\n");
             System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             System.out.println("1. purchase new credit package");
-            //System.out.println("2. add credit package(s)");
-            //System.out.println("3. disable a credit package");
-            System.out.println("4: exit to main menu\n");
+            System.out.println("2: back\n");
             response = 0;
 
             while (response < 1 || response > 4) {
@@ -560,7 +609,7 @@ class MainApp {
                     customerController.updateCustomer(currentCustomer);
                 } else if (response == 3) {
                     Boolean delete = true;
-                    viewAllAddresses(delete);
+//                    viewAllAddresses(delete);
                 } else if (response == 4) {
                     break;
                 } else {
@@ -632,7 +681,7 @@ class MainApp {
                     placeNewBid();
                 } else if (response == 3) {
                     Boolean delete = true;
-                    viewAllAddresses(delete);
+                    viewAllAddresses();
                 } else if (response == 4) {
                     viewCustomerWonAuctionListing();
                 } else if (response == 5) {
@@ -694,7 +743,7 @@ class MainApp {
     //display all active listing as a grossry
     private void viewActiveAuctionListingSimple() {
         List<AuctionListing> allAuctionListings = auctionListingController.retrieveAllAuctionListings();
-        System.out.printf("%8s%20s%20s%35s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Description", "Reserve Price", "Current Bid");
+        System.out.printf("%8s%20s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Current Bid");
 
         for (AuctionListing auctionListing : allAuctionListings) {
             if (auctionListing.getStatus() == AuctionStatus.OPENED) {
@@ -706,9 +755,9 @@ class MainApp {
                     }
                 }
                 DecimalFormat df = new DecimalFormat("0.00");
-                System.out.printf("%8s%20s%20s%35s%20s%20s\n",
+                System.out.printf("%8s%20s%20s%20s\n",
                         auctionListing.getAuctionListingId().toString(), auctionListing.getStartingBidAmount().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
-                        auctionListing.getDescription(), auctionListing.getReservePrice().toString(), df.format(highestBid.floatValue()));
+                        df.format(highestBid.floatValue()));
             }
         }
         System.out.println();
@@ -773,8 +822,7 @@ class MainApp {
                 throw new CustomerInsufficientCreditBalance("Please ensure you have enough credit balance");
             }
         }
-        Boolean delete = false;
-        viewAllAddresses(delete);
+        viewAllAddresses();
 
         System.out.println("Please enter the address index number for shipping purposes");
         int indexOfAddressToShip = 0;
@@ -856,4 +904,53 @@ class MainApp {
     }
     //Summer: include select delivery address in the browse won auction listing method
 
+    private void viewAddressDetails(Long addressId) {
+
+        Scanner sc = new Scanner(System.in);
+        Address address = null;
+        try {
+            address = addressController.retrieveAddressById(addressId);
+
+            //display
+            System.out.printf("Address ID: %s\n", address.getAddressId());
+            System.out.printf("Address Line 1: %s\n", address.getLineOne());
+            System.out.printf("Address Line 2: %s\n", address.getLineTwo());
+            System.out.printf("Zipcode: %s\n", address.getZipCode());
+            //sub meu
+            Integer response = 0;
+            while (true) {
+                System.out.println("1: update");
+                System.out.println("2: delete");
+                System.out.println("3: back");
+                response = 0;
+
+                while (response < 1 || response > 3) {
+                    System.out.print("> ");
+                    response = sc.nextInt();
+                    if (response == 1) { //view details
+                        Address newAddress = doReadAddress(1, 1, currentCustomer);
+                        address.setLineOne(newAddress.getLineOne());
+                        address.setLineTwo(newAddress.getLineTwo());
+                        address.setZipCode(newAddress.getZipCode());
+                        addressController.updateAddress(address);
+                        System.out.println("");
+                        System.out.println("Address successfully updated!");
+                        return;
+                    } else if (response == 2) {
+                        addressController.deleteAddress(addressId);
+                        return;
+                    } else if (response == 3) {
+                        return;
+                    } else {
+                        System.out.println("Invalid option, please try again!\n");
+                    }
+                }
+                if (response == 3) {
+                    break;
+                }
+            }
+        } catch (AddressNotFoundException ex) {
+            //will not reach here
+        }
+    }
 }
