@@ -6,11 +6,19 @@
 package ejb.session.stateless;
 
 import entity.Address;
+import java.util.List;
+import util.exception.AddressNotFoundException;
 
 public interface AddressControllerLocal {
 
     public Address createNewAddress(Address address);
 
-    public Address retrieveAddressById(Long addressId);
-    
+    public Address retrieveAddressById(Long addressId) throws AddressNotFoundException;
+
+    public void deleteAddress(Long addressId) throws AddressNotFoundException;
+
+    public void updateAddress(Address address);
+
+    public List<Address> retrieveAddressesByCustomerId(Long customerId);
+
 }
