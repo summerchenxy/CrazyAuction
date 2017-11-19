@@ -202,9 +202,7 @@ public class AuctionListing implements Serializable {
      * @return the winningBid
      */
     public Bid getWinningBid() {
-        if (winningBid == null) {
-            System.out.print("No winning bid!");
-        }
+        
         return winningBid;
     }
 
@@ -235,9 +233,7 @@ public class AuctionListing implements Serializable {
     }
 
     public BigDecimal getWinningBidValue() {
-        if (winningBidValue == null) {
-            System.out.print("No winning bid!");
-        }
+        
         return winningBidValue;
     }
 

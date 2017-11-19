@@ -262,13 +262,14 @@ public class SalesOperationModule {
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListings();
         System.out.printf("%8s%20s%20s%10s%10s%10s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
         String winningBid;
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
         for (AuctionListing auctionListing : allAuctionListings) {
             winningBid = "NA";
             if (auctionListing.getWinningBidValue()!=null){
                 winningBid = auctionListing.getWinningBidValue().toString();
             }
             System.out.printf("%8s%20s%20s%10s%10s%10s\n",
-                    auctionListing.getAuctionListingId().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
+                    auctionListing.getAuctionListingId().toString(), format.format(auctionListing.getStartDateTime()).toString(), format.format(auctionListing.getEndDateTime()).toString(),
                     auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), winningBid);
         }
         System.out.print("Press any key to continue...> ");
