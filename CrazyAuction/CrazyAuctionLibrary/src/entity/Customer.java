@@ -115,7 +115,6 @@ public class Customer implements Serializable {
         this.addresses = addresses;
     }
 
-
     public String getPassword() {
         return password;
     }
