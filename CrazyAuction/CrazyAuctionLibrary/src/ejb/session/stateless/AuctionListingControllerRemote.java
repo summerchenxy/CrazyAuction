@@ -36,6 +36,6 @@ public interface AuctionListingControllerRemote {
 
     List<AuctionListing> retrieveClosedAuctions();
 
-    void assignWinningBid(AuctionListing auctionListing);
+    void assignWinningBid(Long auctionListingId);
     
 }
