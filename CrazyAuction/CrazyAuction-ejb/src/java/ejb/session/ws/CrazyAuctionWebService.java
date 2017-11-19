@@ -137,24 +137,24 @@ public class CrazyAuctionWebService {
     
     @WebMethod(operationName = "configureProxyBidding")
     public void configureProxyBidding(@WebParam(name = "auctionListingId") Long auctionListingId, @WebParam(name = "maximumAmount") BigDecimal maximumAmount, 
-                                        @WebParam(name = "customerId") long customerId) throws AuctionListingNotFoundException, CustomerNotFoundException, CustomerInsufficientCreditBalance, MaximumBiddingAmountReachedException{
+                                        @WebParam(name = "customerId") long customerId) throws AuctionListingNotFoundException, CustomerNotFoundException, CustomerInsufficientCreditBalance, MaximumBiddingAmountReachedException
     {
-        System.out.println("********** AuctionListingWebService.configureProxyBidding(): ID " +al.getAuctionListingId().toString());
+        System.out.println("********** AuctionListingWebService.configureProxyBidding(): ID " +auctionListingId.toString());
         
-        AuctionListingEntity auctionListingEntity = auctionListingEntityControllerLocal.retrieveAuctionListingByID(auctionListingId);
-        AuctionBidTransactionEntity highestBidTransaction = auctionListingEntityControllerLocal.retrieveHighestSuccessfulAuctionBid(auctionListingEntity);
-        CustomerEntity customerEntity = customerEntityControllerLocal.retrieveCustomerByCustomerId(customerId);
+        AuctionListing auctionListing = auctionListingControllerLocal.retrieveAuctionListingByAuctionListingId(auctionListingId);
+        BigDecimal currentHighestBidValue = auctionListingControllerLocal.getHighestBid(auctionListing).getCreditValue();
+        Customer customer = customerControllerLocal.retrieveCustomerById(customerId);
         
-        BigDecimal increaseInBidAmount = customerEntityControllerLocal.bidIncrement(maximumAmount);
-        BigDecimal amountToBeBidded = increaseInBidAmount.add(highestBidTransaction.getAuctionBidTransactionAmount());
-        if (amountToBeBidded.compareTo(maximumAmount) != 1) {
-            customerEntityControllerLocal.placeNewBidForCustomerAndCreateCreditTransactionAndAuctionBid(auctionListingEntity, customerEntity, highestBidTransaction);
+        double increaseInBidAmount = getSmallestIncrementWithCurrentBid(maximumAmount);
+        BigDecimal amountToBeBidded = currentHighestBidValue.add(BigDecimal.valueOf(increaseInBidAmount));
+        if (amountToBeBidded.compareTo(maximumAmount) != 0) {
+            customerControllerLocal.placeNewBid(auctionListing, customer);
         } else {
             throw new MaximumBiddingAmountReachedException("Maximum bidding amount has been reached!");
         }
     }
     
-    private double getSmallestIncrementWithCurrentBid(BigDecimal highestBid) {
+    public double getSmallestIncrementWithCurrentBid(BigDecimal highestBid){
 
         double smallestIncrement = 0;
         if (highestBid.compareTo(new BigDecimal(1)) < 0) {
@@ -180,6 +180,7 @@ public class CrazyAuctionWebService {
         }
         return smallestIncrement;
     }
+    
     @WebMethod(operationName = "proxyBidding")
     public void proxyBidding(@WebParam(name = "auctionListing") AuctionListing al,
                                         @WebParam(name = "maxAmount") BigDecimal maxAmount) 

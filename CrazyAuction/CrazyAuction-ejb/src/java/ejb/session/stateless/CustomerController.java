@@ -102,5 +102,10 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
         Customer customer = em.find(Customer.class, customerId);
         return customer.getCreditBalance();
     }
+    
+    @Override
+    public Customer retrieveCustomerById(Long id) throws CustomerNotFoundException {
+        return em.find(Customer.class, id);
+    }
 
 }
