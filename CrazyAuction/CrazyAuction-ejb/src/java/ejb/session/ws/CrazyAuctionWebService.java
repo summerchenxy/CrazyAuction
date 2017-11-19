@@ -137,7 +137,7 @@ public class CrazyAuctionWebService {
     
     @WebMethod(operationName = "configureProxyBidding")
     public void configureProxyBidding(@WebParam(name = "auctionListingId") Long auctionListingId, @WebParam(name = "maximumAmount") BigDecimal maximumAmount, 
-                                        @WebParam(name = "customerId") long customerId) throws AuctionListingNotFoundException, CustomerNotFoundException, CustomerInsufficientCreditBalance, MaximumBiddingAmountReachedException
+                                        @WebParam(name = "customerId") Long customerId) throws AuctionListingNotFoundException, CustomerNotFoundException, CustomerInsufficientCreditBalance, MaximumBiddingAmountReachedException
     {
         System.out.println("********** AuctionListingWebService.configureProxyBidding(): ID " +auctionListingId.toString());
         
@@ -147,8 +147,27 @@ public class CrazyAuctionWebService {
         
         double increaseInBidAmount = getSmallestIncrementWithCurrentBid(maximumAmount);
         BigDecimal amountToBeBidded = currentHighestBidValue.add(BigDecimal.valueOf(increaseInBidAmount));
+        if (amountToBeBidded.compareTo(maximumAmount) < 0) {
+            //customerControllerLocal.placeNewBid(auctionListing, customer);
+        } else {
+            throw new MaximumBiddingAmountReachedException("Maximum bidding amount has been reached!");
+        }
+    }
+    
+    @WebMethod(operationName = "configureSniping")
+    public void configureSniping(@WebParam(name = "auctionListingId") Long auctionListingId, @WebParam(name = "maximumAmount") BigDecimal maximumAmount, 
+                                        @WebParam(name = "username") String username,@WebParam(name = "password") String password) throws AuctionListingNotFoundException, CustomerNotFoundException, CustomerInsufficientCreditBalance, MaximumBiddingAmountReachedException
+    {
+        System.out.println("********** AuctionListingWebService.configureSniping(): ID " +auctionListingId.toString());
+        
+        AuctionListing auctionListing = auctionListingControllerLocal.retrieveAuctionListingByAuctionListingId(auctionListingId);
+        BigDecimal currentHighestBidValue = auctionListingControllerLocal.getHighestBid(auctionListing).getCreditValue();
+        //Customer customer = customerControllerLocal.retrieveCustomerById(customerId);
+        
+        double increaseInBidAmount = getSmallestIncrementWithCurrentBid(maximumAmount);
+        BigDecimal amountToBeBidded = currentHighestBidValue.add(BigDecimal.valueOf(increaseInBidAmount));
         if (amountToBeBidded.compareTo(maximumAmount) != 0) {
-            customerControllerLocal.placeNewBid(auctionListing, customer);
+            //customerControllerLocal.placeNewBid(auctionListing, customer);
         } else {
             throw new MaximumBiddingAmountReachedException("Maximum bidding amount has been reached!");
         }
@@ -181,21 +200,5 @@ public class CrazyAuctionWebService {
         return smallestIncrement;
     }
     
-    @WebMethod(operationName = "proxyBidding")
-    public void proxyBidding(@WebParam(name = "auctionListing") AuctionListing al,
-                                        @WebParam(name = "maxAmount") BigDecimal maxAmount) 
-    {   
-        BigDecimal highestBid = new BigDecimal(0);
-        System.out.println("********** AuctionListingWebService.proxyBidding(): " );
-        if (al.getStatus().equals(OPENED)){
-            highestBid = al.getWinningBidValue();
-        }
-    }
-    @WebMethod(operationName = "placeBid")
-    public void placeBid(@WebParam(name = "auctionListing") AuctionListing al,
-                                        @WebParam(name = "maxAmount") BigDecimal maxAmount) 
-    {   
-        System.out.println("********** AuctionListingWebService.placeBid(): " );
-        
-    }
+    
 }
