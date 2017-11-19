@@ -49,7 +49,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     public Long createAuctionListing(AuctionListing auctionListing) {
         em.persist(auctionListing);
         em.flush();
-        //em.refresh(auctionListing);
+        em.refresh(auctionListing);
 
         return auctionListing.getAuctionListingId();
     }
@@ -62,7 +62,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     @Override
     public void deleteAuctionListing(Long auctionListingId) throws AuctionListingNotFoundException {
         AuctionListing auctionListing = retrieveAuctionListingByAuctionListingId(auctionListingId);
-        if (auctionListing.getBidList().isEmpty()) {
+        if (auctionListing.getBidList().size()==0) {
             em.remove(auctionListing);
             em.flush();
         } else {//listing used. mark as disabled
@@ -110,6 +110,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
 
         if (auctionListingId != null) {
+            auctionListing.getBidList().size();
             return auctionListing;
         } else {
             throw new AuctionListingNotFoundException("Auction Listing ID " + auctionListingId + " does not exist!");

@@ -40,7 +40,7 @@ public class CrazyAuctionWebService {
     /**
      * This is a sample web service operation
      */
-    @WebMethod(operationName = "checkIfPremium")
+    /*@WebMethod(operationName = "checkIfPremium")
     public boolean checkIfPremium(@WebParam(name = "customer") Customer currentCustomer) 
     {
         Boolean isPremium = currentCustomer.getIfPremium();
@@ -52,7 +52,7 @@ public class CrazyAuctionWebService {
     {
         currentCustomer.setPremium(Boolean.TRUE);
         customerControllerLocal.updateCustomer(currentCustomer);
-    }
+    }*/
     
     @WebMethod(operationName = "remoteLogin")
     public Customer remoteLogin(@WebParam(name = "username") String username,
@@ -66,7 +66,7 @@ public class CrazyAuctionWebService {
         
         return remoteCustomer;
     }
-    
+    /*
     //debug
     @WebMethod(operationName = "remoteLogout")
     public Customer remoteLogout(@WebParam(name = "customer") Customer currentCustomer) 
@@ -183,5 +183,5 @@ public class CrazyAuctionWebService {
     {   
         System.out.println("********** AuctionListingWebService.placeBid(): " );
         
-    }
+    }*/
 }

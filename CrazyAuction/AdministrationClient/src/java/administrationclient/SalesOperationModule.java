@@ -69,9 +69,9 @@ public class SalesOperationModule {
                 } else if (response == 2) {
                     doViewAuctionListingDetails();
                 } else if (response == 3) {
-                    //doViewAllAuctionListings();
+                    doViewAllAuctionListings();
                 } else if (response == 4) {
-                    //doViewAllAuctionListingsRequiringManualIntervention();
+                    doViewAllAuctionListingsRequiringManualIntervention();
                 } else if (response == 5) {
                     break;
                 } else {

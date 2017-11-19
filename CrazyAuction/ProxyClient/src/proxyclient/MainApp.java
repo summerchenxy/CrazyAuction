@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 import ws.client.AuctionListing;
-import ws.client.AuctionListingNotFoundException_Exception;
+//import ws.client.AuctionListingNotFoundException_Exception;
 import ws.client.CustomerNotFoundException_Exception;
 import ws.client.InvalidLoginCredentialException;
 import ws.client.InvalidLoginCredentialException_Exception;
@@ -23,12 +23,11 @@ import ws.client.InvalidLoginCredentialException_Exception;
  * @author Summer
  */
 public class MainApp {
-    private static DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
     private ws.client.Customer currentCustomer;
 
     public MainApp() {
     }
-    public void runApp() throws InvalidLoginCredentialException_Exception, CustomerNotFoundException_Exception, AuctionListingNotFoundException_Exception
+    public void runApp() throws InvalidLoginCredentialException_Exception, CustomerNotFoundException_Exception/*, AuctionListingNotFoundException_Exception*/
     {
         Scanner sc = new Scanner(System.in);
         while (true) {
@@ -53,7 +52,7 @@ public class MainApp {
             switch (response) {
                 case 1:
                     doRemoteLogin();
-                    doCheckIfPremium();
+                    //doCheckIfPremium();
                     break;
                 case 2:
                     break;
@@ -88,7 +87,7 @@ public class MainApp {
         return token;
     }
     
-    public void doCheckIfPremium() throws AuctionListingNotFoundException_Exception{
+    /*public void doCheckIfPremium() throws AuctionListingNotFoundException_Exception{
         if(checkIfPremium(currentCustomer)){
             menuMain();
         }
@@ -270,7 +269,7 @@ public class MainApp {
     
     public void doRemoteViewWonAuctionListings(){
         remoteViewWonAuctionListings(currentCustomer);
-    }
+    }*/
 
     private static ws.client.Customer remoteLogin(java.lang.String username, java.lang.String password) throws InvalidLoginCredentialException_Exception, CustomerNotFoundException_Exception {
         ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
@@ -278,7 +277,7 @@ public class MainApp {
         return port.remoteLogin(username, password);
     }
 
-    private static ws.client.Customer remoteLogout(ws.client.Customer customer) {
+    /*private static ws.client.Customer remoteLogout(ws.client.Customer customer) {
         ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
         ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
         return port.remoteLogout(customer);
@@ -318,6 +317,6 @@ public class MainApp {
         ws.client.CrazyAuctionWebService_Service service = new ws.client.CrazyAuctionWebService_Service();
         ws.client.CrazyAuctionWebService port = service.getCrazyAuctionWebServicePort();
         port.remoteViewWonAuctionListings(customer);
-    }
+    }*/
     
 }

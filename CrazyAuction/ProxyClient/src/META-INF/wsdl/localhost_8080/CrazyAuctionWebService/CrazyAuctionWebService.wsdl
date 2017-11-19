@@ -4,45 +4,6 @@
 <xsd:import namespace="http://ws.session.ejb/" schemaLocation="http://localhost:8080/CrazyAuctionWebService/CrazyAuctionWebService?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="remoteBrowseAllAuctionListings">
-<part name="parameters" element="tns:remoteBrowseAllAuctionListings"/>
-</message>
-<message name="remoteBrowseAllAuctionListingsResponse">
-<part name="parameters" element="tns:remoteBrowseAllAuctionListingsResponse"/>
-</message>
-<message name="remoteViewWonAuctionListings">
-<part name="parameters" element="tns:remoteViewWonAuctionListings"/>
-</message>
-<message name="remoteViewWonAuctionListingsResponse">
-<part name="parameters" element="tns:remoteViewWonAuctionListingsResponse"/>
-</message>
-<message name="remoteViewAuctionListingDetail">
-<part name="parameters" element="tns:remoteViewAuctionListingDetail"/>
-</message>
-<message name="remoteViewAuctionListingDetailResponse">
-<part name="parameters" element="tns:remoteViewAuctionListingDetailResponse"/>
-</message>
-<message name="AuctionListingNotFoundException">
-<part name="fault" element="tns:AuctionListingNotFoundException"/>
-</message>
-<message name="remoteViewCreditBalance">
-<part name="parameters" element="tns:remoteViewCreditBalance"/>
-</message>
-<message name="remoteViewCreditBalanceResponse">
-<part name="parameters" element="tns:remoteViewCreditBalanceResponse"/>
-</message>
-<message name="premiumRegistration">
-<part name="parameters" element="tns:premiumRegistration"/>
-</message>
-<message name="premiumRegistrationResponse">
-<part name="parameters" element="tns:premiumRegistrationResponse"/>
-</message>
-<message name="remoteLogout">
-<part name="parameters" element="tns:remoteLogout"/>
-</message>
-<message name="remoteLogoutResponse">
-<part name="parameters" element="tns:remoteLogoutResponse"/>
-</message>
 <message name="remoteLogin">
 <part name="parameters" element="tns:remoteLogin"/>
 </message>
@@ -55,108 +16,16 @@
 <message name="CustomerNotFoundException">
 <part name="fault" element="tns:CustomerNotFoundException"/>
 </message>
-<message name="checkIfPremium">
-<part name="parameters" element="tns:checkIfPremium"/>
-</message>
-<message name="checkIfPremiumResponse">
-<part name="parameters" element="tns:checkIfPremiumResponse"/>
-</message>
 <portType name="CrazyAuctionWebService">
-<operation name="remoteBrowseAllAuctionListings">
-<input wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteBrowseAllAuctionListingsRequest" message="tns:remoteBrowseAllAuctionListings"/>
-<output wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteBrowseAllAuctionListingsResponse" message="tns:remoteBrowseAllAuctionListingsResponse"/>
-</operation>
-<operation name="remoteViewWonAuctionListings">
-<input wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteViewWonAuctionListingsRequest" message="tns:remoteViewWonAuctionListings"/>
-<output wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteViewWonAuctionListingsResponse" message="tns:remoteViewWonAuctionListingsResponse"/>
-</operation>
-<operation name="remoteViewAuctionListingDetail">
-<input wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteViewAuctionListingDetailRequest" message="tns:remoteViewAuctionListingDetail"/>
-<output wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteViewAuctionListingDetailResponse" message="tns:remoteViewAuctionListingDetailResponse"/>
-<fault message="tns:AuctionListingNotFoundException" name="AuctionListingNotFoundException" wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteViewAuctionListingDetail/Fault/AuctionListingNotFoundException"/>
-</operation>
-<operation name="remoteViewCreditBalance">
-<input wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteViewCreditBalanceRequest" message="tns:remoteViewCreditBalance"/>
-<output wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteViewCreditBalanceResponse" message="tns:remoteViewCreditBalanceResponse"/>
-</operation>
-<operation name="premiumRegistration">
-<input wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/premiumRegistrationRequest" message="tns:premiumRegistration"/>
-<output wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/premiumRegistrationResponse" message="tns:premiumRegistrationResponse"/>
-</operation>
-<operation name="remoteLogout">
-<input wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteLogoutRequest" message="tns:remoteLogout"/>
-<output wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteLogoutResponse" message="tns:remoteLogoutResponse"/>
-</operation>
 <operation name="remoteLogin">
 <input wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteLoginRequest" message="tns:remoteLogin"/>
 <output wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteLoginResponse" message="tns:remoteLoginResponse"/>
 <fault message="tns:InvalidLoginCredentialException" name="InvalidLoginCredentialException" wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteLogin/Fault/InvalidLoginCredentialException"/>
 <fault message="tns:CustomerNotFoundException" name="CustomerNotFoundException" wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/remoteLogin/Fault/CustomerNotFoundException"/>
 </operation>
-<operation name="checkIfPremium">
-<input wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/checkIfPremiumRequest" message="tns:checkIfPremium"/>
-<output wsam:Action="http://ws.session.ejb/CrazyAuctionWebService/checkIfPremiumResponse" message="tns:checkIfPremiumResponse"/>
-</operation>
 </portType>
 <binding name="CrazyAuctionWebServicePortBinding" type="tns:CrazyAuctionWebService">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="remoteBrowseAllAuctionListings">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="remoteViewWonAuctionListings">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="remoteViewAuctionListingDetail">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="AuctionListingNotFoundException">
-<soap:fault name="AuctionListingNotFoundException" use="literal"/>
-</fault>
-</operation>
-<operation name="remoteViewCreditBalance">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="premiumRegistration">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="remoteLogout">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
 <operation name="remoteLogin">
 <soap:operation soapAction=""/>
 <input>
@@ -171,15 +40,6 @@
 <fault name="CustomerNotFoundException">
 <soap:fault name="CustomerNotFoundException" use="literal"/>
 </fault>
-</operation>
-<operation name="checkIfPremium">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
 </operation>
 </binding>
 <service name="CrazyAuctionWebService">
