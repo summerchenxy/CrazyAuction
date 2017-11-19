@@ -13,6 +13,8 @@ import static java.lang.Boolean.FALSE;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -83,7 +85,12 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     }
 
     @Override
-    public void assignWinningBid(AuctionListing auctionListing) {
+    public void assignWinningBid(Long auctionListingId) {
+        AuctionListing auctionListing = null;
+        try {
+            auctionListing = retrieveAuctionListingByAuctionListingId(auctionListingId);
+        } catch (AuctionListingNotFoundException ex) {
+        }
         auctionListing.setStatus(CLOSED);
         BigDecimal highestBidValue = BigDecimal.ZERO;
         Bid highestBid = new Bid();
@@ -209,8 +216,9 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         List<AuctionListing> auctionListings = retrieveOpenedAuctions();
         for (AuctionListing auctionListing : auctionListings) {
             if (auctionListing.getEndDateTime().compareTo(new Date()) >= 0) {
+
                 auctionListing.setStatus(CLOSED);
-                assignWinningBid(auctionListing);
+                assignWinningBid(auctionListing.getAuctionListingId());
             }
         }
     }
