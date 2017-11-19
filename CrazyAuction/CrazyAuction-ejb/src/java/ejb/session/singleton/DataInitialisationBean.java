@@ -5,9 +5,17 @@
  */
 package ejb.session.singleton;
 
+import entity.AuctionListing;
+import entity.CreditPackage;
 import entity.Customer;
 import entity.Employee;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
@@ -29,6 +37,7 @@ public class DataInitialisationBean {
 
     @PersistenceContext(unitName = "CrazyAuction-ejbPU")
     private EntityManager em;
+    DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
 
     public void persist(Object object) {
         em.persist(object);
@@ -45,7 +54,13 @@ public class DataInitialisationBean {
             initialiseEmployeeData();
         }
         if (em.find(Customer.class, 1l) == null) {
-            initialiseCustomereeData();
+            initialiseCustomerData();
+        }
+        if (em.find(CreditPackage.class, 1l) == null) {
+            initialiseCreditPackageData();
+        }
+        if (em.find(AuctionListing.class, 1l) == null) {
+            initialiseAuctionListingData();
         }
     }
 
@@ -59,7 +74,7 @@ public class DataInitialisationBean {
 
     }
 
-    private void initialiseCustomereeData() {
+    private void initialiseCustomerData() {
         Customer customer = new Customer("Xiao", "Ming", "G00000001", "password", new BigDecimal(0), "xiaoming@test.com");
         em.persist(customer);
         customer = new Customer("Xiao", "Hong", "G00000002", "password", new BigDecimal(0), "xiaohong@test.com");
@@ -67,4 +82,33 @@ public class DataInitialisationBean {
         customer = new Customer("Xiao", "Hua", "G00000003", "password", new BigDecimal(0), "xiaohua@test.com");
         em.persist(customer);
     }
+
+    private void initialiseAuctionListingData() {
+
+        AuctionListing auctionListing = null;
+        try {
+            auctionListing = new AuctionListing(new BigDecimal(10), format.parse("2000.01.01.00.01"),
+                    format.parse("2020.01.01.00.01"), "testAL1",
+                    new BigDecimal(5));
+            em.persist(auctionListing);
+            auctionListing = new AuctionListing(new BigDecimal(20), format.parse("2000.01.01.00.01"),
+                    format.parse("2020.01.01.00.01"), "testAL2",
+                    new BigDecimal(10));
+            em.persist(auctionListing);
+            auctionListing = new AuctionListing(new BigDecimal(50), format.parse("2000.01.01.00.01"),
+                    format.parse("2020.01.01.00.01"), "testAL3",
+                    new BigDecimal(0));
+            em.persist(auctionListing);
+        } catch (ParseException ex) {
+        }
+    }
+
+    private void initialiseCreditPackageData() {
+        CreditPackage creditPackage = new CreditPackage(new BigDecimal(10), new BigDecimal(10));
+        em.persist(creditPackage);
+        creditPackage = new CreditPackage(new BigDecimal(5), new BigDecimal(5));
+        em.persist(creditPackage);
+
+    }
+
 }
