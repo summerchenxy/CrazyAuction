@@ -73,9 +73,6 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
             throw new BidNotFoundException("Bid of credit value " + creditValue.toString() + " does not exist!");
         }
     }
-    
-    public void placeBid(Bid bid){
-        
 
     @Override
     public void placeBid(Bid bid) {
