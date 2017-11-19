@@ -29,5 +29,9 @@ public interface CustomerControllerLocal {
 //    public Customer changeCustomerName(Long customerId, String firstName, String lastName);
 
     public BigDecimal retrieveCustomerCreditBalance(Long customerId);
+
+    public Customer retrieveCustomerById(String id) throws CustomerNotFoundException;
+
+    public void doPurchaseCreditPackage(Long creditPackageId, Long customerId, int unit);
     
 }

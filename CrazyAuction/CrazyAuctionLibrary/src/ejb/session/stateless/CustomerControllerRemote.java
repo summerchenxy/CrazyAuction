@@ -29,4 +29,8 @@ public interface CustomerControllerRemote {
 
     public BigDecimal retrieveCustomerCreditBalance(Long customerId);
 
+    public Customer retrieveCustomerById(String id) throws CustomerNotFoundException;
+
+    public void doPurchaseCreditPackage(Long creditPackageId, Long customerId, int unit);
+
 }

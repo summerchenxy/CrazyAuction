@@ -647,7 +647,7 @@ class MainApp {
 
         System.out.println("\n*** Auction Client :: Credit Menu :: Purchase ***\n");
         List<CreditPackage> allCreditPackages = creditPackageController.retrieveAllCreditPackages();
-        System.out.println("test 1: " + allCreditPackages.size());
+
         System.out.printf("%8s%20s%15s\n", "ID", "Price", "Available Credit");
         for (CreditPackage cp : allCreditPackages) {
             //Summer:customer can only purchase the credit package if no one has bought it befoure 
@@ -660,26 +660,11 @@ class MainApp {
         System.out.print("> ");
         Long creditPackageId = sc.nextLong();
         sc.nextLine();
-        CreditPackage creditPackage;
-        try {
-            creditPackage = creditPackageController.retrieveCreditPackageByCreditPackageId(creditPackageId);
-        } catch (CreditPackageNotFoundException ex) {
-            return;
-        }
         System.out.println("Enter the number of units");
         System.out.print("> ");
         int unit = Integer.valueOf(sc.nextLine().trim());
-        //make transaction
-        CreditTransaction creditTransaction = new CreditTransaction(new Date(), currentCustomer, creditPackage, unit, TransactionTypeEnum.CREDIT, null); //add transaction to customer and credit package 
-        //add to credit package
-        creditTransactionController.createNewCreditTransaction(creditTransaction);
-        creditPackage.getCreditTransactions().add(creditTransaction);
-        creditPackageController.updateCreditPackage(creditPackage);
-        //add to customer
-        currentCustomer.getCreditTransactionHistory().add(creditTransaction);
-        currentCustomer.setCreditBalance(currentCustomer.getCreditBalance().add(creditPackage.getCredit().multiply(new BigDecimal(unit))));
-        customerController.updateCustomer(currentCustomer);
-        System.out.println("Thank you for purchasing the credit package(s)");
+        customerController.doPurchaseCreditPackage(creditPackageId, currentCustomer.getCustomerId(), unit);
+
     }
 
     //view or place bid
@@ -765,7 +750,7 @@ class MainApp {
                         } catch (Exception ex) {
                             System.err.println("invalid input. Please try again");
                         }
-                        //verify if the address belongs to the current user
+                        //verify if the auction listing is opened
                         if (auctionListing.getStatus() == AuctionStatus.OPENED) {
                             viewAnAuctionListing(auctionListingId);
                         } else {
@@ -831,69 +816,46 @@ class MainApp {
     }
 
     private void placeNewBid(Long auctionListingId) throws CustomerInsufficientCreditBalance {
+        Scanner scanner = new Scanner(System.in);
         AuctionListing al = null;
         try {
             al = auctionListingController.retrieveAuctionListingByAuctionListingId(auctionListingId);
             System.out.println();
-            doPlaceBid(al);
-            //may display current smallest increment here
-        } catch (AuctionListingNotFoundException ex) {
-            //won't reach here
-        }
-
-    }
-
-    private void doPlaceBid(AuctionListing al) throws CustomerInsufficientCreditBalance {
-        Scanner scanner = new Scanner(System.in);
-        //display reserved price & current highest bidding
-        System.out.println("Auction Listing ID: " + al.getAuctionListingId());
-        System.out.println("Reserve Price: " + al.getReservePrice());
-        List<Bid> bids = al.getBidList();
-        BigDecimal highestBid = new BigDecimal(0);
-        for (Bid b : bids) {
-            if (b.getCreditValue().compareTo(highestBid) == 1) {
-                highestBid = b.getCreditValue();
+            //display reserved price & current highest bidding
+            System.out.println("Auction Listing ID: " + al.getAuctionListingId());
+            System.out.println("Reserve Price: " + al.getReservePrice());
+            List<Bid> bids = al.getBidList();
+            BigDecimal highestBid = new BigDecimal(0);
+            for (Bid b : bids) {
+                if (b.getCreditValue().compareTo(highestBid) == 1) {
+                    highestBid = b.getCreditValue();
+                }
             }
-        }
-        DecimalFormat df = new DecimalFormat("0.00");
-        System.out.println("Current Highest Bid: " + df.format(highestBid.floatValue()));
-        double minIncrement = getSmallestIncrementWithCurrentBid(highestBid);
-        BigDecimal minNewBid = highestBid.add(new BigDecimal(minIncrement));
-        System.out.println("You need to bid as least " + df.format(minNewBid) + " credit(s).");
-        //to enter new bid amount
-        System.out.println("enter your bid with maximum 2 decimal place: ");
+            DecimalFormat df = new DecimalFormat("0.00");
+            System.out.println("Current Highest Bid: " + df.format(highestBid.floatValue()));
+            double minIncrement = getSmallestIncrementWithCurrentBid(highestBid);
+            BigDecimal minNewBid = highestBid.add(new BigDecimal(minIncrement));
+            System.out.println("You need to bid as least " + df.format(minNewBid) + " credit(s).");
+            //to enter new bid amount
+            System.out.println("enter your bid with maximum 2 decimal place: ");
 
-        BigDecimal bidAmount = new BigDecimal(0);
-        while (bidAmount.compareTo(new BigDecimal(.05)) < 0) {
-            System.out.print("> ");
-            bidAmount = new BigDecimal(Double.valueOf(scanner.nextLine().trim()));
-            //validate for min new bid . promote for reenter 
-            if (bidAmount.compareTo(minNewBid) < 0) {
-                bidAmount = new BigDecimal(0);
-                System.out.println("Your bid must exceed" + df.format(minNewBid));
-//                continue;
-
+            BigDecimal bidAmount = new BigDecimal(0);
+            while (bidAmount.compareTo(new BigDecimal(.05)) < 0) {
+                System.out.print("> ");
+                bidAmount = new BigDecimal(Double.valueOf(scanner.nextLine().trim()));
+                //validate for min new bid . promote for reenter 
+                if (bidAmount.compareTo(minNewBid) < 0) {
+                    bidAmount = new BigDecimal(0);
+                    System.out.println("Your bid must exceed" + df.format(minNewBid));
+                }
+                //validate for enough bal. throw exception
+                if (bidAmount.compareTo(currentCustomer.getCreditBalance()) > 0) {
+                    throw new CustomerInsufficientCreditBalance("Please ensure you have enough credit balance");
+                }
             }
-            //validate for enough bal. throw exception
-            if (bidAmount.compareTo(currentCustomer.getCreditBalance()) > 0) {
-
-                throw new CustomerInsufficientCreditBalance("Please ensure you have enough credit balance");
-            }
-        }
-
-        System.out.println("Please enter an address ID for shipping purposes");
-        Address address = null;
-        Long addressId = Long.valueOf(doReadToken("address ID"));
-        try {
-            address = addressController.retrieveAddressById(addressId);
-        } catch (AddressNotFoundException ex) {
-            //System.out.println("test1");
-            System.err.println("invalid address ID");
-            return;
-        }
-        //verify if the address belongs to the current user
-        if (address.getCustomer().getCustomerId().equals(currentCustomer.getCustomerId())) {
-            Bid newBid = new Bid(bidAmount, address);
+            
+            
+            Bid newBid = new Bid(bidAmount, null);
             newBid.setAuctionListing(al);
             al.getBidList().add(newBid);
             auctionListingController.updateAuctionListing(al);
@@ -914,13 +876,13 @@ class MainApp {
             currentCustomer.setCreditBalance(currentCustomer.getCreditBalance().subtract(newBid.getCreditValue()));
             customerController.updateCustomer(currentCustomer);
             System.out.println("you have successfully bid fot the item!");
-        } else {
-            //System.out.println("test2");
-            System.err.println("Invalid address ID");
+            //may display current smallest increment here
+        } catch (AuctionListingNotFoundException ex) {
+            //won't reach here
         }
     }
 
-    //validate input (smallest amount placeable, smallest increment, must be higher than current highest bid)
+//validate input (smallest amount placeable, smallest increment, must be higher than current highest bid)
     private double getSmallestIncrementWithCurrentBid(BigDecimal highestBid) {
 
         double smallestIncrement = 0;
