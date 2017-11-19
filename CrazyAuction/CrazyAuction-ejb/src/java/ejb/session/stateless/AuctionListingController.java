@@ -25,8 +25,7 @@ import util.exception.AuctionListingNotFoundException;
 
 /**
  *
- * @author alex_zy
-=======
+ * @author alex_zy =======
  */
 /**
  *
@@ -62,7 +61,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     @Override
     public void deleteAuctionListing(Long auctionListingId) throws AuctionListingNotFoundException {
         AuctionListing auctionListing = retrieveAuctionListingByAuctionListingId(auctionListingId);
-        if (auctionListing.getBidList().size()==0) {
+        if (auctionListing.getBidList().size() == 0) {
             em.remove(auctionListing);
             em.flush();
         } else {//listing used. mark as disabled
@@ -73,12 +72,16 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     @Override
     public List<AuctionListing> retrieveAllAuctionListings() {
         Query query = em.createQuery("SELECT s FROM AuctionListing s");
-        return query.getResultList();
+        List<AuctionListing> auctionListings = query.getResultList();
+        for (AuctionListing al : auctionListings) {
+            al.getBidList().size();
+        }
+        return auctionListings;
     }
 
     @Override
     public void assignWinningBid(AuctionListing auctionListing) {
-        auctionListing.setStatus(AuctionStatus.CLOSED);
+        auctionListing.setStatus(CLOSED);
         BigDecimal highestBidValue = BigDecimal.ZERO;
         Bid highestBid = new Bid();
         int size = auctionListing.getBidList().size();
@@ -99,7 +102,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             //set manual for 3b. highest bid same or below reserve price. 
             if (auctionListing.getReservePrice().compareTo(BigDecimal.ZERO) > 0
                     && auctionListing.getReservePrice().compareTo(highestBidValue) > 0) {
-                auctionListing.setStatus(AuctionStatus.MANUAL);
+                auctionListing.setStatus(MANUAL);
             }
         }
         updateAuctionListing(auctionListing);
@@ -124,7 +127,12 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         AuctionStatus status = AuctionStatus.CLOSED;
         Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
         query.setParameter("inStatus", status);
-        return query.getResultList();
+
+        List<AuctionListing> als = query.getResultList();
+        for (AuctionListing al : als) {
+            al.getBidList().size();
+        }
+        return als;
     }
 
     @Override
@@ -132,15 +140,26 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         AuctionStatus status = AuctionStatus.OPENED;
         Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
         query.setParameter("inStatus", status);
-        return query.getResultList();
+        List<AuctionListing> als = query.getResultList();
+        for (AuctionListing al : als) {
+            al.getBidList().size();
+        }
+        return als;
     }
 
     @Override
     public List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention() {
         AuctionStatus status = AuctionStatus.MANUAL;
-        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
+        Boolean checkFinal = false;
+        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus AND s.isFinal = :inFinal");
         query.setParameter("inStatus", status);
-        return query.getResultList();
+        query.setParameter("inFinal", checkFinal);
+        
+        List<AuctionListing> als = query.getResultList();
+        for (AuctionListing al : als) {
+            al.getBidList().size();
+        }
+        return als;
     }
 
     @Override
@@ -163,7 +182,6 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             }
         }
     }
-
 
     public void persist(Object object) {
         em.persist(object);
