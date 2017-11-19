@@ -115,7 +115,7 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
     public void doPurchaseCreditPackage(Long creditPackageId, Long customerId, int unit){ // - need to handle exceptions here
         CreditPackage cp = em.find(CreditPackage.class, creditPackageId);
         Customer customer =em.find(Customer.class,customerId);
-        CreditTransaction ct = new  CreditTransaction(new Date(), customer, cp, unit, TransactionTypeEnum.CREDIT, null);
+        CreditTransaction ct = new  CreditTransaction(customer, cp, unit);
         customer.getCreditTransactionHistory().add(ct);
         cp.getCreditTransactions().add(ct);
         em.persist(ct);

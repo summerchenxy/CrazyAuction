@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,31 +34,38 @@ public class CreditTransaction implements Serializable {
     private Long creditTransactionId;
     @Column(nullable = false)
     private Date transactionDateTime;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private int creditPacketUnit;
+    @Column(nullable = true)
+    private BigDecimal biddedAmount;
+    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer customer;
-    @OneToOne(optional=true)
-    private CreditPackage creditPackage; 
+    @OneToOne(optional = true)
+    private CreditPackage creditPackage;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TransactionTypeEnum type;
-    @OneToOne(mappedBy = "creditTransaction", optional=true)
+    @OneToOne(mappedBy = "creditTransaction", optional = true)
     private Bid bid;
-    
-
 
     public CreditTransaction() {
+        this.transactionDateTime = new Date();
     }
 
-    public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage creditPackages, int unit, TransactionTypeEnum type, Bid bid) {
-        this.transactionDateTime = transactionDateTime;
+    public CreditTransaction(Customer purchasingCustomer, CreditPackage creditPackages, int unit) {
         this.customer = purchasingCustomer;
         this.creditPackage = creditPackages;
         this.creditPacketUnit = unit;
-        this.type = type;
+        this.type = TransactionTypeEnum.DEBIT;
+    }
+
+    public CreditTransaction(Customer purchasingCustomer, Bid bid, BigDecimal biddedAmount) {
+        this.customer = purchasingCustomer;
+        this.type = TransactionTypeEnum.CREDIT;
         this.bid = bid;
+        this.biddedAmount = biddedAmount;
     }
 
     public int getCreditPacketUnit() {
@@ -114,6 +122,14 @@ public class CreditTransaction implements Serializable {
 
     public void setBid(Bid bid) {
         this.bid = bid;
+    }
+
+    public BigDecimal getBiddedAmount() {
+        return biddedAmount;
+    }
+
+    public void setBiddedAmount(BigDecimal biddedAmount) {
+        this.biddedAmount = biddedAmount;
     }
 
 }

@@ -40,13 +40,11 @@ public class Bid implements Serializable {
     private CreditTransaction creditTransaction;
     
     public Bid() {
-       
     }
 
-    public Bid(BigDecimal creditValue, Address address) {
-
+    public Bid(BigDecimal creditValue, AuctionListing auctionListing) {
         this.creditValue = creditValue;
-        this.address = address;
+        this.auctionListing = auctionListing;
     }
 
     public Long getBidId() {

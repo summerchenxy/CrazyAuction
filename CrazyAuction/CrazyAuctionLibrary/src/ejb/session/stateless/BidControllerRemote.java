@@ -9,14 +9,15 @@ import entity.Bid;
 import java.math.BigDecimal;
 import util.exception.BidNotFoundException;
 
-
 public interface BidControllerRemote {
-    
+
     Bid createNewBid(Bid bid);
 
     void refundToCustomer(Bid bid);
-    
+
     Bid retrieveBidByBidId(Long bidId) throws BidNotFoundException;
 
     Bid retrieveBidByCreditValue(BigDecimal creditValue) throws BidNotFoundException;
+
+    public void updateBid(Bid bid);
 }
