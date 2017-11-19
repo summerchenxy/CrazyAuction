@@ -840,7 +840,7 @@ class MainApp {
         //record credit transaction
         CreditTransaction ct = new CreditTransaction();
         ct.setTransactionDateTime(new Date());
-        ct.setPurchasingCustomer(currentCustomer);
+        ct.setCustomer(currentCustomer);
         ct.setType(TransactionTypeEnum.DEBIT);
         ct.setBid(newBid);
         creditTransactionController.createNewCreditTransaction(ct);

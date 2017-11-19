@@ -242,7 +242,7 @@ public class AuctionListing implements Serializable {
      */
     public List<Bid> getBidList() {
         if (bidList.isEmpty()) {
-            System.out.print("Empty Bid List!");
+            //System.out.print("Empty Bid List!");
         }
         return bidList;
     }

@@ -11,5 +11,6 @@ package util.enumeration;
  */
 public enum TransactionTypeEnum {
     CREDIT, //when purchasing credit packages
-    DEBIT//when placing bids
+    DEBIT,//when placing bids
+    REFUND
 }

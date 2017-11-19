@@ -37,7 +37,7 @@ public class CreditTransaction implements Serializable {
     private int creditPacketUnit;
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private Customer purchasingCustomer;
+    private Customer customer;
     @OneToOne(optional=true)
     private CreditPackage creditPackage; 
     @Column(nullable = false)
@@ -53,7 +53,7 @@ public class CreditTransaction implements Serializable {
 
     public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage creditPackages, int unit, TransactionTypeEnum type, Bid bid) {
         this.transactionDateTime = transactionDateTime;
-        this.purchasingCustomer = purchasingCustomer;
+        this.customer = purchasingCustomer;
         this.creditPackage = creditPackages;
         this.creditPacketUnit = unit;
         this.type = type;
@@ -92,12 +92,12 @@ public class CreditTransaction implements Serializable {
         this.transactionDateTime = transactionDateTime;
     }
 
-    public Customer getPurchasingCustomer() {
-        return purchasingCustomer;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setPurchasingCustomer(Customer purchasingCustomer) {
-        this.purchasingCustomer = purchasingCustomer;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public CreditPackage getCreditPackage() {
