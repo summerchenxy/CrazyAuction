@@ -33,12 +33,13 @@ public class CreditTransaction implements Serializable {
     private Long creditTransactionId;
     @Column(nullable = false)
     private Date transactionDateTime;
+    @Column(nullable = false)
+    private int creditPacketUnit;
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer purchasingCustomer;
     @OneToOne(optional=true)
     private CreditPackage creditPackage; 
-    private int creditPacketUnit;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TransactionTypeEnum type;
@@ -50,11 +51,11 @@ public class CreditTransaction implements Serializable {
     public CreditTransaction() {
     }
 
-    public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage creditPackages, int creditPacketUnit, TransactionTypeEnum type, Bid bid) {
+    public CreditTransaction(Date transactionDateTime, Customer purchasingCustomer, CreditPackage creditPackages, int unit, TransactionTypeEnum type, Bid bid) {
         this.transactionDateTime = transactionDateTime;
         this.purchasingCustomer = purchasingCustomer;
         this.creditPackage = creditPackages;
-        this.creditPacketUnit = creditPacketUnit;
+        this.creditPacketUnit = unit;
         this.type = type;
         this.bid = bid;
     }

@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import java.math.BigDecimal;
 import java.util.Scanner;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
@@ -26,5 +27,7 @@ public interface CustomerControllerLocal {
     public Customer doLogin(String username, String password) throws InvalidLoginCredentialException;
 
 //    public Customer changeCustomerName(Long customerId, String firstName, String lastName);
+
+    public BigDecimal retrieveCustomerCreditBalance(Long customerId);
     
 }

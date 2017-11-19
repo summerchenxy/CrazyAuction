@@ -432,9 +432,7 @@ class MainApp {
 
             while (response < 1 || response > 5) {
                 System.out.print("> ");
-
                 response = sc.nextInt();
-
                 if (response == 1) {
                     menuProfile();
                 } else if (response == 2) {
@@ -443,7 +441,6 @@ class MainApp {
                     try {
                         menusAuctionAndBid();
                     } catch (CustomerInsufficientCreditBalance ex) {
-
                     }
                 } else if (response == 4) {
                     menuCredit();
@@ -501,7 +498,6 @@ class MainApp {
         System.out.printf("last name: %s\n", currentCustomer.getLastName());
         System.out.printf("identification number: %s\n", currentCustomer.getIdentificationNumber());
         System.out.printf("username: %s\n", currentCustomer.getUsername());
-        System.out.printf("credit balance: %s\n", currentCustomer.getCreditBalance());
         System.out.printf("password: %s\n", currentCustomer.getPassword());
         if (Thread.currentThread().getStackTrace()[2].getMethodName().equals("doUpdateProfile")) {
 //            System.out.println("called by doupdateprofile");
@@ -595,24 +591,25 @@ class MainApp {
         while (true) {
             System.out.println("\n*** Auction Client :: Credit Menu***\n");
             System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
-            System.out.println("1. purchase new credit package");
-            System.out.println("2: back\n");
+            System.out.println("1. view credit balance");
+            System.out.println("2. purchase new credit package");
+            System.out.println("3: back\n");
             response = 0;
 
-            while (response < 1 || response > 4) {
+            while (response < 1 || response > 3) {
                 System.out.print("> ");
                 response = sc.nextInt();
+                sc.nextLine();
                 if (response == 1) {
-                    doPurchaseCreditPackage();
+                    System.out.println();
+                    System.out.printf("Credit Balance: %s\n", customerController.retrieveCustomerCreditBalance(currentCustomer.getCustomerId()).setScale(2).toPlainString());
+                    System.out.println("***************************************");
+                    System.out.print("Press any key to continue...> ");
+                    sc.nextLine();
                 } else if (response == 2) {
-                    List<Address> addresses = doReadAddresses();
-                    currentCustomer.setAddresses(addresses);
-                    customerController.updateCustomer(currentCustomer);
+                    doPurchaseCreditPackage();
                 } else if (response == 3) {
-                    Boolean delete = true;
-//                    viewAllAddresses(delete);
-                } else if (response == 4) {
-                    break;
+                    return;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
@@ -628,10 +625,11 @@ class MainApp {
 
         System.out.println("\n*** Auction Client :: Credit Menu :: Purchase ***\n");
         List<CreditPackage> allCreditPackages = creditPackageController.retrieveAllCreditPackages();
-        System.out.printf("%8s%20s%15s\n", "CreditPackage ID", "Price", "Available Credit");
+        System.out.println("test 1: " + allCreditPackages.size());
+        System.out.printf("%8s%20s%15s\n", "ID", "Price", "Available Credit");
         for (CreditPackage cp : allCreditPackages) {
             //Summer:customer can only purchase the credit package if no one has bought it befoure 
-            if (cp.getCreditTransactions() == null && cp.getEnabled()) {
+            if (cp.getEnabled()) {
                 System.out.printf("%8s%20s%15s\n", cp.getCreditPackageId(), cp.getPrice(), cp.getCredit());
             }
         }
@@ -639,6 +637,7 @@ class MainApp {
         System.out.println("Enter the CreditPackage ID to purchase (enter an unlisted id to quit purchase)");
         System.out.print("> ");
         Long creditPackageId = sc.nextLong();
+        sc.nextLine();
         CreditPackage creditPackage;
         try {
             creditPackage = creditPackageController.retrieveCreditPackageByCreditPackageId(creditPackageId);
@@ -647,15 +646,16 @@ class MainApp {
         }
         System.out.println("Enter the number of units");
         System.out.print("> ");
-        int unit = sc.nextInt();
+        int unit = Integer.valueOf(sc.nextLine().trim());
         //make transaction
         CreditTransaction creditTransaction = new CreditTransaction(new Date(), currentCustomer, creditPackage, unit, TransactionTypeEnum.CREDIT, null); //add transaction to customer and credit package 
         //add to credit package
+        creditTransactionController.createNewCreditTransaction(creditTransaction);
         creditPackage.getCreditTransactions().add(creditTransaction);
         creditPackageController.updateCreditPackage(creditPackage);
         //add to customer
         currentCustomer.getCreditTransactionHistory().add(creditTransaction);
-        currentCustomer.setCreditBalance(currentCustomer.getCreditBalance().add(creditPackage.getCredit()));
+        currentCustomer.setCreditBalance(currentCustomer.getCreditBalance().add(creditPackage.getCredit().multiply(new BigDecimal(unit))));
         customerController.updateCustomer(currentCustomer);
         System.out.println("Thank you for purchasing the credit package(s)");
     }
@@ -939,6 +939,8 @@ class MainApp {
                         return;
                     } else if (response == 2) {
                         addressController.deleteAddress(addressId);
+                        System.out.println("");
+                        System.out.println("Address deleted");
                         return;
                     } else if (response == 3) {
                         return;
