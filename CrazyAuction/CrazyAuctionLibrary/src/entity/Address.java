@@ -28,31 +28,63 @@ public class Address implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long addressId;
-    @Column(length =32, nullable = false)
+    @Column(length = 32, nullable = false)
     private String lineOne;
-    @Column(length =32, nullable = true)
+    @Column(length = 32, nullable = true)
     private String lineTwo;
+    @Column(length = 6)
+    private String zipCode;
+    private Boolean isAssociatedWithWinningBid;//shipping
+    private Boolean enabled; //psuedo-delete if associated with a winning bit
+
     @ManyToOne
     @JoinColumn(nullable = true)
     private Customer customer;
     @OneToMany(mappedBy = "address")
-    private List<Bid> bids = new ArrayList ();
-    private boolean enabled;
+    private List<Bid> bids = new ArrayList();
 
-    public Address() { 
+    public Address() {
         this.bids = new ArrayList<>();
         enabled = true;
+        isAssociatedWithWinningBid = false;
     }
 
-    public Address(String lineOne, String lineTwo, Customer customer) {
+    public Boolean getIsAssociatedWithWinningBid() {
+        return isAssociatedWithWinningBid;
+    }
+
+    public void setIsAssociatedWithWinningBid(Boolean isAssociatedWithWinningBid) {
+        this.isAssociatedWithWinningBid = isAssociatedWithWinningBid;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Address(String lineOne, String lineTwo, String zipCode, Customer customer) {
         this();
         this.customer = customer;
         this.lineOne = lineOne;
         this.lineTwo = lineTwo;
+        this.zipCode = zipCode;
     }
 
-    private boolean IsEnabled() {return this.enabled;}
-            
+    private boolean IsEnabled() {
+        return this.enabled;
+    }
+
     public Long getAddressId() {
         return addressId;
     }
@@ -92,6 +124,5 @@ public class Address implements Serializable {
     public void setBids(List<Bid> bids) {
         this.bids = bids;
     }
-
 
 }
