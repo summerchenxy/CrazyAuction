@@ -722,8 +722,7 @@ class MainApp {
     }
 
     private void viewAnAuctionListing(AuctionListing al) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println();
+
         System.out.println("Auction Listing ID: " + al.getAuctionListingId());
         System.out.println("Start Date: " + al.getStartDateTime());
         System.out.println("End Date: " + al.getEndDateTime());
@@ -738,37 +737,33 @@ class MainApp {
         DecimalFormat df = new DecimalFormat("0.00");
         System.out.println("Current Highest Bid: " + df.format(highestBid.floatValue()));
 //        may display current smallest increment here
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
+        System.out.println();
     }
 
     //display all active listing as a grossry
     private void viewActiveAuctionListingSimple() {
-        List<AuctionListing> allAuctionListings = auctionListingController.retrieveOpenedAuctions();
-        System.out.printf("%8s%30s%20s\n", "ID", "End Date Time", "Current Bid");
+        List<AuctionListing> allAuctionListings = auctionListingController.retrieveAllAuctionListings();
+        System.out.printf("%8s%20s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Current Bid");
+
         for (AuctionListing auctionListing : allAuctionListings) {
-            BigDecimal highestBid = null;
-            //assign non-null current highest bid 
-            if (auctionListing.getBidList() != null && auctionListing.getBidList().size() != 0) {
+            if (auctionListing.getStatus() == AuctionStatus.OPENED) {
                 List<Bid> bids = auctionListing.getBidList();
+                BigDecimal highestBid = new BigDecimal(0);
                 for (Bid b : bids) {
                     if (b.getCreditValue().compareTo(highestBid) == 1) {
                         highestBid = b.getCreditValue();
                     }
                 }
+                DecimalFormat df = new DecimalFormat("0.00");
+                System.out.printf("%8s%20s%20s%20s\n",
+                        auctionListing.getAuctionListingId().toString(), auctionListing.getStartingBidAmount().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
+                        df.format(highestBid.floatValue()));
             }
-            String highestBidString;
-            if (highestBid != null) {
-                highestBidString = highestBid.setScale(2).toString();
-            } else {
-                highestBidString = "N.A.";
-            }
-            System.out.printf("%8s%30s%20s\n",
-                    auctionListing.getAuctionListingId().toString(), auctionListing.getEndDateTime().toString(), highestBidString);
         }
         System.out.println();
     }
 
+    //display a grossry for all active listings. prompt the user to refresh or bid on one listing
     private void placeNewBid() throws CustomerInsufficientCreditBalance {
         Scanner sc = new Scanner(System.in);
         System.out.println("\n*** Auction Client :: Auction&Bid Menu :: View Auction Listing ***\n");
@@ -786,6 +781,7 @@ class MainApp {
                     al = auctionListingController.retrieveAuctionListingByAuctionListingId(alId);
                     doPlaceBid(al);
                 } catch (AuctionListingNotFoundException ex) {
+                    System.out.println("An error has occurred while retrieving auctionListing: " + ex.getMessage() + "\n");
                 }
             }
         }

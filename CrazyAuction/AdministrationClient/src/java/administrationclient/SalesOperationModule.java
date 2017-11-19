@@ -232,7 +232,7 @@ public class SalesOperationModule {
         String input;
 
         System.out.println("*** OAS Administration Panel :: Sales Operation :: View Auction Listing Details :: Delete Auction Listing ***\n");
-        System.out.printf("Confirm Delete AuctionListing of ID: %d) (Enter 'Y' to Delete)> ", auctionListing.getAuctionListingId());
+        System.out.printf("Confirm Delete AuctionListing of start date time %s and end date time of %s (Auction Listing ID: %d) (Enter 'Y' to Delete)> ", auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(), auctionListing.getAuctionListingId());
         input = scanner.nextLine().trim();
 
         if (input.equals("Y")) {
@@ -260,7 +260,7 @@ public class SalesOperationModule {
         System.out.println("*** OAS Administration Panel :: System Administration :: View All AuctionListings ***\n");
 
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListings();
-        System.out.printf("%8s%20s%20s%10s%15s%15s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
+        System.out.printf("%8s%20s%20s%10s%10s%10s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
         String winningBid;
         DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
         for (AuctionListing auctionListing : allAuctionListings) {
@@ -268,7 +268,7 @@ public class SalesOperationModule {
             if (auctionListing.getWinningBidValue()!=null){
                 winningBid = auctionListing.getWinningBidValue().toString();
             }
-            System.out.printf("%8s%20s%20s%10s%15s%15s\n",
+            System.out.printf("%8s%20s%20s%10s%10s%10s\n",
                     auctionListing.getAuctionListingId().toString(), format.format(auctionListing.getStartDateTime()).toString(), format.format(auctionListing.getEndDateTime()).toString(),
                     auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), winningBid);
         }
@@ -282,17 +282,15 @@ public class SalesOperationModule {
         System.out.println("*** OAS Administration Panel :: System Administration :: View All AuctionListings with Bids but Below Reserve Price ***\n");
 
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListingsRequiringManualIntervention();
-        System.out.printf("%8s%20s%20s%10s%15s%15s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
+        System.out.printf("%8s%20s%20s%15s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Status", "Description", "Reserve Price", "Bid List", "Winning Bid");
         String winningBid;
-        DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
         for (AuctionListing auctionListing : allAuctionListings) {
             winningBid = "NA";
             if (auctionListing.getWinningBidValue()!=null){
                 winningBid = auctionListing.getWinningBidValue().toString();
             }
-            System.out.printf("%8s%20s%20s%10s%15s%15s\n",
-                    auctionListing.getAuctionListingId().toString(), format.format(auctionListing.getStartDateTime()).toString(), format.format(auctionListing.getEndDateTime()).toString(),
-                    auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), winningBid);
+            System.out.printf("%8s%20s%20s%15s%20s%20s\n",
+                    auctionListing.getAuctionListingId().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(), auctionListing.getStatus().toString(), auctionListing.getDescription(), auctionListing.getDescription().toString(), auctionListing.getBidList().toArray().toString(), auctionListing.getWinningBid().toString());
         }
 
         System.out.println("------------------------");
@@ -330,6 +328,7 @@ public class SalesOperationModule {
                 auctionListing.setWinningBidManually(null);
                 auctionListing.setWinningBidValueManually(null);
             }//ALEX: DO INPUT VALIDATION WITH A LOOP HERE
+
             auctionListingControllerRemote.updateAuctionListing(auctionListing);
             System.out.println("auctionListing winning bid assigned successfully!\n");
         }

@@ -43,8 +43,7 @@ public class CreditTransaction implements Serializable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TransactionTypeEnum type;
-    @ManyToOne
-    @JoinColumn(nullable = true)
+    @OneToOne(mappedBy = "creditTransaction", optional=true)
     private Bid bid;
     
 

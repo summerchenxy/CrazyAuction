@@ -210,7 +210,7 @@ public class FinanceOperationModule {
 
         if (input.equals("Y")) {
             if (creditPackageControllerRemote.getTransactionsNum(creditPackage)==0) {
-                System.out.println(creditPackage.getCreditPackageId());
+                //System.out.println(creditPackage.getCreditPackageId());
                 //creditPackageControllerRemote.retrieveCreditPackageByCreditPackageId(creditPackage.getCreditPackageId());
                 creditPackageControllerRemote.deleteCreditPackage(creditPackage);
                 System.out.println("Credit Package deleted successfully!\n");
