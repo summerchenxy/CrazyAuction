@@ -31,7 +31,7 @@ import util.exception.InvalidLoginCredentialException;
 @Stateless
 @Local(CustomerControllerLocal.class)
 @Remote(CustomerControllerRemote.class)
-public class CustomerController implements CustomerControllerRemote, CustomerControllerLocal {
+public class CustomerController implements CustomerControllerLocal, CustomerControllerRemote {
 
     @EJB
     private AddressControllerLocal addressController;

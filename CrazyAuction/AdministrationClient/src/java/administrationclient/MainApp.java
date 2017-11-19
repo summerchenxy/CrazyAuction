@@ -5,7 +5,6 @@
  */
 package administrationclient;
 
-import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.CreditPackageControllerRemote;
 import ejb.session.stateless.EmployeeControllerRemote;
 import entity.Employee;
@@ -17,6 +16,7 @@ import static util.enumeration.AccessRightEnum.FINANCE;
 import static util.enumeration.AccessRightEnum.SALES;
 import util.exception.InvalidAccessRightException;
 import util.exception.InvalidLoginCredentialException;
+import ejb.session.stateless.AuctionListingControllerRemote;
 
 /**
  *
@@ -100,7 +100,7 @@ public class MainApp {
         username = scanner.nextLine().trim();
         System.out.print("Enter password> ");
         password = scanner.nextLine().trim();
-        
+        System.out.println(username+" "+password);
         if(username.length() > 0 && password.length() > 0)
         {
             try

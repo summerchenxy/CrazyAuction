@@ -77,7 +77,7 @@ public class DataInitialisationBean {
     private void initialiseCustomerData() {
         Customer customer = new Customer("Xiao", "Ming", "G00000001", "password", new BigDecimal(0), "xiaoming@test.com");
         em.persist(customer);
-        customer = new Customer("Xiao", "Hong", "G00000002", "password", new BigDecimal(0), "xiaohong@test.com");
+        customer = new Customer("Xiao", "Hong", "G00000002", "password", new BigDecimal(100.0), "xiaohong@test.com");
         em.persist(customer);
         customer = new Customer("Xiao", "Hua", "G00000003", "password", new BigDecimal(0), "xiaohua@test.com");
         em.persist(customer);

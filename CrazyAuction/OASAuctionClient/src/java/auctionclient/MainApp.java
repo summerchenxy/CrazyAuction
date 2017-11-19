@@ -6,11 +6,9 @@
 package auctionclient;
 
 import ejb.session.stateless.AddressControllerRemote;
-import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.BidControllerRemote;
 import ejb.session.stateless.CreditPackageControllerRemote;
 import ejb.session.stateless.CreditTransactionControllerRemote;
-import ejb.session.stateless.CustomerControllerRemote;
 import entity.Address;
 import entity.AuctionListing;
 import entity.Bid;
@@ -35,6 +33,8 @@ import util.enumeration.AuctionStatus;
 import util.exception.AddressNotFoundException;
 import util.exception.AuctionListingNotFoundException;
 import util.exception.CustomerInsufficientCreditBalance;
+import ejb.session.stateless.AuctionListingControllerRemote;
+import ejb.session.stateless.CustomerControllerRemote;
 
 /**
  *
@@ -67,7 +67,6 @@ class MainApp {
     public void runApp() {
 
         Scanner sc = new Scanner(System.in);
-
         while (true) {
             Integer response = 0;
             System.out.println("\n*** Auction Client :: Welcome ***\n");

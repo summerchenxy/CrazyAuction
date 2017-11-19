@@ -6,13 +6,13 @@
 package auctionclient;
 
 import ejb.session.stateless.AddressControllerRemote;
-import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.BidControllerRemote;
 import ejb.session.stateless.CreditPackageControllerRemote;
 import ejb.session.stateless.CreditTransactionControllerRemote;
-import ejb.session.stateless.CustomerControllerRemote;
 import javax.ejb.EJB;
 import util.exception.CustomerNotFoundException;
+import ejb.session.stateless.AuctionListingControllerRemote;
+import ejb.session.stateless.CustomerControllerRemote;
 
 /**
  *

@@ -47,11 +47,14 @@ public class Customer implements Serializable {
     private String username;
     @JoinColumn(nullable = true)
     private List<Bid> wonBids = new ArrayList<Bid>();
+    @Column(nullable = false)
+    private Boolean isPremium;
 
     public Customer() {
         this.creditBalance = new BigDecimal(0);
         this.addresses = new ArrayList<>();
         this.creditTransactionHistory = new ArrayList<>();
+        this.isPremium = false;//by default false unless premium register
     }
 
     public Customer(String firstName, String lastName, String identificationNumber, String password, BigDecimal creditBalance, String loginCredential) {
@@ -62,6 +65,14 @@ public class Customer implements Serializable {
         this.password = password;
         this.creditBalance = creditBalance;
         this.username = loginCredential;
+    }
+
+    public Boolean getIfPremium() {
+        return isPremium;
+    }
+
+    public void setPremium(Boolean isPremium) {
+        this.isPremium = isPremium;
     }
 
     public Long getCustomerId() {

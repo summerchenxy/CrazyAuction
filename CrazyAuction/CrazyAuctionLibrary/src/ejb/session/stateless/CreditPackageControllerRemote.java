@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.CreditPackage;
+import entity.CreditTransaction;
 import java.util.List;
 import util.exception.CreditPackageNotFoundException;
 
@@ -27,5 +28,8 @@ public interface CreditPackageControllerRemote {
     CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException;
 
     void disableCreditPackage(CreditPackage creditPackage);
+    
     int getTransactionsNum(CreditPackage creditPackage);
+    
+    List<CreditTransaction> getTransactions(CreditPackage creditPackage);
 }

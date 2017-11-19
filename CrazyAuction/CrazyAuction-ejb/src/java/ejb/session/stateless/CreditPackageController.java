@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.CreditPackage;
+import entity.CreditTransaction;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -63,12 +64,19 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
         updateCreditPackage(creditPackage);
     }
 
+  
     @Override
-    public int getTransactionsNum(CreditPackage creditPackage) {
+    public List<CreditTransaction> getTransactions(CreditPackage creditPackage){
+
         Long creditPackageId = creditPackage.getCreditPackageId();
         Query query = em.createQuery("SELECT ct FROM CreditTransaction ct WHERE ct.creditPackage.creditPackageId = :inCreditPackageId");
         query.setParameter("inCreditPackageId", creditPackageId);
-        return query.getResultList().size();
+        return (List<CreditTransaction>)query.getResultList();
+    }
+    
+    @Override
+    public int getTransactionsNum(CreditPackage creditPackage){
+        return getTransactions(creditPackage).size();
     }
 
     @Override

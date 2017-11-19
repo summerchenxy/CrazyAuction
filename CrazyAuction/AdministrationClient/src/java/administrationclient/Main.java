@@ -5,12 +5,12 @@
  */
 package administrationclient;
 
-import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.CreditPackageControllerRemote;
 import ejb.session.stateless.EmployeeControllerRemote;
 import java.text.ParseException;
 import javax.ejb.EJB;
 import util.exception.InvalidAccessRightException;
+import ejb.session.stateless.AuctionListingControllerRemote;
 
 /**
  *

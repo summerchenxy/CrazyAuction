@@ -5,7 +5,6 @@
  */
 package administrationclient;
 
-import ejb.session.stateless.AuctionListingControllerRemote;
 import ejb.session.stateless.EmployeeControllerRemote;
 import entity.AuctionListing;
 import entity.Bid;
@@ -22,6 +21,7 @@ import util.enumeration.AccessRightEnum;
 import util.enumeration.AuctionStatus;
 import util.exception.AuctionListingNotFoundException;
 import util.exception.InvalidAccessRightException;
+import ejb.session.stateless.AuctionListingControllerRemote;
 
 /**
  *
@@ -249,12 +249,12 @@ public class SalesOperationModule {
         System.out.println("*** OAS Administration Panel :: System Administration :: View All AuctionListings ***\n");
 
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListings();
-        System.out.printf("%8s%20s%20s%15s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Status", "Description", "Reserve Price", "Bid List", "Winning Bid");
+        System.out.printf("%8s%20s%20s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Status", "Reserve Price", "Bid List", "Winning Bid");
 
         for (AuctionListing auctionListing : allAuctionListings) {
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n",
+            System.out.printf("%8s%20s%20s%20s%20s\n",
                     auctionListing.getAuctionListingId().toString(), auctionListing.getStartingBidAmount().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
-                    auctionListing.getStatus().toString(), auctionListing.getDescription(), auctionListing.getReservePrice().toString(), auctionListing.getBidList().toArray().toString(), auctionListing.getWinningBid().toString());
+                    auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), auctionListing.getBidList().toArray().toString(), auctionListing.getWinningBid().toString());
         }
         System.out.print("Press any key to continue...> ");
         scanner.nextLine();

@@ -5,20 +5,24 @@
  */
 package ejb.session.ws;
 
-import ejb.session.stateless.CustomerControllerRemote;
 import entity.AuctionListing;
 import entity.Bid;
 import entity.Customer;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Scanner;
 import javax.ejb.EJB;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.ejb.Stateless;
+import util.exception.AuctionListingNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
+import ejb.session.stateless.CustomerControllerLocal;
+import ejb.session.stateless.AuctionListingControllerLocal;
+import static util.enumeration.AuctionStatus.OPENED;
 
 /**
  *
@@ -29,18 +33,33 @@ import util.exception.InvalidLoginCredentialException;
 public class CrazyAuctionWebService {
 
     @EJB
-    private CustomerControllerRemote customerControllerRemote;
+    private CustomerControllerLocal customerControllerLocal;
+    @EJB
+    private AuctionListingControllerLocal auctionListingControllerLocal;
 
     /**
      * This is a sample web service operation
      */
+    @WebMethod(operationName = "checkIfPremium")
+    public boolean checkIfPremium(@WebParam(name = "customer") Customer currentCustomer) 
+    {
+        Boolean isPremium = currentCustomer.getIfPremium();
+        return isPremium;
+    }
+    
+    @WebMethod(operationName = "premiumRegistration")
+    public void premiumRegistration(@WebParam(name = "customer") Customer currentCustomer) 
+    {
+        currentCustomer.setPremium(Boolean.TRUE);
+        customerControllerLocal.updateCustomer(currentCustomer);
+    }
     
     @WebMethod(operationName = "remoteLogin")
     public Customer remoteLogin(@WebParam(name = "username") String username,
                               @WebParam(name = "password") String password) 
                                 throws InvalidLoginCredentialException, CustomerNotFoundException
     {
-        Customer remoteCustomer = customerControllerRemote.doLogin(username, password);
+        Customer remoteCustomer = customerControllerLocal.doLogin(username, password);
         System.out.println("********** AuctionListingWebService.remoteLogin(): Customer " 
                             + remoteCustomer.getUsername() 
                             + " login remotely via web service");
@@ -50,44 +69,119 @@ public class CrazyAuctionWebService {
     
     //debug
     @WebMethod(operationName = "remoteLogout")
-    public void remoteLogout(@WebParam(name = "customer") Customer currentCustomer) 
+    public Customer remoteLogout(@WebParam(name = "customer") Customer currentCustomer) 
     {
         currentCustomer = null;
         System.out.println("********** AuctionListingWebService.remoteLogout(): Customer " 
                             + currentCustomer.getUsername() 
                             + " logout remotely via web service");
-        System.out.println("You have successfully logged out\n");
+        return currentCustomer;
     }
     
     @WebMethod(operationName = "remoteViewCreditBalance")
-    public void remoteViewCreditBalance(@WebParam(name = "customer") Customer currentCustomer) 
+    public BigDecimal remoteViewCreditBalance(@WebParam(name = "customer") Customer currentCustomer) 
     {
-        BigDecimal creditBalance = null;
+        BigDecimal creditBalance = new BigDecimal(0);
         creditBalance = currentCustomer.getCreditBalance();
         System.out.println("********** AuctionListingWebService.remoteiewCreditBalance(): Customer " 
                             + currentCustomer.getUsername() 
                             + " view credit balance remotely via web service");
-        System.out.println("Your Credit balance is "+creditBalance.toString()+"\n");
+        return creditBalance;
     }
     
     @WebMethod(operationName = "remoteViewAuctionListingDetail")
-    public void remoteViewAuctionListingDetail(@WebParam(name = "auctionListing") AuctionListing al) 
+    public AuctionListing remoteViewAuctionListingDetail(@WebParam(name = "auctionListingID") Long auctionListingId) throws AuctionListingNotFoundException 
     {
         System.out.println("********** AuctionListingWebService.remoteViewAuctionListingDetail(): Auction Listing ID " 
-                            + al.getAuctionListingId());
-        System.out.println("Start Date: " + al.getStartDateTime());
-        System.out.println("End Date: " + al.getEndDateTime());
-        System.out.println("Reserve Price: " + al.getReservePrice());
-        List<Bid> bids = al.getBidList();
-        BigDecimal highestBid = new BigDecimal(0);
-        for (Bid b : bids) {
-            if (b.getCreditValue().compareTo(highestBid) == 1) {
-                highestBid = b.getCreditValue();
-            }
-        }
+                            + auctionListingId);
+        AuctionListing al = auctionListingControllerLocal.retrieveAuctionListingByAuctionListingId(auctionListingId);
         DecimalFormat df = new DecimalFormat("0.00");
-        System.out.println("Current Highest Bid: " + df.format(highestBid.floatValue()));
-//        may display current smallest increment here
-        System.out.println();
+        System.out.printf("%8s%20s%20s%15s%20s\n", "Start Date Time", "End Date Time", "Reserve Price", "Winning Bid");
+        System.out.printf("%8s%20s%20s%15s%20s\n",
+                al.getStartDateTime().toString(), al.getEndDateTime().toString(),
+                al.getReservePrice().toString(), df.format(al.getWinningBidValue().floatValue()));
+        System.out.println("------------------------");
+        return al;
+    }
+    
+    @WebMethod(operationName = "remoteBrowseAllAuctionListings")
+    public void remoteBrowseAllAuctionListings() 
+    {
+        System.out.println("********** AuctionListingWebService.remoteBrowseAllAuctionListings(): " );
+        List<AuctionListing> alList = auctionListingControllerLocal.retrieveAllAuctionListings();
+        DecimalFormat df = new DecimalFormat("0.00");
+        System.out.printf("%8s%20s%20s%15s%20s\n", "Start Date Time", "End Date Time", "Reserve Price", "Winning Bid");    
+        for (AuctionListing al: alList){
+            System.out.printf("%8s%20s%20s%15s%20s\n",al.getAuctionListingId().toString(),
+                al.getStartDateTime().toString(), al.getEndDateTime().toString(),
+                al.getReservePrice().toString(), df.format(al.getWinningBidValue().floatValue()));
+        }
+    }
+    
+    @WebMethod(operationName = "remoteViewWonAuctionListings")
+    public void remoteViewWonAuctionListings(@WebParam(name = "customer") Customer currentCustomer) 
+    {
+        System.out.println("********** AuctionListingWebService.remoteViewWonAuctionListings(): " );
+        List<Bid> wonBids = currentCustomer.getWonBids();
+        DecimalFormat df = new DecimalFormat("0.00");
+        System.out.printf("%8s%20s%20s%15s%20s\n", "ID","Start Date Time", "End Date Time", "Reserve Price", "Winning Bid");    
+        for (Bid b : wonBids) {
+            AuctionListing al = b.getAuctionListing();
+            System.out.printf("%8s%20s%20s%15s%20s\n", al.getAuctionListingId().toString(),
+                al.getStartDateTime().toString(), al.getEndDateTime().toString(),
+                al.getReservePrice().toString(), df.format(al.getWinningBidValue().floatValue()));
+        }
+    }
+    
+    @WebMethod(operationName = "configureProxyBidding")
+    public void configureProxyBidding(@WebParam(name = "auctionListing") AuctionListing al,
+                                        @WebParam(name = "maxAmount") BigDecimal maxAmount) 
+    {
+        System.out.println("********** AuctionListingWebService.configureProxyBidding(): ID " +al.getAuctionListingId().toString());
+        
+    }
+    
+    private double getSmallestIncrementWithCurrentBid(BigDecimal highestBid) {
+
+        double smallestIncrement = 0;
+        if (highestBid.compareTo(new BigDecimal(1)) < 0) {
+            smallestIncrement = .05;
+        } else if (highestBid.compareTo(new BigDecimal(5)) < 0) {
+            smallestIncrement = .25;
+        } else if (highestBid.compareTo(new BigDecimal(25)) < 0) {
+            smallestIncrement = .50;
+        } else if (highestBid.compareTo(new BigDecimal(100)) < 0) {
+            smallestIncrement = 1.00;
+        } else if (highestBid.compareTo(new BigDecimal(250)) < 0) {
+            smallestIncrement = 2.50;
+        } else if (highestBid.compareTo(new BigDecimal(500)) < 0) {
+            smallestIncrement = 5.00;
+        } else if (highestBid.compareTo(new BigDecimal(1000)) < 0) {
+            smallestIncrement = 10.00;
+        } else if (highestBid.compareTo(new BigDecimal(2500)) < 0) {
+            smallestIncrement = 25.00;
+        } else if (highestBid.compareTo(new BigDecimal(5000)) < 0) {
+            smallestIncrement = 50.00;
+        } else {
+            smallestIncrement = 100.00;
+        }
+        return smallestIncrement;
+    }
+    @WebMethod(operationName = "proxyBidding")
+    public void proxyBidding(@WebParam(name = "auctionListing") AuctionListing al,
+                                        @WebParam(name = "maxAmount") BigDecimal maxAmount) 
+    {   
+        BigDecimal highestBid = new BigDecimal(0);
+        System.out.println("********** AuctionListingWebService.proxyBidding(): " );
+        if (al.getStatus().equals(OPENED)){
+            highestBid = al.getWinningBidValue();
+        }
+    }
+    @WebMethod(operationName = "placeBid")
+    public void placeBid(@WebParam(name = "auctionListing") AuctionListing al,
+                                        @WebParam(name = "maxAmount") BigDecimal maxAmount) 
+    {   
+        System.out.println("********** AuctionListingWebService.placeBid(): " );
+        
     }
 }
