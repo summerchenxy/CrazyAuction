@@ -155,6 +155,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         query.setParameter("inStatus", status);
         query.setParameter("inFinal", checkFinal);
         
+
         List<AuctionListing> als = query.getResultList();
         for (AuctionListing al : als) {
             al.getBidList().size();
