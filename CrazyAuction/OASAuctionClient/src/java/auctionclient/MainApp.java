@@ -64,7 +64,7 @@ class MainApp {
     public void runApp() {
 
         Scanner sc = new Scanner(System.in);
-        boolean premium = currentCustomer.getIfPremium();
+        //boolean premium = currentCustomer.getIfPremium();
         while (true) {
             Integer response = 0;
             System.out.println("\n*** Auction Client :: Welcome ***\n");

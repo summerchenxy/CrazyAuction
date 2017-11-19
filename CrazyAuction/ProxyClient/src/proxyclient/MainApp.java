@@ -8,7 +8,9 @@ package proxyclient;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 import ws.client.AuctionListing;
 import ws.client.AuctionListingNotFoundException_Exception;
@@ -232,10 +234,33 @@ public class MainApp {
     }
     
     public void doConfigureProxyBidding(AuctionListing al){
+        Scanner sc = new Scanner(System.in);
+        BigDecimal maxAmt = null;
+        while (maxAmt == null) {
+            try {
+                System.out.print("> ");
+                maxAmt = BigDecimal.valueOf(sc.nextDouble());
+            } catch (Exception ex) {
+            }
+        }
         System.out.println("You have successfully configured proxy bidding for auction listing!");
     }
     
     public void doConfigureSniping(AuctionListing al){
+        Scanner sc = new Scanner(System.in);
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+        System.out.println("Auction Listing ID "+al.getAuctionListingId().toString()+"expires on " + format.format(al.getEndDateTime()));
+        System.out.println("Enter End Date in yyyy.MM.dd.HH format ");
+        Date date = null;
+        while (date == null) {
+            System.out.print("> ");
+            String line = sc.nextLine();
+            try {
+                date = format.parse(line);
+            } catch (ParseException e) {
+                System.out.println("Sorry, that's not valid. Please try again.");
+            }
+        }
         System.out.println("You have successfully configured sniping for auction listing!");
     }
     

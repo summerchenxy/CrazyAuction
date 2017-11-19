@@ -131,4 +131,39 @@ public class CrazyAuctionWebService {
                 al.getReservePrice().toString(), df.format(al.getWinningBidValue().floatValue()));
         }
     }
+    
+    @WebMethod(operationName = "configureProxyBidding")
+    public void configureProxyBidding(@WebParam(name = "auctionListing") AuctionListing al,
+                                        @WebParam(name = "maxAmount") BigDecimal maxAmount) 
+    {
+        System.out.println("********** AuctionListingWebService.configureProxyBidding(): ID " +al.getAuctionListingId().toString());
+        
+    }
+    
+    private double getSmallestIncrementWithCurrentBid(BigDecimal highestBid) {
+
+        double smallestIncrement = 0;
+        if (highestBid.compareTo(new BigDecimal(1)) < 0) {
+            smallestIncrement = .05;
+        } else if (highestBid.compareTo(new BigDecimal(5)) < 0) {
+            smallestIncrement = .25;
+        } else if (highestBid.compareTo(new BigDecimal(25)) < 0) {
+            smallestIncrement = .50;
+        } else if (highestBid.compareTo(new BigDecimal(100)) < 0) {
+            smallestIncrement = 1.00;
+        } else if (highestBid.compareTo(new BigDecimal(250)) < 0) {
+            smallestIncrement = 2.50;
+        } else if (highestBid.compareTo(new BigDecimal(500)) < 0) {
+            smallestIncrement = 5.00;
+        } else if (highestBid.compareTo(new BigDecimal(1000)) < 0) {
+            smallestIncrement = 10.00;
+        } else if (highestBid.compareTo(new BigDecimal(2500)) < 0) {
+            smallestIncrement = 25.00;
+        } else if (highestBid.compareTo(new BigDecimal(5000)) < 0) {
+            smallestIncrement = 50.00;
+        } else {
+            smallestIncrement = 100.00;
+        }
+        return smallestIncrement;
+    }
 }
