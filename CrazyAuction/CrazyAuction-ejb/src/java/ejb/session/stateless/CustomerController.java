@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Address;
 import entity.CreditTransaction;
 import entity.Customer;
+import java.math.BigDecimal;
 import java.util.Scanner;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -22,7 +23,6 @@ import javax.xml.ws.WebServiceRef;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerPasswordChangeException;
 import util.exception.InvalidLoginCredentialException;
-
 
 /**
  *
@@ -65,17 +65,19 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException {
         Query query = em.createQuery("SELECT s FROM Customer s WHERE s.username = :inUsername");
         query.setParameter("inUsername", username);
-
         try {
-            return (Customer) query.getSingleResult();
+            Customer customer = (Customer) query.getSingleResult();
+            customer.getAddresses().size();
+            customer.getCreditTransactionHistory().size();
+            customer.getWonBids().size();
+            return customer;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new CustomerNotFoundException("Customer Username " + username + " does not exist!");
         }
     }
-  
-  @Override
-    public Customer doLogin(String username, String password) throws InvalidLoginCredentialException {
 
+    @Override
+    public Customer doLogin(String username, String password) throws InvalidLoginCredentialException {
         try {
             Customer customer = retrieveCustomerByUsername(username);
             if (customer.getPassword().equals(password)) {
@@ -95,5 +97,10 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
 //            return customer;
 //        }
 
+    @Override
+    public BigDecimal retrieveCustomerCreditBalance(Long customerId) {
+        Customer customer = em.find(Customer.class, customerId);
+        return customer.getCreditBalance();
+    }
 
 }

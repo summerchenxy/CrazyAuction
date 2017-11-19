@@ -34,46 +34,40 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     @Override
-    public CreditPackage createCreditPackage(CreditPackage creditPackage)
-    {
+    public CreditPackage createCreditPackage(CreditPackage creditPackage) {
         em.persist(creditPackage);
         em.flush();
         em.refresh(creditPackage);
 
         return creditPackage;
     }
-    
-    
+
     @Override
-    public void updateCreditPackage(CreditPackage creditPackage)
-    {
+    public void updateCreditPackage(CreditPackage creditPackage) {
         em.merge(creditPackage);
     }
-    
-    
-   
+
     @Override
-    public void deleteCreditPackage(CreditPackage creditPackage)
-    {
-        System.out.println("Delete method" +creditPackage.getCreditPackageId());
-        if (getTransactionsNum(creditPackage)==0){
+    public void deleteCreditPackage(CreditPackage creditPackage) {
+        System.out.println("Delete method" + creditPackage.getCreditPackageId());
+        if (getTransactionsNum(creditPackage) == 0) {
             em.remove(creditPackage);
             em.flush();
-        }
-        else{//package used. mark as disabled
+        } else {//package used. mark as disabled
             disableCreditPackage(creditPackage);
         }
     }
-    
+
     @Override
-    public void disableCreditPackage(CreditPackage creditPackage)
-    {
+    public void disableCreditPackage(CreditPackage creditPackage) {
         creditPackage.setEnabled(Boolean.FALSE);
         updateCreditPackage(creditPackage);
     }
-    
 
+  
+    @Override
     public List<CreditTransaction> getTransactions(CreditPackage creditPackage){
+
         Long creditPackageId = creditPackage.getCreditPackageId();
         Query query = em.createQuery("SELECT ct FROM CreditTransaction ct WHERE ct.creditPackage.creditPackageId = :inCreditPackageId");
         query.setParameter("inCreditPackageId", creditPackageId);
@@ -84,26 +78,23 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     public int getTransactionsNum(CreditPackage creditPackage){
         return getTransactions(creditPackage).size();
     }
-  
+
     @Override
-    public List<CreditPackage> retrieveAllCreditPackages()
-    {
+    public List<CreditPackage> retrieveAllCreditPackages() {
         Query query = em.createQuery("SELECT s FROM CreditPackage s");
-        
-        return query.getResultList();
+        List<CreditPackage> creditPackages = query.getResultList();
+
+        return creditPackages;
     }
 
     @Override
-    public CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException
-    {
+    public CreditPackage retrieveCreditPackageByCreditPackageId(Long creditPackageId) throws CreditPackageNotFoundException {
         CreditPackage creditPackage = em.find(CreditPackage.class, creditPackageId);
-        
-        if(creditPackageId != null)
-        {
+
+        if (creditPackageId != null) {
+            creditPackage.getCreditTransactions().size();
             return creditPackage;
-        }
-        else
-        {
+        } else {
             throw new CreditPackageNotFoundException("Credit Package ID " + creditPackageId + " does not exist!");
         }
     }
@@ -111,5 +102,5 @@ public class CreditPackageController implements CreditPackageControllerRemote, C
     public void persist(Object object) {
         em.persist(object);
     }
-    
+
 }
