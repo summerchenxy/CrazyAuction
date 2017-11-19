@@ -6,8 +6,10 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import java.util.Scanner;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerPasswordChangeException;
+import util.exception.InvalidLoginCredentialException;
 
 
 /**
@@ -19,6 +21,7 @@ public interface CustomerControllerRemote {
     public Customer createNewCustomer(Customer customer);
     public void updateCustomer(Customer customer);
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
+    public Customer DoLogin(String username, String password) throws InvalidLoginCredentialException;
+//    public Customer changeCustomerName(Long customerId, String firstName, String lastName);
 
-   
 }
