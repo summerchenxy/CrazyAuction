@@ -22,6 +22,7 @@ import util.enumeration.AuctionStatus;
 import util.exception.AuctionListingNotFoundException;
 import util.exception.InvalidAccessRightException;
 import ejb.session.stateless.AuctionListingControllerRemote;
+import java.text.DecimalFormat;
 
 /**
  *
@@ -157,11 +158,20 @@ public class SalesOperationModule {
         Long auctionListingId = scanner.nextLong();
 
         try {
-            AuctionListing auctionListing = auctionListingControllerRemote.retrieveAuctionListingByAuctionListingId(auctionListingId);
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n", "AuctionListing ID", "Starting Bid Amount", "Start Date Time", "End Date Time", "Status", "Description", "Reserve Price", "Bid List", "Winning Bid");
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n",
-                    auctionListing.getAuctionListingId().toString(), auctionListing.getStartingBidAmount().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
-                    auctionListing.getStatus().toString(), auctionListing.getDescription(), auctionListing.getReservePrice().toString(), auctionListing.getBidList().toArray().toString(), auctionListing.getWinningBid().toString());
+            AuctionListing al = auctionListingControllerRemote.retrieveAuctionListingByAuctionListingId(auctionListingId);
+            System.out.println("Auction Listing ID: " + al.getAuctionListingId());
+            System.out.println("Auction Listing ID: "+al.getStartingBidAmount().toString());
+            System.out.println("Start Date: " + al.getStartDateTime().toString());
+            System.out.println("End Date: " + al.getEndDateTime().toString());
+            System.out.println("Status: " + al.getStatus().toString());
+            System.out.println("Description: " + al.getDescription());
+            System.out.println("Reserve Price: " + al.getReservePrice().toString());
+            String winningBid = "NA";
+            if (al.getWinningBidValue()!=null){
+                winningBid = al.getWinningBidValue().toString();
+            }
+            System.out.println("Current Highest Bid: " + winningBid);
+    
             System.out.println("------------------------");
             System.out.println("1: Update Auction Listing");
             System.out.println("2: Delete Auction Listing");
@@ -170,9 +180,9 @@ public class SalesOperationModule {
             response = scanner.nextInt();
 
             if (response == 1) {
-                doUpdateAuctionListing(auctionListing);
+                doUpdateAuctionListing(al);
             } else if (response == 2) {
-                doDeleteAuctionListing(auctionListing);
+                doDeleteAuctionListing(al);
             }
         } catch (AuctionListingNotFoundException ex) {
             System.out.println("An error has occurred while retrieving auctionListing: " + ex.getMessage() + "\n");
@@ -249,12 +259,12 @@ public class SalesOperationModule {
         System.out.println("*** OAS Administration Panel :: System Administration :: View All AuctionListings ***\n");
 
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListings();
-        System.out.printf("%8s%20s%20s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Status", "Reserve Price", "Bid List", "Winning Bid");
+        System.out.printf("%8s%20s%20s%20s%20s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
 
         for (AuctionListing auctionListing : allAuctionListings) {
             System.out.printf("%8s%20s%20s%20s%20s\n",
                     auctionListing.getAuctionListingId().toString(), auctionListing.getStartingBidAmount().toString(), auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(),
-                    auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), auctionListing.getBidList().toArray().toString(), auctionListing.getWinningBid().toString());
+                    auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), auctionListing.getWinningBid().toString());
         }
         System.out.print("Press any key to continue...> ");
         scanner.nextLine();

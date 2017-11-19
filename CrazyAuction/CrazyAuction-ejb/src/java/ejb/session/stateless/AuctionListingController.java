@@ -66,7 +66,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             em.remove(auctionListing);
             em.flush();
         } else {//listing used. mark as disabled
-            auctionListing.setEnabled(FALSE);
+            auctionListing.setEnabled(Boolean.FALSE);
         };
     }
 
@@ -78,7 +78,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
 
     @Override
     public void assignWinningBid(AuctionListing auctionListing) {
-        auctionListing.setStatus(CLOSED);
+        auctionListing.setStatus(AuctionStatus.CLOSED);
         BigDecimal highestBidValue = BigDecimal.ZERO;
         Bid highestBid = new Bid();
         int size = auctionListing.getBidList().size();
@@ -99,7 +99,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             //set manual for 3b. highest bid same or below reserve price. 
             if (auctionListing.getReservePrice().compareTo(BigDecimal.ZERO) > 0
                     && auctionListing.getReservePrice().compareTo(highestBidValue) > 0) {
-                auctionListing.setStatus(MANUAL);
+                auctionListing.setStatus(AuctionStatus.MANUAL);
             }
         }
         updateAuctionListing(auctionListing);
@@ -110,7 +110,9 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
 
         if (auctionListingId != null) {
+            System.out.print("test1");
             auctionListing.getBidList().size();
+            System.out.print(auctionListing.getBidList().size());
             return auctionListing;
         } else {
             throw new AuctionListingNotFoundException("Auction Listing ID " + auctionListingId + " does not exist!");
@@ -119,7 +121,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
 
     @Override
     public List<AuctionListing> retrieveClosedAuctions() {
-        AuctionStatus status = CLOSED;
+        AuctionStatus status = AuctionStatus.CLOSED;
         Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
         query.setParameter("inStatus", status);
         return query.getResultList();
@@ -127,7 +129,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
 
     @Override
     public List<AuctionListing> retrieveOpenedAuctions() {
-        AuctionStatus status = OPENED;
+        AuctionStatus status = AuctionStatus.OPENED;
         Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
         query.setParameter("inStatus", status);
         return query.getResultList();
@@ -135,7 +137,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
 
     @Override
     public List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention() {
-        AuctionStatus status = MANUAL;
+        AuctionStatus status = AuctionStatus.MANUAL;
         Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
         query.setParameter("inStatus", status);
         return query.getResultList();
@@ -146,7 +148,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         List<AuctionListing> auctionListings = retrieveClosedAuctions();
         for (AuctionListing auctionListing : auctionListings) {
             if (auctionListing.getStartDateTime().compareTo(new Date()) <= 0) {
-                auctionListing.setStatus(OPENED);
+                auctionListing.setStatus(AuctionStatus.OPENED);
                 updateAuctionListing(auctionListing);
             }
         }
