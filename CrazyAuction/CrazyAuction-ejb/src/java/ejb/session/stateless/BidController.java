@@ -5,8 +5,10 @@
  */
 package ejb.session.stateless;
 
+import entity.AuctionListing;
 import entity.Bid;
 import entity.CreditPackage;
+import entity.CreditTransaction;
 import entity.Customer;
 import java.math.BigDecimal;
 import javax.ejb.Local;
@@ -27,20 +29,20 @@ import util.exception.BidNotFoundException;
 @Local(BidControllerLocal.class)
 @Remote(BidControllerRemote.class)
 public class BidController implements BidControllerRemote, BidControllerLocal {
-
+    
     @PersistenceContext(unitName = "CrazyAuction-ejbPU")
     private EntityManager em;
-
+    
     @Override
     public Bid createNewBid(Bid bid) {
-
+        
         em.persist(bid.getCreditTransaction());
         em.persist(bid);
         em.flush();
         em.refresh(bid);
         return bid;
     }
-
+    
     @Override
     public void refundToCustomer(Bid bid) {
         BigDecimal creditValue = bid.getCreditValue();
@@ -50,23 +52,23 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
         em.merge(bid);
         em.merge(customer);
     }
-
+    
     @Override
     public Bid retrieveBidByBidId(Long bidId) throws BidNotFoundException {
         Bid bid = em.find(Bid.class, bidId);
-
+        
         if (bidId != null) {
             return bid;
         } else {
             throw new BidNotFoundException("Bid ID " + bidId + " does not exist!");
         }
     }
-
+    
     @Override
     public Bid retrieveBidByCreditValue(BigDecimal creditValue) throws BidNotFoundException {
         Query query = em.createQuery("SELECT s FROM Bid s WHERE s.creditValue = :inCreditValue");
         query.setParameter("inCreditValue", creditValue);
-
+        
         try {
             return (Bid) query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException ex) {
@@ -74,16 +76,27 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
         }
     }
     
-    public void placeBid(Bid bid){
-        
-
-    @Override
-    public void placeBid(Bid bid) {
-
-    }
 
     @Override
     public void updateBid(Bid bid) {
         em.merge(bid);
+    }
+
+    //a customer spent an amount of credit to bid for an auction listing
+    public void placeBid(Long customerId, Long auctionListingId, BigDecimal amount) {
+        AuctionListing al = em.find(AuctionListing.class, auctionListingId);
+        Customer customer = em.find(Customer.class, customerId);
+        Bid bid = new Bid(amount, al);
+        CreditTransaction ct = new CreditTransaction(customer, bid, amount);
+        em.persist(ct);
+        bid.setCreditTransaction(ct);
+        em.persist(bid);
+        customer.getCreditTransactionHistory().add(ct);
+        em.merge(customer);
+        al.getBidList().add(bid);
+        em.merge(al);
+        
+        em.flush();
+        
     }
 }

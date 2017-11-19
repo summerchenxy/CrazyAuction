@@ -21,6 +21,7 @@ public interface BidControllerLocal {
 
     public void placeBid(Bid bid);
     
+
     public void updateBid(Bid bid);
     
 }
