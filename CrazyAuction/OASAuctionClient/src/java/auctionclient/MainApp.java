@@ -88,7 +88,7 @@ class MainApp {
             switch (response) {
                 case 1:
                     try {
-                        DoLogin();
+                        doLogin();
                         menuMain();
                     } catch (InvalidLoginCredentialException ex) {
                     }
@@ -332,7 +332,7 @@ class MainApp {
         sc.nextLine();
     }
 
-    private void DoLogin() throws InvalidLoginCredentialException {
+    private void doLogin() throws InvalidLoginCredentialException {
         Scanner sc = new Scanner(System.in);
         String username;
         String password = "";
@@ -342,7 +342,7 @@ class MainApp {
         password = doReadToken("password");
         if (username.length() > 0 && password.length() > 0) {
             try {
-                currentCustomer = customerController.DoLogin(username, password);
+                currentCustomer = customerController.doLogin(username, password);
                 System.out.println();
                 System.out.println("Login successful!\n");
             } catch (InvalidLoginCredentialException ex) {
@@ -506,9 +506,10 @@ class MainApp {
         while (true) {
             System.out.println("\n*** Auction Client :: Address Menu***\n");
             System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
+            //Summer: sequence of use cases. add update Address.
             System.out.println("1. view all address(es)");
             System.out.println("2. add address(es)");
-            System.out.println("3. disable an address");
+            System.out.println("3. disable an address");//Summer: should be included in view address details instead of show up directly
             System.out.println("4: exit to main menu\n");
             response = 0;
 
@@ -544,8 +545,8 @@ class MainApp {
             System.out.println("\n*** Auction Client :: Credit Menu***\n");
             System.out.printf("You are logged in as %s\n", currentCustomer.getUsername());
             System.out.println("1. purchase new credit package");
-            System.out.println("2. add address(es)");
-            System.out.println("3. disable an address");
+            //System.out.println("2. add credit package(s)");
+            //System.out.println("3. disable a credit package");
             System.out.println("4: exit to main menu\n");
             response = 0;
 
@@ -580,7 +581,7 @@ class MainApp {
         List<CreditPackage> allCreditPackages = creditPackageController.retrieveAllCreditPackages();
         System.out.printf("%8s%20s%15s\n", "CreditPackage ID", "Price", "Available Credit");
         for (CreditPackage cp : allCreditPackages) {
-            //customer can only purchase the credit package if no one has bought it befoure 
+            //Summer:customer can only purchase the credit package if no one has bought it befoure 
             if (cp.getCreditTransactions() == null && cp.getEnabled()) {
                 System.out.printf("%8s%20s%15s\n", cp.getCreditPackageId(), cp.getPrice(), cp.getCredit());
             }
@@ -622,7 +623,7 @@ class MainApp {
             System.out.println("3. Browse won auction listing(s)");//browser -> for place bidding
             System.out.println("4: exit to main menu\n");
             response = 0;
-
+            //Summer: add "view acution listing" and only show place new bid and refresh auction listing in the view method instead of here
             while (response < 1 || response > 4) {
                 System.out.print("> ");
                 response = sc.nextInt();
@@ -854,5 +855,6 @@ class MainApp {
         System.out.print("Press any key to continue...> ");
         sc.nextLine();
     }
+    //Summer: include select delivery address in the browse won auction listing method
 
 }

@@ -74,7 +74,7 @@ public class CustomerController implements CustomerControllerRemote, CustomerCon
     }
   
   @Override
-    public Customer DoLogin(String username, String password) throws InvalidLoginCredentialException {
+    public Customer doLogin(String username, String password) throws InvalidLoginCredentialException {
 
         try {
             Customer customer = retrieveCustomerByUsername(username);

@@ -130,7 +130,7 @@ public class MainApp {
         
         while(true)
         {
-            System.out.println("*** RCBS - Teller Terminal ***\n");
+            System.out.println("*** OAS Administration Panel ***\n");
             System.out.println("You are login. \n");
             System.out.println("1: Change password");
             System.out.println("2: Perform more tasks");
