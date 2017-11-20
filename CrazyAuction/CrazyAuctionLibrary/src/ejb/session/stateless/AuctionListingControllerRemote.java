@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.AuctionListing;
 import entity.Bid;
+import entity.Customer;
 import java.math.BigDecimal;
 import java.util.List;
 import util.exception.AuctionListingNotFoundException;
@@ -16,7 +17,7 @@ import util.exception.AuctionListingNotFoundException;
  * @author Summer
  */
 public interface AuctionListingControllerRemote {
-    
+
     Long createAuctionListing(AuctionListing auctionListing);
 
     void updateAuctionListing(AuctionListing auctionListing);
@@ -26,20 +27,22 @@ public interface AuctionListingControllerRemote {
     List<AuctionListing> retrieveAllAuctionListings();
 
     AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException;
-    
+
     List<AuctionListing> retrieveAllAuctionListingsRequiringManualIntervention();
-    
+
     void openAuction();
 
     void closeAuction();
-    
+
     List<AuctionListing> retrieveOpenedAuctions();
 
     List<AuctionListing> retrieveClosedAuctions();
 
     void assignWinningBid(Long auctionListingId);
-    
+
     void refundBid(Bid bid);
 
     Bid getHighestBid(AuctionListing auctionListing);
+
+    public void placeNewBid(Long auctionListingId, Customer customer, BigDecimal bidAmount);
 }

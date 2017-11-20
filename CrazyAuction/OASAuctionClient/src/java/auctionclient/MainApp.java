@@ -856,26 +856,7 @@ class MainApp {
                 }
             }
 
-            Bid newBid = new Bid(bidAmount, null);
-            newBid.setAuctionListing(al);
-            al.getBidList().add(newBid);
-            auctionListingController.updateAuctionListing(al);
-            //record credit transaction
-            CreditTransaction ct = new CreditTransaction();
-            ct.setTransactionDateTime(new Date());
-            ct.setCustomer(currentCustomer);
-            ct.setType(TransactionTypeEnum.DEBIT);
-            ct.setBid(newBid);
-            //associate transaction to bid
-            newBid.setCreditTransaction(ct);
-            bidController.createNewBid(newBid);
-//            creditTransactionController.createNewCreditTransaction(ct);
-
-            //associate transaction to customer
-            currentCustomer.getCreditTransactionHistory().add(ct);
-            //subtract credit balance 
-            currentCustomer.setCreditBalance(currentCustomer.getCreditBalance().subtract(newBid.getCreditValue()));
-            customerController.updateCustomer(currentCustomer);
+            auctionListingController.placeNewBid(auctionListingId, currentCustomer, bidAmount);
             System.out.println("you have successfully bid fot the item!");
             //may display current smallest increment here
         } catch (AuctionListingNotFoundException ex) {
