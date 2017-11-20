@@ -155,7 +155,6 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     public AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException {
         AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
 
-
         if (auctionListing != null) {
             try {
                 auctionListing.getBidList().size();
@@ -163,6 +162,8 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
                     b.getCreditTransaction().getCustomer().toString();
                 }
                 
+
+//            System.out.print(auctionListing.getBidList().size());
             } catch (Exception ex) {
             }
             try {
@@ -238,7 +239,6 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         List<AuctionListing> auctionListings = retrieveOpenedAuctions();
         for (AuctionListing auctionListing : auctionListings) {
             if (auctionListing.getEndDateTime().compareTo(new Date()) >= 0) {
-
                 auctionListing.setStatus(CLOSED);
                 updateAuctionListing(auctionListing);
                 assignWinningBid(auctionListing.getAuctionListingId());
@@ -248,5 +248,22 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
 
     public void persist(Object object) {
         em.persist(object);
+    }
+
+    @Override
+    public void placeNewBid(Long auctionListingId, Customer customer, BigDecimal bidAmount) {
+        AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
+        Bid newBid = new Bid(bidAmount, auctionListing);
+        CreditTransaction ct = new CreditTransaction();
+        ct.setTransactionDateTime(new Date());
+        ct.setCustomer(customer);
+        ct.setType(TransactionTypeEnum.DEBIT);
+        ct.setBid(newBid);;
+        em.persist(ct);
+        newBid.setCreditTransaction(ct);
+        em.persist(newBid);
+        customer.getCreditTransactionHistory().add(ct);
+        customer.setCreditBalance(customer.getCreditBalance().subtract(newBid.getCreditValue()));
+        em.merge(customer);
     }
 }
