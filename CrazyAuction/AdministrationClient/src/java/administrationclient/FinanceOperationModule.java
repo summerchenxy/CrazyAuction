@@ -120,9 +120,18 @@ public class FinanceOperationModule {
         Integer response = 0;
 
         System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details ***\n");
-        System.out.print("Enter Credit Package ID> ");
-        Long creditPackageId = scanner.nextLong();
+        System.out.println("Enter Credit Package ID");
+        System.out.print("> ");
 
+        Long creditPackageId = null;
+        while (creditPackageId == null) {
+            try {
+                System.out.print("> ");
+                creditPackageId = Long.valueOf(scanner.nextLine().trim());
+            } catch (NumberFormatException ex) {
+                System.out.println("Invalid input. Please try again");
+            }
+        }
         try {
             CreditPackage creditPackage = creditPackageControllerRemote.retrieveCreditPackageByCreditPackageId(creditPackageId);
 //            List<CreditTransaction> creditTransactions = creditPackage.getCreditTransactions();
@@ -142,13 +151,12 @@ public class FinanceOperationModule {
 //            else{
 //no need to print transactions
             System.out.printf("%8s%20s%20s%15s\n", "ID", "Price", "Credit Value", "Enabled Status");
-            if (creditPackage.getEnabled()==true){
+            if (creditPackage.getEnabled() == true) {
                 System.out.printf("%8s%20s%20s%15s\n",
-                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Enabled");
-            }
-            else{
+                        creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Enabled");
+            } else {
                 System.out.printf("%8s%20s%20s%15s\n",
-                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Disabled");
+                        creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Disabled");
             }
             System.out.println("------------------------");
             System.out.println("1: Update Credit Package");
@@ -174,7 +182,8 @@ public class FinanceOperationModule {
 
         System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details :: Update Credit Package ***\n");
 
-        System.out.print("Enter Price > ");
+        System.out.println("Enter Price");
+        System.out.print("> ");
         BigDecimal price = null; //ALEX: YOUR SAMPLE IS HEREEEE
         while (price == null) {
             try {
@@ -184,13 +193,13 @@ public class FinanceOperationModule {
             } catch (Exception ex) {
             }
         }
-        
+
         creditPackage.setPrice(price);
-        System.out.println("price updated "+ price.toString());
+        System.out.println("price updated " + price.toString());
 
         System.out.print("Enter 'Enabled' or 'Disabled'");
         input = scanner.nextLine().trim();
-        while (!input.equals("Enabled") && !input.equals("Disabled")) {
+        while (!input.equalsIgnoreCase("Enabled") && !input.equalsIgnoreCase("Disabled")) {
             try {
                 System.out.print("> ");
                 input = scanner.nextLine().trim();
@@ -199,13 +208,13 @@ public class FinanceOperationModule {
                     creditPackageControllerRemote.updateCreditPackage(creditPackage);
                 } else if (input.equals("Disabled")) {
                     creditPackageControllerRemote.disableCreditPackage(creditPackage);
-                } 
+                }
             } catch (Exception ex) {
             }
         }
 
         creditPackageControllerRemote.updateCreditPackage(creditPackage);
-        System.out.println("Credit Package with ID "+ creditPackage.getCreditPackageId()+" updated successfully!\n");
+        System.out.println("Credit Package with ID " + creditPackage.getCreditPackageId() + " updated successfully!\n");
     }
 
     private void doDeleteCreditPackage(CreditPackage creditPackage) throws CreditPackageNotFoundException {
@@ -213,11 +222,11 @@ public class FinanceOperationModule {
         String input;
 
         System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details :: Delete Credit Package ***\n");
-        System.out.print("Confirm Delete Credit Package of ID:" +creditPackage.getCreditPackageId()+"(Enter 'Y' to Delete)> ");
+        System.out.print("Confirm Delete Credit Package of ID:" + creditPackage.getCreditPackageId() + "(Enter 'Y' to Delete)> ");
         input = scanner.nextLine().trim();
 
         if (input.equals("Y")) {
-            if (creditPackageControllerRemote.getTransactionsNum(creditPackage)==0) {
+            if (creditPackageControllerRemote.getTransactionsNum(creditPackage) == 0) {
                 //System.out.println(creditPackage.getCreditPackageId());
                 //creditPackageControllerRemote.retrieveCreditPackageByCreditPackageId(creditPackage.getCreditPackageId());
                 creditPackageControllerRemote.deleteCreditPackage(creditPackage);
@@ -240,13 +249,12 @@ public class FinanceOperationModule {
         System.out.printf("%8s%20s%20s%15s\n", "ID", "Price", "Credit Value", "Enabled Status");
 
         for (CreditPackage creditPackage : allCreditPackages) {
-            if (creditPackage.getEnabled()==true){
+            if (creditPackage.getEnabled() == true) {
                 System.out.printf("%8s%20s%20s%15s\n",
-                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Enabled");
-            }
-            else{
+                        creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Enabled");
+            } else {
                 System.out.printf("%8s%20s%20s%15s\n",
-                            creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Disabled");
+                        creditPackage.getCreditPackageId().toString(), creditPackage.getPrice().toString(), creditPackage.getCredit().toString(), "Disabled");
             }
         }
 

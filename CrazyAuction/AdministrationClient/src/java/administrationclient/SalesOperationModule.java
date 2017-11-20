@@ -88,7 +88,7 @@ public class SalesOperationModule {
                 }
             }
 
-            if (response == 4) {
+            if (response == 5) {
                 break;
             }
         }
