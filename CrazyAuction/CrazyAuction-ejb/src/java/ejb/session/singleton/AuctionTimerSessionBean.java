@@ -17,6 +17,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.SessionContext;
 import javax.ejb.Startup;
+import java.lang.Long;
 
 /**
  *
@@ -37,28 +38,29 @@ public class AuctionTimerSessionBean {
     @Resource
     private SessionContext sessionContext;
     
-    @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckOpenAuctionEvery5s")
-    public void automaticActivateAuctionTimer()
-    {
-        System.out.println("Activate Auction Timer event "+new Date());
-        auctionListingControllerLocal.openAuction();
-    }
     @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
     public void automaticCloseAuctionTimer()
     {
         System.out.println("Close Auction Timer event "+new Date());
         auctionListingControllerLocal.closeAuction();
     }
+    @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckOpenAuctionEvery5s")
+    public void automaticActivateAuctionTimer()
+    {
+        System.out.println("Activate Auction Timer event "+new Date());
+        auctionListingControllerLocal.openAuction();
+    }
+    
     @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
     public void automaticProxyBidding()
     {
         System.out.println("Proxy Bidding Place Bid event "+new Date());
-        //crazyAuctionWebService.proxyBidding(AuctionListing al, BigDecimal maxAmount);
+        //crazyAuctionWebService.configureProxyBidding(auctionListingId, maxAmount, custId);
     }
     @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
     public void automaticSniping()
     {
         System.out.println("Sniping Place Bid event "+new Date());
-        //crazyAuctionWebService.sniping();
+        //crazyAuctionWebService.configureSniping(Long.MIN_VALUE, BigDecimal.ONE, username, password);
     }
 }

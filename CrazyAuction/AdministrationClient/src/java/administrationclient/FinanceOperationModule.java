@@ -174,11 +174,19 @@ public class FinanceOperationModule {
 
         System.out.println("*** OAS Administration Panel :: Finance Operation :: View Credit Package Details :: Update Credit Package ***\n");
 
-        System.out.print("Enter Price (blank if no change)> ");
-        newPrice = BigDecimal.valueOf(scanner.nextDouble());
+        System.out.print("Enter Price > ");
+        BigDecimal price = null; //ALEX: YOUR SAMPLE IS HEREEEE
+        while (price == null) {
+            try {
+                System.out.print("> ");
+                creditPackage.setPrice(BigDecimal.valueOf(scanner.nextDouble()));
+                price = creditPackage.getPrice();
+            } catch (Exception ex) {
+            }
+        }
         
-        creditPackage.setPrice(newPrice);
-        System.out.println("price updated "+ newPrice.toString());
+        creditPackage.setPrice(price);
+        System.out.println("price updated "+ price.toString());
 
         System.out.print("Enter 'Enabled' or 'Disabled'");
         input = scanner.nextLine().trim();
