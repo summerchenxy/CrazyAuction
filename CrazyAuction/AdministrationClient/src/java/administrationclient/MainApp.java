@@ -17,6 +17,7 @@ import static util.enumeration.AccessRightEnum.SALES;
 import util.exception.InvalidAccessRightException;
 import util.exception.InvalidLoginCredentialException;
 import ejb.session.stateless.AuctionListingControllerRemote;
+import ejb.session.stateless.CustomerControllerRemote;
 
 /**
  *
@@ -26,6 +27,7 @@ public class MainApp {
     private EmployeeControllerRemote employeeControllerRemote;
     private CreditPackageControllerRemote creditPackageControllerRemote;
     private AuctionListingControllerRemote auctionListingControllerRemote;
+    private CustomerControllerRemote customerControllerRemote;
     
     private Employee currentEmployee;
     
@@ -36,8 +38,9 @@ public class MainApp {
     public MainApp() {
     }
 
-    public MainApp(EmployeeControllerRemote employeeControllerRemote, CreditPackageControllerRemote creditPackageControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote) {
+    public MainApp(EmployeeControllerRemote employeeControllerRemote, CustomerControllerRemote customerControllerRemote, CreditPackageControllerRemote creditPackageControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote) {
         this.employeeControllerRemote = employeeControllerRemote;
+        this.customerControllerRemote = customerControllerRemote;
         this.creditPackageControllerRemote = creditPackageControllerRemote;
         this.auctionListingControllerRemote = auctionListingControllerRemote;
     }
@@ -213,7 +216,7 @@ public class MainApp {
             financeOperationModule.menuFinanceOperation();
         }
         else if (accessRightEnum.equals(SALES)){
-            salesOperationModule = new SalesOperationModule(employeeControllerRemote, auctionListingControllerRemote, currentEmployee);
+            salesOperationModule = new SalesOperationModule(employeeControllerRemote, customerControllerRemote, auctionListingControllerRemote, currentEmployee);
             salesOperationModule.menuSalesOperation();
         }
 

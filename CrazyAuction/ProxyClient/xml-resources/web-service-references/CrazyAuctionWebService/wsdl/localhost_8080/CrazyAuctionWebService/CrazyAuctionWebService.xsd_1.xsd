@@ -82,7 +82,7 @@
 <xs:element name="creditPackage" type="tns:creditPackage" minOccurs="0"/>
 <xs:element name="creditPacketUnit" type="xs:int"/>
 <xs:element name="creditTransactionId" type="xs:long" minOccurs="0"/>
-<xs:element name="purchasingCustomer" type="tns:customer" minOccurs="0"/>
+<xs:element name="customer" type="tns:customer" minOccurs="0"/>
 <xs:element name="transactionDateTime" type="xs:dateTime" minOccurs="0"/>
 <xs:element name="type" type="tns:transactionTypeEnum" minOccurs="0"/>
 </xs:sequence>
@@ -122,6 +122,7 @@
 <xs:restriction base="xs:string">
 <xs:enumeration value="CREDIT"/>
 <xs:enumeration value="DEBIT"/>
+<xs:enumeration value="REFUND"/>
 </xs:restriction>
 </xs:simpleType>
 </xs:schema>

@@ -112,6 +112,11 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
     }
     
     @Override
+    public Customer retrieveCustomerById(Long id) throws CustomerNotFoundException {
+        return em.find(Customer.class, id);
+    }
+
+    @Override
     public void doPurchaseCreditPackage(Long creditPackageId, Long customerId, int unit){ // - need to handle exceptions here
         CreditPackage cp = em.find(CreditPackage.class, creditPackageId);
         Customer customer =em.find(Customer.class,customerId);

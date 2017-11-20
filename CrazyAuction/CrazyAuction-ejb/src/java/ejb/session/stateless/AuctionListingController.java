@@ -104,6 +104,10 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             highestBidValue = highestBid.getCreditValue();
             auctionListing.setWinningBid(highestBid);
             auctionListing.setWinningBidValue(highestBidValue);
+            //add bid to wonbids of customer
+            Customer customer = highestBid.getCreditTransaction().getCustomer();
+            customer.getWonBids().add(highestBid);
+            em.merge(customer);
             //refund the non-winning bids
             for (Bid bid : auctionListing.getBidList()) {
                 if (highestBid.getBidId().compareTo(bid.getBidId())!=0) {

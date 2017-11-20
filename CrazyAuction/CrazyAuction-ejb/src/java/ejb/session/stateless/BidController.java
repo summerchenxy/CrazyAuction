@@ -75,13 +75,14 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
             throw new BidNotFoundException("Bid of credit value " + creditValue.toString() + " does not exist!");
         }
     }
-    
+
     @Override
     public void updateBid(Bid bid) {
         em.merge(bid);
     }
 
     //a customer spent an amount of credit to bid for an auction listing
+    @Override
     public void placeBid(Long customerId, Long auctionListingId, BigDecimal amount) {
         AuctionListing al = em.find(AuctionListing.class, auctionListingId);
         Customer customer = em.find(Customer.class, customerId);
