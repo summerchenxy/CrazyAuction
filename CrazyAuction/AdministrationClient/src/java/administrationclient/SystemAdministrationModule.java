@@ -18,8 +18,9 @@ import util.exception.InvalidAccessRightException;
  * @author Summer
  */
 public class SystemAdministrationModule {
+
     private EmployeeControllerRemote employeeControllerRemote;
-    
+
     private Employee currentEmployee;
 
     public SystemAdministrationModule() {
@@ -30,111 +31,96 @@ public class SystemAdministrationModule {
         this.currentEmployee = currentEmployee;
         //System.out.println(currentEmployee.toString());
     }
-    
-    public void menuSystemAdministration() throws InvalidAccessRightException{
+
+    public void menuSystemAdministration() throws InvalidAccessRightException {
         //System.out.println(currentEmployee.getUsername());
-        if(currentEmployee.getAccessRightEnum() != AccessRightEnum.ADMIN)
-        {
+        if (currentEmployee.getAccessRightEnum() != AccessRightEnum.ADMIN) {
             throw new InvalidAccessRightException("You don't have ADMIN rights to access the system administration module.");
         }
-        
+
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
-        
-        while(true)
-        {
+
+        while (true) {
             System.out.println("*** OAS Administration Panel :: System Administration ***\n");
             System.out.println("1: Create New Employee");
             System.out.println("2: View Employee Details");
             System.out.println("3: View All Employee");
             System.out.println("4: Back\n");
             response = 0;
-            
-            while(response < 1 || response > 4)
-            {
+
+            while (response < 1 || response > 4) {
                 System.out.print("> ");
 
                 response = scanner.nextInt();
 
-                if(response == 1)
-                {
+                if (response == 1) {
                     doCreateNewEmployee();
-                }
-                else if(response == 2)
-                {
+                } else if (response == 2) {
                     doViewEmployeeDetails();
-                }
-                else if(response == 3)
-                {
+                } else if (response == 3) {
                     doViewAllEmployees();
-                }
-                else if (response == 4)
-                {
+                } else if (response == 4) {
                     break;
-                }
-                else
-                {
-                    System.out.println("Invalid option, please try again!\n");                
+                } else {
+                    System.out.println("Invalid option, please try again!\n");
                 }
             }
-            
-            if(response == 4)
-            {
+
+            if (response == 4) {
                 break;
             }
         }
     }
-    private void doCreateNewEmployee()
-    {
+
+    private void doCreateNewEmployee() {
         Scanner scanner = new Scanner(System.in);
         Employee newEmployee = new Employee();
-        
+
         System.out.println("*** OAS Administration Panel :: System Administration :: Create New Employee ***\n");
         System.out.print("Enter First Name> ");
         newEmployee.setFirstName(scanner.nextLine().trim());
         System.out.print("Enter Last Name> ");
         newEmployee.setLastName(scanner.nextLine().trim());
-        
-        while(true)
-        {
-            System.out.print("Select Access Right (1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
-            Integer accessRightInt = scanner.nextInt();
-            
-            if(accessRightInt >= 1 && accessRightInt <= 3)
-            {
-                newEmployee.setAccessRightEnum(AccessRightEnum.values()[accessRightInt-1]);
-                break;
-            }
-            else
-            {
+
+        while (true) {
+            try {
+                System.out.print("Select Access Right (1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
+                Integer accessRightInt = Integer.valueOf(scanner.nextLine().trim());
+
+                if (accessRightInt >= 1 && accessRightInt <= 3) {
+                    newEmployee.setAccessRightEnum(AccessRightEnum.values()[accessRightInt - 1]);
+                    break;
+                } else {
+                    System.out.println("Invalid option, please try again!\n");
+                }
+            } catch (NumberFormatException ex) {
                 System.out.println("Invalid option, please try again!\n");
             }
         }
-        
+
         scanner.nextLine();
         System.out.print("Enter Username> ");
         newEmployee.setUsername(scanner.nextLine().trim());
         System.out.print("Enter Password> ");
         newEmployee.setPassword(scanner.nextLine().trim());
-        
+
         newEmployee = employeeControllerRemote.createNewEmployee(newEmployee);
-        System.out.println("New employeecreated successfully! ID: " + newEmployee.getEmployeeId()+ "\n");
+        System.out.println("New employeecreated successfully! ID: " + newEmployee.getEmployeeId() + "\n");
     }
-    
-    private void doViewEmployeeDetails()
-    {
+
+    private void doViewEmployeeDetails() {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
-        
+
         System.out.println("*** OAS Administration Panel :: System Administration :: View Employee Details ***\n");
         System.out.print("Enter Employee ID> ");
         Long employeeId = scanner.nextLong();
-        
-        try
-        {
+
+        try {
             Employee employee = employeeControllerRemote.retrieveEmployeeByEmployeeId(employeeId);
             System.out.printf("%8s%20s%20s%15s%20s%20s\n", "Employee ID", "First Name", "Last Name", "Access Right", "Username", "Password");
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n", employee.getEmployeeId().toString(), employee.getFirstName(), employee.getLastName(), employee.getAccessRightEnum().toString(), employee.getUsername(), employee.getPassword());         
+            System.out.printf("%8s%20s%20s%15s%20s%20s\n", employee.getEmployeeId().toString(), employee.getFirstName(), employee.getLastName(), employee.getAccessRightEnum().toString(), employee.getUsername(), employee.getPassword());
             System.out.println("------------------------");
             System.out.println("1: Update Employee");
             System.out.println("2: Delete Employee");
@@ -142,119 +128,105 @@ public class SystemAdministrationModule {
             System.out.print("> ");
             response = scanner.nextInt();
 
-            if(response == 1)
-            {
+            if (response == 1) {
                 doUpdateEmployee(employee);
-            }
-            else if(response == 2)
-            {
+            } else if (response == 2) {
                 doDeleteEmployee(employee);
             }
-        }
-        catch(EmployeeNotFoundException ex)
-        {
+        } catch (EmployeeNotFoundException ex) {
             System.out.println("An error has occurred while retrieving employee: " + ex.getMessage() + "\n");
         }
     }
-    private void doUpdateEmployee(Employee employee)
-    {
-        Scanner scanner = new Scanner(System.in);        
+
+    private void doUpdateEmployee(Employee employee) {
+        Scanner scanner = new Scanner(System.in);
         String input;
-        
+
         System.out.println("*** OAS Administration Panel :: System Administration :: View Employee Details :: Update Employee ***\n");
         System.out.print("Enter First Name (blank if no change)> ");
         input = scanner.nextLine().trim();
-        if(input.length() > 0)
-        {
+        if (input.length() > 0) {
             employee.setFirstName(input);
         }
-                
+
         System.out.print("Enter Last Name (blank if no change)> ");
         input = scanner.nextLine().trim();
-        if(input.length() > 0)
-        {
+        if (input.length() > 0) {
             employee.setLastName(input);
         }
-        
-        while(true)
-        {
+
+        while (true) {
             System.out.print("Select Access Right (0: No Change, 1: System Administrator, 2: Finance employee, 3: Sales employee)> ");
             Integer accessRightInt = scanner.nextInt();
-            
-            if(accessRightInt >= 1 && accessRightInt <= 3)
-            {
-                employee.setAccessRightEnum(AccessRightEnum.values()[accessRightInt-1]);
+
+            if (accessRightInt >= 1 && accessRightInt <= 3) {
+                employee.setAccessRightEnum(AccessRightEnum.values()[accessRightInt - 1]);
                 break;
-            }
-            else if (accessRightInt == 0)
-            {
+            } else if (accessRightInt == 0) {
                 break;
-            }
-            else
-            {
+            } else {
                 System.out.println("Invalid option, please try again!\n");
             }
         }
-        
+
         scanner.nextLine();
         System.out.print("Enter Username (blank if no change)> ");
         input = scanner.nextLine().trim();
-        if(input.length() > 0)
-        {
+        if (input.length() > 0) {
             employee.setUsername(input);
         }
-        
+
         System.out.print("Enter Password (blank if no change)> ");
         input = scanner.nextLine().trim();
-        if(input.length() > 0)
-        {
+        if (input.length() > 0) {
             employee.setPassword(input);
         }
-        
+
         employeeControllerRemote.updateEmployee(employee);
         System.out.println("employee updated successfully!\n");
     }
-    
-    private void doDeleteEmployee(Employee employee)
-    {
-        Scanner scanner = new Scanner(System.in);        
+
+    private void doDeleteEmployee(Employee employee) {
+        Scanner scanner = new Scanner(System.in);
         String input;
-        
+
         System.out.println("*** OAS Administration Panel :: System Administration :: View Employee Details :: Delete Employee ***\n");
         System.out.printf("Confirm Delete Employee %s %s (Employee ID: %d) (Enter 'Y' to Delete)> ", employee.getFirstName(), employee.getLastName(), employee.getEmployeeId());
+        System.out.print("> ");
         input = scanner.nextLine().trim();
-        
-        if(input.equals("Y"))
-        {
-            try 
-            {
-                employeeControllerRemote.deleteEmployee(employee.getEmployeeId());
-                System.out.println("Employee deleted successfully!\n");
-            } 
-            catch (EmployeeNotFoundException ex) 
-            {
-                System.out.println("An error has occurred while deleting employee: " + ex.getMessage() + "\n");
-            }            
-        }
-        else
-        {
-            System.out.println("Employee NOT deleted!\n");
+        while (true) {
+            if (input.equalsIgnoreCase("Y")) {
+                try {
+                    employeeControllerRemote.deleteEmployee(employee.getEmployeeId());
+                    System.out.println("Employee successfully deleted!\n");
+                } catch (EmployeeNotFoundException ex) {
+                    System.out.println("An error has occurred while deleting employee: " + ex.getMessage() + "\n");
+                }
+                break;
+            } else if (input.equalsIgnoreCase("N")) {
+                System.out.println("Employee NOT deleted!\n");
+                break;
+            } else {
+                System.err.println("\nInvalid input. Please try again");
+                System.out.print("> ");
+                input = scanner.next();
+                scanner.nextLine();
+            }
         }
     }
-    private void doViewAllEmployees()
-    {
+
+    private void doViewAllEmployees() {
         Scanner scanner = new Scanner(System.in);
-        
+
         System.out.println("*** OAS Administration Panel :: System Administration :: View All Employees ***\n");
-        
+
         List<Employee> allEmployees = employeeControllerRemote.retrieveAllEmployees();
         System.out.printf("%8s%20s%20s%15s%20s%20s\n", "Employee ID", "First Name", "Last Name", "Access Right", "Username", "Password");
 
-        for(Employee employee:allEmployees)
-        {
+        for (Employee employee : allEmployees) {
             System.out.printf("%8s%20s%20s%15s%20s%20s\n", employee.getEmployeeId().toString(), employee.getFirstName(), employee.getLastName(), employee.getAccessRightEnum().toString(), employee.getUsername(), employee.getPassword());
         }
-        
+
         System.out.print("Press any key to continue...> ");
         scanner.nextLine();
     }
