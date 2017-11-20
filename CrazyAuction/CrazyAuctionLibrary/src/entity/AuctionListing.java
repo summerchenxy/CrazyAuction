@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,6 +41,8 @@ public class AuctionListing implements Serializable {
     private Date startDateTime;
     @Column(nullable = false)
     private Date endDateTime;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AuctionStatus status;
     @Column(length = 32, nullable = false)
     private String description;
