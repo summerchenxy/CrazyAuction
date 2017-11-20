@@ -49,7 +49,7 @@ public class MainApp {
         this.bidControllerRemote = bidControllerRemote;
     }
 
-    public void runApp() throws InvalidAccessRightException, ParseException {
+    public void runApp() throws InvalidAccessRightException, ParseException, BidNotFoundException {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
 
@@ -105,7 +105,7 @@ public class MainApp {
         }
     }
 
-    private void menuMain() throws InvalidLoginCredentialException, InvalidAccessRightException, ParseException {
+    private void menuMain() throws InvalidLoginCredentialException, InvalidAccessRightException, ParseException, BidNotFoundException {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
 
