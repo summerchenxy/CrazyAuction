@@ -199,8 +199,9 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     @Override
     public List<AuctionListing> retrieveOpenedAuctions() {
         AuctionStatus status = AuctionStatus.OPENED;
-        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus");
+        Query query = em.createQuery("SELECT s FROM AuctionListing s WHERE s.status = :inStatus AND s.enabled =:inEnabled");
         query.setParameter("inStatus", status);
+        query.setParameter("inEnabled", true);
         List<AuctionListing> als = query.getResultList();
         for (AuctionListing al : als) {
             al.getBidList().size();
