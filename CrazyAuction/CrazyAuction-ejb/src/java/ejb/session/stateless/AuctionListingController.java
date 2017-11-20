@@ -224,6 +224,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             if (auctionListing.getEndDateTime().compareTo(new Date()) >= 0) {
 
                 auctionListing.setStatus(CLOSED);
+                updateAuctionListing(auctionListing);
                 assignWinningBid(auctionListing.getAuctionListingId());
             }
         }

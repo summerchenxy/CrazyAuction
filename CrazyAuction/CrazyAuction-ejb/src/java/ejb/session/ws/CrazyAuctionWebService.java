@@ -22,6 +22,8 @@ import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import ejb.session.stateless.CustomerControllerLocal;
 import ejb.session.stateless.AuctionListingControllerLocal;
+import ejb.session.stateless.BidControllerLocal;
+import java.util.Date;
 import static util.enumeration.AuctionStatus.OPENED;
 import util.exception.CustomerInsufficientCreditBalance;
 import util.exception.MaximumBiddingAmountReachedException;
@@ -38,6 +40,8 @@ public class CrazyAuctionWebService {
     private CustomerControllerLocal customerControllerLocal;
     @EJB
     private AuctionListingControllerLocal auctionListingControllerLocal;
+    @EJB
+    private BidControllerLocal bidControllerLocal;
 
     /**
      * This is a sample web service operation
@@ -148,7 +152,7 @@ public class CrazyAuctionWebService {
         double increaseInBidAmount = getSmallestIncrementWithCurrentBid(maximumAmount);
         BigDecimal amountToBeBidded = currentHighestBidValue.add(BigDecimal.valueOf(increaseInBidAmount));
         if (amountToBeBidded.compareTo(maximumAmount) < 0) {
-            //customerControllerLocal.placeNewBid(auctionListing, customer);
+            bidControllerLocal.placeBid(customerId, auctionListingId, amountToBeBidded);
         } else {
             throw new MaximumBiddingAmountReachedException("Maximum bidding amount has been reached!");
         }
@@ -156,21 +160,16 @@ public class CrazyAuctionWebService {
     
     @WebMethod(operationName = "configureSniping")
     public void configureSniping(@WebParam(name = "auctionListingId") Long auctionListingId, @WebParam(name = "maximumAmount") BigDecimal maximumAmount, 
-                                        @WebParam(name = "username") String username,@WebParam(name = "password") String password) throws AuctionListingNotFoundException, CustomerNotFoundException, CustomerInsufficientCreditBalance, MaximumBiddingAmountReachedException
+                                        @WebParam(name = "username") String username,@WebParam(name = "password") String password) throws AuctionListingNotFoundException, CustomerNotFoundException, CustomerInsufficientCreditBalance, MaximumBiddingAmountReachedException, InvalidLoginCredentialException
     {
         System.out.println("********** AuctionListingWebService.configureSniping(): ID " +auctionListingId.toString());
-        
+        Customer customer = remoteLogin(username, password);
         AuctionListing auctionListing = auctionListingControllerLocal.retrieveAuctionListingByAuctionListingId(auctionListingId);
         BigDecimal currentHighestBidValue = auctionListingControllerLocal.getHighestBid(auctionListing).getCreditValue();
-        //Customer customer = customerControllerLocal.retrieveCustomerById(customerId);
+        Date endDateOfAuction = auctionListing.getEndDateTime();
         
-        double increaseInBidAmount = getSmallestIncrementWithCurrentBid(maximumAmount);
-        BigDecimal amountToBeBidded = currentHighestBidValue.add(BigDecimal.valueOf(increaseInBidAmount));
-        if (amountToBeBidded.compareTo(maximumAmount) != 0) {
-            //customerControllerLocal.placeNewBid(auctionListing, customer);
-        } else {
-            throw new MaximumBiddingAmountReachedException("Maximum bidding amount has been reached!");
-        }
+        //Timer timer = ejbTimerSessionBeanLocal.createSnipingTimer(triggerDateTimeForTimer, auctionListingId, maximumAmount, customerId);
+        //System.out.println("********** BiddingSnipingCreditBalanceWebService.createSnipingTimer() - Timer created:" + timer.getInfo().toString());
     }
     
     public double getSmallestIncrementWithCurrentBid(BigDecimal highestBid){

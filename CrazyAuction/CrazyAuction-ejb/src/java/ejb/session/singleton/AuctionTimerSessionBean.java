@@ -17,6 +17,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.SessionContext;
 import javax.ejb.Startup;
+import java.lang.Long;
 
 /**
  *
@@ -53,12 +54,12 @@ public class AuctionTimerSessionBean {
     public void automaticProxyBidding()
     {
         System.out.println("Proxy Bidding Place Bid event "+new Date());
-        //crazyAuctionWebService.proxyBidding(AuctionListing al, BigDecimal maxAmount);
+        //crazyAuctionWebService.configureProxyBidding(auctionListingId, maxAmount, custId);
     }
     @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
     public void automaticSniping()
     {
         System.out.println("Sniping Place Bid event "+new Date());
-        //crazyAuctionWebService.sniping();
+        //crazyAuctionWebService.configureSniping(Long.MIN_VALUE, BigDecimal.ONE, username, password);
     }
 }

@@ -103,7 +103,7 @@ public class MainApp {
         username = scanner.nextLine().trim();
         System.out.print("Enter password> ");
         password = scanner.nextLine().trim();
-        System.out.println(username+" "+password);
+        //System.out.println(username+" "+password);
         if(username.length() > 0 && password.length() > 0)
         {
             try
@@ -197,7 +197,6 @@ public class MainApp {
         else{
             throw new InvalidLoginCredentialException("Password entered was incorrect!");
         }
-        scanner.nextLine();
     }
     
     private void doRoleSpecificTasks() throws InvalidAccessRightException, ParseException{
