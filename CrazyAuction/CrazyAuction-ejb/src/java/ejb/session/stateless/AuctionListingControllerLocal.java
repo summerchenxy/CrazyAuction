@@ -8,6 +8,7 @@ package ejb.session.stateless;
 
 import entity.AuctionListing;
 import entity.Bid;
+import entity.Customer;
 import java.math.BigDecimal;
 import java.util.List;
 import util.exception.AuctionListingNotFoundException;
@@ -45,6 +46,8 @@ public interface AuctionListingControllerLocal {
     void refundBid(Bid bid);
 
     Bid getHighestBid(AuctionListing auctionListing);
+
+    public void placeNewBid(Long auctionListingId, Customer customer, BigDecimal bidAmount);
 
     
 }
