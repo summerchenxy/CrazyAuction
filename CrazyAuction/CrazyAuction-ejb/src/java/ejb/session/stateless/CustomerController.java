@@ -110,21 +110,25 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
         Customer customer = em.find(Customer.class, customerId);
         return customer.getCreditBalance();
     }
-    
+
     @Override
     public Customer retrieveCustomerById(Long id) throws CustomerNotFoundException {
         return em.find(Customer.class, id);
     }
 
     @Override
-    public void doPurchaseCreditPackage(Long creditPackageId, Long customerId, int unit){ // - need to handle exceptions here
+    public void doPurchaseCreditPackage(Long creditPackageId, Long customerId, int unit) { // - need to handle exceptions here
         CreditPackage cp = em.find(CreditPackage.class, creditPackageId);
-        Customer customer =em.find(Customer.class,customerId);
-        CreditTransaction ct = new  CreditTransaction(customer, cp, unit);
-        customer.getCreditTransactionHistory().add(ct);
-        cp.getCreditTransactions().add(ct);
+        Customer customer = em.find(Customer.class, customerId);
+        CreditTransaction ct = new CreditTransaction(customer, cp, unit);
         em.persist(ct);
-        System.out.println("Thank you for purchasing the credit package(s)");
+        customer.getCreditTransactionHistory().add(ct);
+        customer.setCreditBalance(customer.getCreditBalance().add(cp.getCredit().multiply(new BigDecimal(unit))));
+//        em.merge(customer);
+        cp.getCreditTransactions().add(ct);
+//        em.merge(cp);
+        em.flush();
+
     }
 
 }

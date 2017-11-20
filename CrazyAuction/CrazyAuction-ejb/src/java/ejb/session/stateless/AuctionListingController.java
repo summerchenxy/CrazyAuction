@@ -110,7 +110,7 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             em.merge(customer);
             //refund the non-winning bids
             for (Bid bid : auctionListing.getBidList()) {
-                if (highestBid.getBidId().compareTo(bid.getBidId())!=0) {
+                if (highestBid.getBidId().compareTo(bid.getBidId()) != 0) {
                     refundBid(bid);
                 }
             }
@@ -123,9 +123,9 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         }
         updateAuctionListing(auctionListing);
     }
-    
+
     @Override
-    public void refundBid(Bid bid){
+    public void refundBid(Bid bid) {
         //create a new transaction to add back the credit to customer
         Customer customer = bid.getCreditTransaction().getCustomer();
         CreditTransaction ct = new CreditTransaction();
@@ -137,17 +137,17 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         em.flush();
         em.refresh(ct);
     }
-    
+
     @Override
-    public Bid getHighestBid(AuctionListing auctionListing){
+    public Bid getHighestBid(AuctionListing auctionListing) {
         BigDecimal highestBidValue = BigDecimal.ZERO;
         Bid highestBid = new Bid();
         for (Bid bid : auctionListing.getBidList()) {
-                highestBidValue = highestBidValue.max(bid.getCreditValue());
-                if (highestBidValue.compareTo(bid.getCreditValue()) == 0) {
-                    highestBid = bid;
-                }
+            highestBidValue = highestBidValue.max(bid.getCreditValue());
+            if (highestBidValue.compareTo(bid.getCreditValue()) == 0) {
+                highestBid = bid;
             }
+        }
         return highestBid;
     }
 
@@ -155,15 +155,30 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     public AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException {
         AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
 
-        if (auctionListingId != null) {
-            auctionListing.getBidList().size();
-            auctionListing.getWinningBid().getCreditTransaction().getCustomer().toString();
-            auctionListing.getStatus().toString();
+        if (auctionListing != null) {
+            try {
+                auctionListing.getBidList().size();
+                auctionListing.getWinningBid().getCreditTransaction().getCustomer().toString();
+                auctionListing.getStatus();
 //            System.out.print(auctionListing.getBidList().size());
-            return auctionListing;
+
+            } catch (Exception ex) {
+            }
+            try {
+                auctionListing.getWinningBid().getCreditTransaction().getCustomer().toString();
+//            System.out.print(auctionListing.getBidList().size());
+            } catch (Exception ex) {
+            }
+            try {
+                auctionListing.getStatus();
+//            System.out.print(auctionListing.getBidList().size());
+
+            } catch (Exception ex) {
+            }
         } else {
             throw new AuctionListingNotFoundException("Auction Listing ID " + auctionListingId + " does not exist!");
         }
+        return auctionListing;
     }
 
     @Override
