@@ -664,7 +664,7 @@ class MainApp {
         System.out.print("> ");
         int unit = Integer.valueOf(sc.nextLine().trim());
         customerController.doPurchaseCreditPackage(creditPackageId, currentCustomer.getCustomerId(), unit);
-
+        System.out.println("Thank you for purchasing the credit package(s)");
     }
 
     //view or place bid
@@ -738,26 +738,27 @@ class MainApp {
                 if (response == 1) { //view details
                     Long auctionListingId = null;
                     AuctionListing auctionListing = null;
-                    while (auctionListingId == null) {
-
+                    while (auctionListing == null) {
                         try {
                             auctionListingId = Long.valueOf(doReadToken("auction listing ID"));
                             try {
                                 auctionListing = auctionListingController.retrieveAuctionListingByAuctionListingId(auctionListingId);
                             } catch (AuctionListingNotFoundException ex) {
+                                ex.printStackTrace();
                                 System.err.println("invalid auction listing ID");
                             }
                         } catch (Exception ex) {
-                            System.err.println("invalid input. Please try again");
+                            ex.printStackTrace();
+                            System.err.println("Invalid input. Please try again");
                         }
-                        //verify if the auction listing is opened
-                        if (auctionListing.getStatus() == AuctionStatus.OPENED) {
-                            viewAnAuctionListing(auctionListingId);
-                        } else {
-                            System.err.println("Invalid address ID");
-                        }
-                        return;
                     }
+                    //verify if the auction listing is opened
+                    if (auctionListing.getStatus() == AuctionStatus.OPENED) {
+                        viewAnAuctionListing(auctionListingId);
+                    } else {
+                        System.err.println("Invalid auction listing ID");
+                    }
+                    return;
                 } else if (response == 2) {
                     viewAllAuctionListings();
                 } else if (response == 3) {
@@ -849,12 +850,12 @@ class MainApp {
                     System.out.println("Your bid must exceed" + df.format(minNewBid));
                 }
                 //validate for enough bal. throw exception
+//                System.out.println("balance is: "+currentCustomer.getCreditBalance().setScale(2).toPlainString());
                 if (bidAmount.compareTo(currentCustomer.getCreditBalance()) > 0) {
                     throw new CustomerInsufficientCreditBalance("Please ensure you have enough credit balance");
                 }
             }
-            
-            
+
             Bid newBid = new Bid(bidAmount, null);
             newBid.setAuctionListing(al);
             al.getBidList().add(newBid);
