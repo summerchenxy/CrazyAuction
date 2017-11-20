@@ -164,7 +164,7 @@ public class SalesOperationModule {
         try {
             AuctionListing al = auctionListingControllerRemote.retrieveAuctionListingByAuctionListingId(auctionListingId);
             DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
-            System.out.println("Auction Listing ID: " + al.getAuctionListingId());
+            System.out.println("Auction Listing ID: " + auctionListingId);
             System.out.println("Starting Bid Amount: "+al.getStartingBidAmount().toString());
             System.out.println("Start Date: " + format.format(al.getStartDateTime()).toString());
             System.out.println("End Date: " + format.format(al.getEndDateTime()).toString());
@@ -199,33 +199,53 @@ public class SalesOperationModule {
 
         System.out.println("*** OAS Administration Panel :: Sales Operation :: View Auction Listing Details :: Update Auction Listing ***\n");
 
-        System.out.print("Enter Starting Bid Amount (blank if not change)> ");
-        auctionListing.setStartingBidAmount(BigDecimal.valueOf(scanner.nextDouble()));
-        scanner.next();
-
-        System.out.print("Enter Start Date in yyyy.MM.dd.HH format (blank if no change)> ");
-        String startDateString = scanner.nextLine().trim();
-        if (startDateString.length() > 0) {
-            Date startDate = formatter.parse(startDateString);
-            auctionListing.setStartDateTime(startDate);
+        System.out.print("Enter Starting Bid Amount ");
+        BigDecimal bidAmount = null;
+        while (bidAmount == null) {
+            try {
+                System.out.print("> ");
+                auctionListing.setStartingBidAmount(BigDecimal.valueOf(scanner.nextDouble()));
+                bidAmount = auctionListing.getStartingBidAmount();
+            } catch (Exception ex) {
+            }
         }
-
-        System.out.print("Enter End Date in yyyy.MM.dd.HH format (blank if no change)> ");
-        String endDateString = scanner.nextLine().trim();
-        if (endDateString.length() > 0) {
-            Date endDate = formatter.parse(endDateString);
-            auctionListing.setEndDateTime(endDate);
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+        System.out.println("Enter Start Date in yyyy.MM.dd.HH.mm format ");
+        Date date = null;
+        while (date == null) {
+            System.out.print("> ");
+            String line = scanner.nextLine();
+            try {
+                date = format.parse(line);
+            } catch (ParseException e) {
+                System.out.println("Sorry, that's not valid. Please try again.");
+            }
         }
+        Date startDate = date;
+        auctionListing.setStartDateTime(startDate);
+        System.out.println("Enter End Date in yyyy.MM.dd.HH format ");
+        date = null;
+        while (date == null) {
+            System.out.print("> ");
+            String line = scanner.nextLine();
+            try {
+                date = format.parse(line);
+            } catch (ParseException e) {
+                System.out.println("Sorry, that's not valid. Please try again.");
+            }
+        }
+        Date endDate = date;
+        auctionListing.setEndDateTime(endDate);
 
         System.out.print("Enter Description (blank if no change)> ");
         String input = scanner.nextLine().trim();
-        if (startDateString.length() > 0) {
+        if (input.length() > 0) {
             auctionListing.setDescription(input);
         }
 
         System.out.print("Enter Reserve Price (blank if no change)> ");
         auctionListing.setReservePrice(BigDecimal.valueOf(scanner.nextDouble()));
-        scanner.next();
+        //scanner.next();
 
         auctionListingControllerRemote.updateAuctionListing(auctionListing);
         System.out.println("auctionListing updated successfully!\n");

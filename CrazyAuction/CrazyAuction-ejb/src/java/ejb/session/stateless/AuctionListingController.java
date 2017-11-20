@@ -157,8 +157,8 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
 
         if (auctionListingId != null) {
             auctionListing.getBidList().size();
-            auctionListing.getWinningBid().getCreditTransaction().getCustomer().toString();
-            auctionListing.getStatus().toString();
+//            auctionListing.getWinningBid().getCreditTransaction().getCustomer().toString();
+//            auctionListing.getStatus().toString();
 //            System.out.print(auctionListing.getBidList().size());
             return auctionListing;
         } else {
