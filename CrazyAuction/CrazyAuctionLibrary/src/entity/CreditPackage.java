@@ -35,7 +35,7 @@ public class CreditPackage implements Serializable {
     @Column(nullable = false)
     private Boolean enabled;
     @OneToMany(mappedBy = "creditPackage")
-    private List<CreditTransaction> creditTransactions;
+    private List<CreditTransaction> creditTransactions = new ArrayList<CreditTransaction>();
             
     public CreditPackage() {
         this.creditTransactions = new ArrayList<>();

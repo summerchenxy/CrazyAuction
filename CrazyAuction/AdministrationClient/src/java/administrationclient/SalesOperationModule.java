@@ -22,9 +22,11 @@ import util.enumeration.AuctionStatus;
 import util.exception.AuctionListingNotFoundException;
 import util.exception.InvalidAccessRightException;
 import ejb.session.stateless.AuctionListingControllerRemote;
+import ejb.session.stateless.BidControllerRemote;
 import ejb.session.stateless.CustomerControllerRemote;
 import entity.Customer;
 import java.text.DecimalFormat;
+import util.exception.BidNotFoundException;
 
 /**
  *
@@ -35,20 +37,22 @@ public class SalesOperationModule {
     private EmployeeControllerRemote employeeControllerRemote;
     private CustomerControllerRemote customerControllerRemote;
     private AuctionListingControllerRemote auctionListingControllerRemote;
+    private BidControllerRemote bidControllerRemote;
     private Employee currEmployee;
     private static DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
 
     public SalesOperationModule() {
     }
 
-    public SalesOperationModule(EmployeeControllerRemote employeeControllerRemote, CustomerControllerRemote customerControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote, Employee currentEmployee) {
+    public SalesOperationModule(EmployeeControllerRemote employeeControllerRemote, CustomerControllerRemote customerControllerRemote, AuctionListingControllerRemote auctionListingControllerRemote, BidControllerRemote bidControllerRemote, Employee currentEmployee) {
         this.employeeControllerRemote = employeeControllerRemote;
         this.customerControllerRemote = customerControllerRemote;
         this.auctionListingControllerRemote = auctionListingControllerRemote;
+        this.bidControllerRemote = bidControllerRemote;
         this.currEmployee = currentEmployee;
     }
 
-    public void menuSalesOperation() throws InvalidAccessRightException, ParseException {
+    public void menuSalesOperation() throws InvalidAccessRightException, ParseException, BidNotFoundException {
         if (currEmployee.getAccessRightEnum() != AccessRightEnum.SALES) {
             throw new InvalidAccessRightException("You don't have SALES Employee rights to access the sales operation module.");
         }
@@ -153,7 +157,7 @@ public class SalesOperationModule {
         System.out.println("New auctionListingcreated successfully! ID: " + newAuctionListingId + "\n");
     }
 
-    private void doViewAuctionListingDetails() throws ParseException {
+    private void doViewAuctionListingDetails() throws ParseException, BidNotFoundException {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
 
@@ -164,6 +168,7 @@ public class SalesOperationModule {
         try {
             AuctionListing al = auctionListingControllerRemote.retrieveAuctionListingByAuctionListingId(auctionListingId);
             DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+            System.out.println("It is now " + format.format(new Date()));
             System.out.println("Auction Listing ID: " + auctionListingId);
             System.out.println("Starting Bid Amount: "+al.getStartingBidAmount().toString());
             System.out.println("Start Date: " + format.format(al.getStartDateTime()).toString());
@@ -171,6 +176,7 @@ public class SalesOperationModule {
             System.out.println("Status: " + al.getStatus().toString());
             System.out.println("Description: " + al.getDescription());
             System.out.println("Reserve Price: " + al.getReservePrice().toString());
+            System.out.println("Number of Bids: " + al.getBidList().size());
             String winningBid = "NA";
             if (al.getWinningBidValue()!=null){
                 winningBid = al.getWinningBidValue().toString();
@@ -244,34 +250,39 @@ public class SalesOperationModule {
         }
 
         System.out.print("Enter Reserve Price (blank if no change)> ");
-        auctionListing.setReservePrice(BigDecimal.valueOf(scanner.nextDouble()));
+        if (input.length() > 0) {
+            auctionListing.setReservePrice(BigDecimal.valueOf(scanner.nextDouble()));
+        }
         //scanner.next();
 
         auctionListingControllerRemote.updateAuctionListing(auctionListing);
         System.out.println("auctionListing updated successfully!\n");
     }
 
-    private void doDeleteAuctionListing(AuctionListing auctionListing) throws AuctionListingNotFoundException {
+    private void doDeleteAuctionListing(AuctionListing auctionListing) throws AuctionListingNotFoundException, BidNotFoundException {
         Scanner scanner = new Scanner(System.in);
         String input;
 
         System.out.println("*** OAS Administration Panel :: Sales Operation :: View Auction Listing Details :: Delete Auction Listing ***\n");
-        System.out.printf("Confirm Delete AuctionListing of start date time %s and end date time of %s (Auction Listing ID: %d) (Enter 'Y' to Delete)> ", auctionListing.getStartDateTime().toString(), auctionListing.getEndDateTime().toString(), auctionListing.getAuctionListingId());
+        System.out.printf("Confirm Delete AuctionListing of ID: %d) (Enter 'Y' to Delete)> ",  auctionListing.getAuctionListingId());
         input = scanner.nextLine().trim();
 
         if (input.equals("Y")) {
+            auctionListing.getBidList().size();
             List<Bid> bidList = auctionListing.getBidList();
-            if (bidList.isEmpty()) {
+            if (bidList.size()==0) {
                 auctionListingControllerRemote.deleteAuctionListing(auctionListing.getAuctionListingId());
                 System.out.println("Auction Listing deleted successfully!\n");
             } else {//auction listing is used and is marked as disabled
                 auctionListing.setEnabled(Boolean.FALSE);
                 //refund the credits to the customer
                 for (Bid bid : bidList) {
-                    bid.refundToCustomer();
+                    bid = bidControllerRemote.retrieveBidByBidId(bid.getBidId());
+                    bid.getCreditTransaction().toString();
+                    //bidControllerRemote.refundToCustomer(bid.getBidId());
                 }
                 auctionListingControllerRemote.updateAuctionListing(auctionListing);
-                System.out.println("Auction Listing has been used hence it is closed but not deleted!\n");
+                System.out.println("Auction Listing has been used hence it is disabled but not deleted!\n");
             }
         } else {
             System.out.println("AuctionListing NOT deleted!\n");
@@ -282,11 +293,11 @@ public class SalesOperationModule {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("*** OAS Administration Panel :: System Administration :: View All AuctionListings ***\n");
-
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+        System.out.println("It is now " + format.format(new Date()));
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListings();
         System.out.printf("%8s%20s%20s%10s%10s%10s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
         String winningBid;
-        DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
         for (AuctionListing auctionListing : allAuctionListings) {
             winningBid = "NA";
             if (auctionListing.getWinningBidValue()!=null){
@@ -302,9 +313,9 @@ public class SalesOperationModule {
 
     private void doViewAllAuctionListingsRequiringManualIntervention() {
         Scanner scanner = new Scanner(System.in);
-
+        
         System.out.println("*** OAS Administration Panel :: System Administration :: View All AuctionListings with Bids but Below Reserve Price ***\n");
-
+        
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListingsRequiringManualIntervention();
         System.out.printf("%8s%20s%20s%15s%20s%20s\n", "AuctionListing ID", "Start Date Time", "End Date Time", "Status", "Description", "Reserve Price", "Bid List", "Winning Bid");
         String winningBid;

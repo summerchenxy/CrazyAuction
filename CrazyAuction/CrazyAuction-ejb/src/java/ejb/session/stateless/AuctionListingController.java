@@ -159,6 +159,9 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
         if (auctionListing != null) {
             try {
                 auctionListing.getBidList().size();
+                for (Bid b: auctionListing.getBidList()){
+                    b.getCreditTransaction().getCustomer().toString();
+                }
                 
             } catch (Exception ex) {
             }

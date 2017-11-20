@@ -52,7 +52,7 @@ public class AuctionListing implements Serializable {
     private BigDecimal winningBidValue;
     @Column(nullable = false)
     private Boolean enabled;//false if it is disabled
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Boolean isFinal; //true if is manually intervened 
 
     @OneToMany(mappedBy = "auctionListing")

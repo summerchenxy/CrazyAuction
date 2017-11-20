@@ -11,6 +11,8 @@ import entity.CreditPackage;
 import entity.CreditTransaction;
 import entity.Customer;
 import java.math.BigDecimal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -44,14 +46,26 @@ public class BidController implements BidControllerRemote, BidControllerLocal {
     }
     
     @Override
-    public void refundToCustomer(Bid bid) {
-        BigDecimal creditValue = bid.getCreditValue();
-        Customer customer = bid.getCreditTransaction().getCustomer();
-        customer.addCreditBalance(creditValue);
-        bid.setCreditValue(BigDecimal.ZERO);
-        em.merge(bid);
-        em.merge(customer);
+    public void refundToCustomer(Long bidId) {
+        Bid bid;
+        try {
+            bid = retrieveBidByBidId(bidId);
+            
+            BigDecimal creditValue = bid.getCreditValue();
+            System.out.println(bid.getCreditTransaction().toString());
+            CreditTransaction ct = bid.getCreditTransaction();
+            System.out.println(ct.getCustomer().toString());
+            Customer customer = ct.getCustomer();
+            customer.addCreditBalance(creditValue);
+            bid.setCreditValue(BigDecimal.ZERO);
+            em.merge(bid);
+            em.merge(customer);
+        } catch (BidNotFoundException ex) {
+            Logger.getLogger(BidController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
+    
     
     @Override
     public Bid retrieveBidByBidId(Long bidId) throws BidNotFoundException {

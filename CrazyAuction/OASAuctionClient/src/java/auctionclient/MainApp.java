@@ -118,6 +118,7 @@ class MainApp {
         customer.setIdentificationNumber(doReadNric());
         System.out.println();
         customer.setAddresses(doReadAddresses());
+        System.out.println("test1" + customer.getAddresses().size());
         System.out.println();
         customer.setPassword(doReadPassword());
         System.out.println();
@@ -245,9 +246,9 @@ class MainApp {
             }
         }
         for (int i = 0; i < numberOfAddress; i++) {
-            Address address = doReadAddress(i + 1, numberOfAddress, null);
+            Address address = doReadAddress(i + 1, numberOfAddress, currentCustomer);
+            addresses.add(address);
         }
-
         return addresses;
     }
 
@@ -258,7 +259,7 @@ class MainApp {
         boolean firstAttempt = true;
         while (!password1.equals(password2)) {
             if (!firstAttempt) {
-                System.err.println("Make sure you have entered the same password twice./n");
+                System.err.println("Make sure you have entered the same password twice.\n");
             }
             System.out.println("Please enter your password");
             System.out.print("> ");
@@ -701,7 +702,7 @@ class MainApp {
         System.out.println("\n*** Auction Client :: Auction&Bid Menu :: View Auction Listing ***\n");
 
         List<AuctionListing> allAuctionListings = auctionListingController.retrieveOpenedAuctions();
-        System.out.printf("%8s%30s%20s\n", "ID", "End Date Time", "Current Bid");
+        System.out.printf("%8s%20s%30s%20s\n", "ID", "Description","End Date Time", "Current Bid");
         for (AuctionListing auctionListing : allAuctionListings) {
             BigDecimal highestBid = null;
             //assign non-null current highest bid 
@@ -716,12 +717,13 @@ class MainApp {
             }
             String highestBidString;
             if (highestBid != null) {
-                highestBidString = highestBid.setScale(2).toString();
+                DecimalFormat df = new DecimalFormat("0.00");
+                highestBidString = df.format(highestBid.floatValue());
             } else {
                 highestBidString = "N.A.";
             }
-            System.out.printf("%8s%30s%20s\n",
-                    auctionListing.getAuctionListingId().toString(), auctionListing.getEndDateTime().toString(), highestBidString);
+            System.out.printf("%8s%20s%30s%20s\n",
+                    auctionListing.getAuctionListingId().toString(), auctionListing.getDescription(),auctionListing.getEndDateTime().toString(), highestBidString);
         }
         //sub meu
         Integer response = 0;

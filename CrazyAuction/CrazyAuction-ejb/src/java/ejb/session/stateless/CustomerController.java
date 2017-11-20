@@ -45,9 +45,12 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
     @Override
     public Customer createNewCustomer(Customer customer) {
         em.persist(customer);
+        System.out.println("test1" + customer.getAddresses().size());
         for (Address address : customer.getAddresses()) {
-            addressController.createNewAddress(address);
+            address.setCustomer(customer);
+            em.persist(address);
         }
+        System.out.println("test2" + customer.getAddresses().size());
         em.flush();
         em.refresh(customer);
         return customer;

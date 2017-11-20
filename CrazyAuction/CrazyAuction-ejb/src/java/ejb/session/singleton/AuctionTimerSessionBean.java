@@ -38,26 +38,28 @@ public class AuctionTimerSessionBean {
     @Resource
     private SessionContext sessionContext;
     
-    @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
-    public void automaticCloseAuctionTimer()
-    {
-        System.out.println("Close Auction Timer event "+new Date());
-        auctionListingControllerLocal.closeAuction();
-    }
-    @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckOpenAuctionEvery5s")
+    
+    @Schedule(hour = "*", minute = "*/1", info = "auctionTimerCheckOpenAuctionEvery5s")
     public void automaticActivateAuctionTimer()
     {
         System.out.println("Activate Auction Timer event "+new Date());
         auctionListingControllerLocal.openAuction();
     }
     
-    @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
+    @Schedule(hour = "*", minute = "*/1", info = "auctionTimerCheckCloseAuctionEvery5s")
+    public void automaticCloseAuctionTimer()
+    {
+        System.out.println("Close Auction Timer event "+new Date());
+        auctionListingControllerLocal.closeAuction();
+    }
+    
+    @Schedule(hour = "*", minute = "*/1", info = "auctionTimerCheckCloseAuctionEvery5s")
     public void automaticProxyBidding()
     {
         System.out.println("Proxy Bidding Place Bid event "+new Date());
         //crazyAuctionWebService.configureProxyBidding(auctionListingId, maxAmount, custId);
     }
-    @Schedule(hour = "*", minute = "*/5", info = "auctionTimerCheckCloseAuctionEvery5s")
+    @Schedule(hour = "*", minute = "*/1", info = "auctionTimerCheckCloseAuctionEvery5s")
     public void automaticSniping()
     {
         System.out.println("Sniping Place Bid event "+new Date());

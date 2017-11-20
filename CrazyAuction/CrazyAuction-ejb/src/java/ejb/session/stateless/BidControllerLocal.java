@@ -13,7 +13,7 @@ public interface BidControllerLocal {
 
     Bid createNewBid(Bid bid);
 
-    void refundToCustomer(Bid bid);
+    void refundToCustomer(Long bidId);
 
     Bid retrieveBidByBidId(Long bidId) throws BidNotFoundException;
 

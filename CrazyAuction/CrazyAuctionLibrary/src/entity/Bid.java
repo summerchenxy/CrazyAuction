@@ -87,11 +87,4 @@ public class Bid implements Serializable {
         this.creditTransaction = creditTransaction;
     }
     
-    public void refundToCustomer(){
-        BigDecimal creditValue = this.getCreditValue();
-        Customer customer = this.getCreditTransaction().getCustomer();
-        customer.addCreditBalance(creditValue);
-        this.setCreditValue(BigDecimal.ZERO);
-    }
-    
 }
