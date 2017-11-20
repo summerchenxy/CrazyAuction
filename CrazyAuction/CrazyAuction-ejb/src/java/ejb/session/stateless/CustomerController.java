@@ -71,15 +71,17 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException {
         Query query = em.createQuery("SELECT s FROM Customer s WHERE s.username = :inUsername");
         query.setParameter("inUsername", username);
+        Customer customer=null;
         try {
-            Customer customer = (Customer) query.getSingleResult();
-            customer.getAddresses().size();
-            customer.getCreditTransactionHistory().size();
-            customer.getWonBids().size();
-            return customer;
+            customer = (Customer) query.getSingleResult();
+
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new CustomerNotFoundException("Customer Username " + username + " does not exist!");
         }
+        customer.getAddresses().size();
+        customer.getCreditTransactionHistory().size();
+        customer.getWonBids().size();
+        return customer;
     }
 
     @Override
@@ -123,6 +125,10 @@ public class CustomerController implements CustomerControllerLocal, CustomerCont
     public void doPurchaseCreditPackage(Long creditPackageId, Long customerId, int unit) { // - need to handle exceptions here
         CreditPackage cp = em.find(CreditPackage.class, creditPackageId);
         Customer customer = em.find(Customer.class, customerId);
+        System.out.println(customer.getFirstName());
+        System.out.println(cp.getCredit());
+        System.out.println(unit);
+
         CreditTransaction ct = new CreditTransaction(customer, cp, unit);
         em.persist(ct);
         customer.getCreditTransactionHistory().add(ct);

@@ -154,15 +154,14 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
     @Override
     public AuctionListing retrieveAuctionListingByAuctionListingId(Long auctionListingId) throws AuctionListingNotFoundException {
         AuctionListing auctionListing = em.find(AuctionListing.class, auctionListingId);
+        auctionListing.getBidList().size();
 
         if (auctionListing != null) {
             try {
                 auctionListing.getBidList().size();
-                for (Bid b: auctionListing.getBidList()){
+                for (Bid b : auctionListing.getBidList()) {
                     b.getCreditTransaction().getCustomer().toString();
                 }
-                
-
 //            System.out.print(auctionListing.getBidList().size());
             } catch (Exception ex) {
             }
@@ -174,7 +173,6 @@ public class AuctionListingController implements AuctionListingControllerLocal, 
             try {
                 auctionListing.getStatus();
 //            System.out.print(auctionListing.getBidList().size());
-
             } catch (Exception ex) {
             }
         } else {

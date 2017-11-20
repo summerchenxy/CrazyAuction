@@ -55,6 +55,7 @@ public class CreditTransaction implements Serializable {
     }
 
     public CreditTransaction(Customer purchasingCustomer, CreditPackage creditPackages, int unit) {
+        this();
         this.customer = purchasingCustomer;
         this.creditPackage = creditPackages;
         this.creditPacketUnit = unit;
@@ -62,6 +63,7 @@ public class CreditTransaction implements Serializable {
     }
 
     public CreditTransaction(Customer purchasingCustomer, Bid bid, BigDecimal biddedAmount) {
+              this();
         this.customer = purchasingCustomer;
         this.type = TransactionTypeEnum.CREDIT;
         this.bid = bid;

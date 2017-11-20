@@ -87,10 +87,8 @@ public class MainApp {
         String username;
         String password = "";
         System.out.println("*** OAS Administration Panel :: Login ***\n");
-        System.out.print("Enter username> ");
-        username = scanner.nextLine().trim();
-        System.out.print("Enter password> ");
-        password = doReadPassword();
+        username = doReadToken("username");
+        password = doReadToken("password");
         //System.out.println(username+" "+password);
         if (username.length() > 0 && password.length() > 0) {
             try {
@@ -144,7 +142,14 @@ public class MainApp {
         currentEmployee.setPassword(password);
         employeeControllerRemote.updateEmployee(currentEmployee);
     }
-
+    private String doReadToken(String tokenName) {
+        Scanner sc = new Scanner(System.in);
+        System.out.printf("Enter your %s\n", tokenName);
+        System.out.print("> ");
+        String token = sc.next();
+        sc.nextLine();
+        return token;
+    }
     private String doReadPassword() {
         Scanner sc = new Scanner(System.in);
         String password1 = "password1";

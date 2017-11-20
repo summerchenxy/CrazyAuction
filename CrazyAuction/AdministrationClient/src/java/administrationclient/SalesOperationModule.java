@@ -105,6 +105,7 @@ public class SalesOperationModule {
             try {
                 System.out.print("> ");
                 newAuctionListing.setStartingBidAmount(BigDecimal.valueOf(scanner.nextDouble()));
+                scanner.nextLine();
                 bidAmount = newAuctionListing.getStartingBidAmount();
             } catch (Exception ex) {
             }
@@ -279,7 +280,7 @@ public class SalesOperationModule {
                 for (Bid bid : bidList) {
                     bid = bidControllerRemote.retrieveBidByBidId(bid.getBidId());
                     bid.getCreditTransaction().toString();
-                    //bidControllerRemote.refundToCustomer(bid.getBidId());
+                    bidControllerRemote.refundToCustomer(bid.getBidId());
                 }
                 auctionListingControllerRemote.updateAuctionListing(auctionListing);
                 System.out.println("Auction Listing has been used hence it is disabled but not deleted!\n");
@@ -296,16 +297,16 @@ public class SalesOperationModule {
         DateFormat format = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
         System.out.println("It is now " + format.format(new Date()));
         List<AuctionListing> allAuctionListings = auctionListingControllerRemote.retrieveAllAuctionListings();
-        System.out.printf("%8s%20s%20s%10s%10s%10s\n", "ID", "Start Time", "End Time", "Status", "Reserve Price", "Winning Bid");
+        System.out.printf("%8s%20s%20s%10s%10s%10s%10s\n", "ID", "Start Time", "End Time", "timer Status", "Reserve Price", "Winning Bid", "enabled");
         String winningBid;
         for (AuctionListing auctionListing : allAuctionListings) {
             winningBid = "NA";
             if (auctionListing.getWinningBidValue()!=null){
                 winningBid = auctionListing.getWinningBidValue().toString();
             }
-            System.out.printf("%8s%20s%20s%10s%10s%10s\n",
+            System.out.printf("%8s%20s%20s%10s%10s%10s%10s\n",
                     auctionListing.getAuctionListingId().toString(), format.format(auctionListing.getStartDateTime()).toString(), format.format(auctionListing.getEndDateTime()).toString(),
-                    auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), winningBid);
+                    auctionListing.getStatus().toString(), auctionListing.getReservePrice().toString(), winningBid, auctionListing.getEnabled());
         }
         System.out.print("Press any key to continue...> ");
         scanner.nextLine();
