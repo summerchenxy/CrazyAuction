@@ -42,7 +42,7 @@ public class CreditTransaction implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer customer;
-    @OneToOne(optional = true)
+    @ManyToOne(optional = true)
     private CreditPackage creditPackage;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
